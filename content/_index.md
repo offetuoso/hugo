@@ -1,5 +1,5 @@
 ---
-heading: "Hi, I'm Kihun Oh"
+heading: "offetuoso's Blog"
 subheading: "Treat yourself well. Cherish others."
 handle: "offetuoso"
 ---

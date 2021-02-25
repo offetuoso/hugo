@@ -1,5 +1,3 @@
-
-
 # 테마 설정
 theme = "hugo-theme-codex" 
 themesDir = "/themes" 
@@ -31,11 +29,12 @@ ignoreErrors = ["error-remote-getjson"]
   instagram = "https://instagram.com/offetuoso"
   # linkedin = "<link to your profile>"
   # youtube = "https://www.youtube.com/channel/<your channel>"
+  search = "#"
   
   # 아이콘의 제목 (툴팁으로 표시됨) 및 표시 순서.
   # 현재 다음 아이콘이 지원됩니다.
-  #   "Twitter", "GitHub", "Email", "Mastodon", "Facebook", "GitLab", "Instagram", "LinkedIn", "YouTube"
-  iconOrder = ["GitHub", "Email", "Instagram"]
+  #   "Twitter", "GitHub", "Email", "Mastodon", "Facebook", "GitLab", "Instagram", "LinkedIn", "YouTube", "search"
+  iconOrder = ["GitHub", "Email", "Instagram", "search"]
 
   # 트위터 카드의 메타 데이터, 기본값은 params.twitter
   # twitterSite = "@<your handle>"
@@ -70,3 +69,5 @@ ignoreErrors = ["error-remote-getjson"]
   url = "/blog"
 
 
+[outputs]
+  home = ["HTML", "RSS", "JSON"]

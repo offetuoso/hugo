@@ -45,12 +45,18 @@
   {{- if not .Site.IsServer -}}
       {{ template "_internal/google_analytics_async.html" . }}
   {{- end -}}
+  
 </head>
 
 <body>
+  {{ partial "search.html" .}}
   {{ partial "burger.html" .}} 
 
   {{ partial "nav.html" .}}
+  
+  
+
+  
 
   <main>
     {{ block "main" . }} {{ end }}

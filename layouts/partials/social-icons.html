@@ -1,5 +1,5 @@
 {{ $currentPage := . }}
-{{ $icons := .Site.Params.iconOrder | default (slice "Twitter" "GitHub" "Email" "Mastodon" "Facebook" "GitLab" "Instagram" "LinkedIn" "YouTube") }}
+{{ $icons := .Site.Params.iconOrder | default (slice "Twitter" "GitHub" "Email" "Mastodon" "Facebook" "GitLab" "Instagram" "LinkedIn" "YouTube" "search") }}
 
 <div class="social-icons">
   {{ range $icons }}
@@ -8,7 +8,7 @@
       <a class="social-icons__link" rel="me" title="{{ . }}"
          href="{{ index $currentPage.Site.Params $icon }}"
          target="_blank" rel="noopener">
-        <div class="social-icons__icon" style="background-image: url('{{print "svg/" $icon ".svg" | absURL}}')"></div>
+        <div class="social-icons__icon icon_{{$icon}}" style="background-image: url('{{print "svg/" $icon ".svg" | absURL}}')"></div>
       </a>
     {{ end }}
   {{ end }}   
