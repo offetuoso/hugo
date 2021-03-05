@@ -1,5 +1,8 @@
 ---
 title: "Rich Content"
+image: "bg-archives.jpg"
+font_size: "40px"
+font_color: "white"
 date: 2020-06-05
 slug: "rich-text"
 description: "A brief description of Hugo Shortcodes"
@@ -30,3 +33,8 @@ Hugo ships with several [Built-in Shortcodes](https://gohugo.io/content-manageme
 ## Vimeo Simple Shortcode
 
 {{< vimeo_simple 48912912 >}}
+
+
+## 이미지 
+``![contact](/images/bg-contact.jpg)``
+![contact](/images/bg-contact.jpg)

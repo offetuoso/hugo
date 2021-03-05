@@ -1,5 +1,8 @@
 ---
 title: "Test1"
+image: "bg-post.jpg"
+font_color: "white"
+font_size: 
 date: 2021-02-16T14:15:02+09:00
 slug: "Test1-post"
 description: "This is an example post for hugo-theme-codex."

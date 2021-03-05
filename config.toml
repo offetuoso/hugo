@@ -71,3 +71,6 @@ ignoreErrors = ["error-remote-getjson"]
 
 [outputs]
   home = ["HTML", "RSS", "JSON"]
+  
+ searchEnable = true
+  

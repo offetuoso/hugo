@@ -9,7 +9,21 @@
       <div class="post__container">
         <div class="post">
           <header class="post__header">
-            <h1 id="post__title">{{.Title}}</h1>
+            {{ if .Params.image}} 
+            	<div class="header-inner" style="background-image: url('/images/{{.Params.image}}');">
+            {{ else }}
+            	<div class="header-inner" style="display:none;">
+            {{ end }}
+			      <div class="overlay"></div>
+				<div class="page-heading">
+		             <h1 class="post__title" style="color:{{.Params.font_color}};font-size: {{.Params.font_size}};">
+		            	{{.Title}}
+		              </h1>
+		        </div>	
+	        </div>
+	        <h1 class="post__title" id="post__title" style=" {{if or (.Params.image) (.Params.type) }} display:none; {{ end }}">
+		       	{{.Title}}
+            </h1>		
             {{ if .Date }}<time datetime="{{ .Date }}" class="post__date">{{ .Date.Format $dateFormat }}</time> {{ end }}
           </header>
           <article class="post__content">

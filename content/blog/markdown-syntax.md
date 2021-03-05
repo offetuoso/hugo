@@ -1,5 +1,7 @@
 ---
 title: "Markdown Syntax Guide"
+image: 
+font_color: "white"
 date: 2020-06-05
 slug: "markdown-syntax-guide"
 description: "Sample article showcasing basic Markdown syntax and formatting for HTML elements"

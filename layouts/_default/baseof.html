@@ -33,7 +33,6 @@
   <link type="text/css" rel="stylesheet" href="{{ "/css/lib/jquery-ui.css" | absURL }}"/>
   <link type="text/css" rel="stylesheet" href="{{ "/css/lib/font-awesome/css/font-awesome.css" | absURL }}"/>
   <link type="text/css" rel="stylesheet" href="{{ "/css/common.css" | absURL }}"/>
-
 	
   {{ partial "favicon.html" }}
 
@@ -64,13 +63,8 @@
 <body>
   {{ partial "search.html" .}}
   {{ partial "burger.html" .}} 
-
   {{ partial "nav.html" .}}
   
-  
-
-  
-
   <main>
     {{ block "main" . }} {{ end }}
   </main>

@@ -1,5 +1,8 @@
 ---
 title: "Math Typesetting"
+image: "bg-index.jpg"
+font_color: "white"
+font_size: "40px"
 date: 2020-06-05
 slug: "math-typesetting"
 description: "A brief guide to setup KaTeX"
