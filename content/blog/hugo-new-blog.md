@@ -1,14 +1,13 @@
 ---
-title: "Test1"
+title: "Hugo를 이용한 Github Page"
 image: "bg-post.jpg"
 font_color: "white"
-font_size: 
-date: 2021-02-16T14:15:02+09:00
-slug: "Test1-post"
-description: "This is an example post for hugo-theme-codex."
-keywords: ["gohugo", "hugo", "go", "blog"]
-draft: false
-tags: ["hugo"]
+font_size: 30px
+date: 2021-03-05
+slug: "hugo-New-blog"
+description: "Hugo 블로그 개설"
+draft: true
+tags: ["hugo","git","github","blog"]
 math: false
 toc: true
 ---

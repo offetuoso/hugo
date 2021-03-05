@@ -7,7 +7,7 @@ date: 2020-06-05
 slug: "math-typesetting"
 description: "A brief guide to setup KaTeX"
 keywords: ["gohugo", "hugo", "go", "blog"]
-draft: true
+draft: false
 tags: ["math"]
 math: true
 toc: false
