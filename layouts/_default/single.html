@@ -14,7 +14,7 @@
             {{ else }}
             	<div class="header-inner" style="display:none;">
             {{ end }}
-			      <div class="overlay"></div>
+			      <div class="overlay" style="opacity:  {{ if .Params.opacity}} {{.Params.opacity}} {{ else }}0.5 {{ end }};"></div>
 				<div class="page-heading">
 		             <h1 class="post__title" style="color:{{.Params.font_color}};font-size: {{.Params.font_size}};">
 		            	{{.Title}}
