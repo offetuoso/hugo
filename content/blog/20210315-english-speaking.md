@@ -5,7 +5,7 @@ font_color: "white"
 font_size: 30px
 opacity: "0.4"
 date: 2021-03-15
-slug: "english-speak"
+slug: "20210315-english-speak"
 description: "영어 회화 문법정리"
 draft: false
 tags: ["english","speak","talk"]

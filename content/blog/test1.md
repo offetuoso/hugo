@@ -7,7 +7,7 @@ date: 2021-02-16T14:15:02+09:00
 slug: "Test1-post"
 description: "This is an example post for hugo-theme-codex."
 keywords: ["gohugo", "hugo", "go", "blog"]
-draft: false
+draft: true
 tags: ["hugo"]
 math: false
 toc: true
