@@ -32,8 +32,7 @@ toc: true
 
 ### 상속
 
-### 오버라이딩 VS 오버로딩
-##오버라이딩 (Overriding)
+###오버라이딩 (Overriding)
 
 > 오버라이딩이란?
 
@@ -143,7 +142,7 @@ The method Talk(String) of type Korean must override or implement a supertype  m
 
 ```
 
-##오버로딩 (Overloading)
+###오버로딩 (Overloading)
 
 > 오버로딩이란?
 
@@ -217,7 +216,7 @@ this is True
 ![contact](/images/overload_example.png)
 
 
-##다형성 
+###다형성 
 
 
 ##오버라이딩을 이용한 다형성 
