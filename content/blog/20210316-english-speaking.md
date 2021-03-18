@@ -1,13 +1,13 @@
 ---
-title: "영어 회화 21.03.17"
+title: "영어 회화 21.03.16"
 image: "bg-post.jpg"
 font_color: "white"
 font_size: 30px
 opacity: "0.4"
-date: 2021-03-17
-slug: "20210317-english-speak"
+date: 2021-03-16
+slug: "20210316-english-speak"
 description: "영어 회화 문법정리"
-draft: true
+draft: false
 tags: ["english","speak","talk"]
 math: false
 toc: true
