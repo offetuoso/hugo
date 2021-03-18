@@ -32,7 +32,7 @@ toc: true
 
 ### 상속
 
-###오버라이딩 (Overriding)
+### 오버라이딩 (Overriding)
 
 > 오버라이딩이란?
 
@@ -142,7 +142,7 @@ The method Talk(String) of type Korean must override or implement a supertype  m
 
 ```
 
-###오버로딩 (Overloading)
+### 오버로딩 (Overloading)
 
 > 오버로딩이란?
 
@@ -216,10 +216,10 @@ this is True
 ![contact](/images/overload_example.png)
 
 
-##다형성 
+### 다형성 
 
 
-###오버라이딩을 이용한 다형성 
+#### 오버라이딩을 이용한 다형성 
 
 
 > 위에서 오버라이딩을 설명했던 소스와 다른점 한가지가 있다.
@@ -294,7 +294,7 @@ Hello!
 Konnichiwa!
 ```
 
-### 참조변수의 다형성
+#### 참조변수의 다형성
 
 > 참조변수가 사용할 수 있는 멤버의 개수가 실제 인스턴스의 멤버 개수보다 같거나 적어야 참조할 수 있다. 클래스는 상속을 통해 확장될 수는 있어도 축소될 수는 없기 때문에, 자식클래스에서 사용할 수 있는 멤버의 개수는 언제나 부모 클래스와 같거나 많게 된다.
 
@@ -313,7 +313,7 @@ Korean korean = new Person();	//오류
 ```
 
 
-### 참조변수의 형변환
+#### 참조변수의 형변환
 
 > 자식클래스를 부모 클래스로 참조할때 자식 클래스로 형 변환 할 수 있다.
 
