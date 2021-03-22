@@ -4,10 +4,10 @@ image: "bg-post.jpg"
 font_color: "white"
 font_size: 30px
 opacity: "0.4"
-date: 2021-03-17
+date: 2021-03-19
 slug: "20210319-english-speak"
 description: "영어 회화 문법정리"
-draft: true
+draft: false
 tags: ["english","speak","talk","EngAll","잉그올"]
 math: false
 toc: true
