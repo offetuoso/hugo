@@ -37,12 +37,9 @@ toc: true
 
 > 오버라이딩이란?
 
-
-
 >사전적 의미로는 
  `more important than any other considerations`
-  번역해 보면 `다른 고려 사항보다 더 중요하다`
-이다.
+  번역해 보면 `다른 고려 사항보다 더 중요하다`이다.
 
 > 부모 클래스로 부터 상속받은 메소드를 자식 클래스에서 재정의 하여, <br>
  `덮어 쓰는 것`이다. 상속받은 메소드를 그대로 사용할 수도 있지만, 자식 클래스에서 상황에 맞게 변경해야 하는 경우 오버라이딩을 사용한다.
@@ -50,6 +47,16 @@ toc: true
 > 오버라이딩을 사용하기 위한 조건에는 부모 클래스의 메소드를 재정의하는 것이므로 <br>
 <mark>이름, 매개변수 리턴 값이 모두 같아야 한다</mark>.
 
+> 오버라이딩의 조건
+> 1. 부모 클래스와 자식 클래스 사이에서만 성립한다. 
+> 2. static 메소드는 오버라이딩 할 수 없다. `static 메소드 끼리의 오버라이딩은 hiding이라 한다.`
+> 3. private는 정의된 메소드는 상속 자체가 안된다.
+> 4. interface 메소드를 오버라이딩 할 경우엔 public으로 해야한다.
+> 5. 메소드의 파라미터가 완전히 일치해야 하며, 리턴타입도 같아야 한다. 파라미터의 이름은 상관없다.
+> 6. 부모 클래스의 접근제어자보다 좁아질 수 없다. 확장 될 수는 있다.
+> 7. 부모 클래스보다 더 많은 예외를 던질 수 있다.
+> 8. final 예약어로 정의된 메소드는 오버라이딩 할 수 없다. 
+ 
 
 > 아래 소스코드를 보면, 
 > 1. main 클래스를 가지고 있는 Example 클래스 
@@ -155,10 +162,15 @@ The method Talk(String) of type Korean must override or implement a supertype  m
 > 보통 하나의 이름을 가진 메소드는 1개만 존재 하지만, `파라미터가 다르다면` 컴퓨터는 오버로드된 메소드로 
 인식하여 다른 메소르도 인식함.
 
+> 오버로딩이 되는 조건은 
+> 1. 메소드 이름이 같아야 한다.
+> 2. 메소드의 파라미터의 형이 다르거나 갯수가 다르거나 순서가 다름.
+> 3. 반환타입은 영향을 미치지 않는다.  
+
 > 아래 소스코드를 보면, 
 > 1. main 클래스를 가지고 있는 Example 클래스 
-> 2. Mountain이라는 클래스가 있고 each라는 입력하면 답변을 해주는 메소드가 있다.
-> 3. 같은 이름의 다른 파라미터를 갖는 3개의 each가 있다.
+> 2. Mountain이라는 클래스가 있고 echo라는 입력하면 답변을 해주는 메소드가 있다.
+> 3. 같은 이름의 다른 파라미터를 갖는 3개의 echo가 있다.
 
 
 
@@ -172,26 +184,26 @@ public class Example {
 		
 		Mountain mountain = new Mountain();
 		
-		mountain.each("Hello"); 	//문자열 입력
+		mountain.echo("Hello"); 	//문자열 입력
 		
-		mountain.each(100);		//숫자 입력
+		mountain.echo(100);		//숫자 입력
 		
-		mountain.each(true);		//참,거짓 입력
+		mountain.echo(true);		//참,거짓 입력
 		
 	}
 
 }
 
 class Mountain {
-	void each(String say) {
+	void echo(String say) {
 		System.out.println("you say "+say);
 	}
 	
-	void each(int money) {
+	void echo(int money) {
 		System.out.println("you have "+money+" doller");
 	}
 	
-	void each(Boolean bool) {
+	void echo(Boolean bool) {
 		if(bool) {
 			System.out.println("this is True");
 		}else {
@@ -215,6 +227,41 @@ this is True
 예를들면 우리가 많이 사용하는 System.out.println(); 출력 함수가 있다.
 
 ![contact](/images/overload_example.png)
+
+> 주의할점 
+파라메터의 순서를 다르게 오버라이드 하였지만, int와 long 모두 소숫점이 없는 정수를 입력 가능하기 때문에
+컴퓨터의 입장에서는 어느 메소드를 사용할지 애매한경우가 생긴다.
+ 
+`The method sum(int, long) is ambiguous for the type Calculator`
+Calculator의 메소드 sum (int, long)은 형식에 대해 모호합니다.
+
+```
+	
+	public class Example {
+
+	public static void main(String[] args) {
+		
+		Calculator cal = new Calculator();
+		
+		cal.sum(1, 5);
+	}
+
+}
+
+class Calculator {
+	void sum(int a, long b) {
+		System.out.println("sum is "+ (a+b));
+	}
+	
+	void sum(long a, int b) {
+		System.out.println("sum is "+ (a+b));
+	}
+	
+}
+
+
+```
+
 
 
 ### 다형성 

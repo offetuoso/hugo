@@ -1,5 +1,5 @@
 ---
-title: "EngAll 영어 회화 21.03.17"
+title: "잉그올 영어 회화 21.03.17"
 image: "bg-post.jpg"
 font_color: "white"
 font_size: 30px
@@ -8,7 +8,7 @@ date: 2021-03-17
 slug: "20210317-english-speak"
 description: "영어 회화 문법정리"
 draft: true
-tags: ["english","speak","talk","EngAll"]
+tags: ["english","speak","talk","EngAll","잉그올"]
 math: false
 toc: true
 ---
