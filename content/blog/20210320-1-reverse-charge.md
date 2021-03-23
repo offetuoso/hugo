@@ -46,7 +46,7 @@ toc: true
 >	- 그리디 알고리즘 문제에서는 이처럼 문제 풀이를 위한 최소한의 아이디어를 떠올리고 이것이 정당한지 검토할 수 있어야 합니다.
 
 
-####reverse_change.py
+###reverse_change.py
 ```
 n =1260
 count  = 0 
@@ -60,7 +60,7 @@ for coin in array:
 print(count)
 ```
 
-####ReverseCharge.java
+###ReverseCharge.java
 ```
 package ex.algorism.greedy;
 
