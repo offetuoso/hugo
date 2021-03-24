@@ -15,16 +15,23 @@ toc: true
 
 ## 	I’m used to ~ ('난 -에 익숙해')
 > **I'm used to you** 난 너에게 익숙해
+> **I'm used to working overtime** 난 야근에 익숙해
 
 
 
 ## 	I'm afraid ~ ('유감스럽지만,')
 > **I'm afraid Rainy outside** 유감이지만, 밖에 비가 오는 것 같아
+> **I'm afraid ** 유감이지만, 밖에 비가 오는 것 같아
 
 
 
 ## 	 I’m working on ~ ('지금 -를 하고있어')
 > **I’m working on my English speaking** 난 영어 말하기를 공부하고 있어
+> **i'm working on study Algorithm** 난 알고리즘을 공부하고 있어
+
+## 	 I’m ~ is bad ('난 -가 안좋다')
+> **I’m health is bad** 난 건강이 안좋다
+> **I'm english is bad** 난 영어를 잘 못한다.
 
 
 

@@ -15,32 +15,39 @@ toc: true
 
 ## 	I use ~ ('난 -를 사용한다.')
 > **I use Java** 난 자바를 사용한다.
+> **I use Korean** 난 한국어를 사용한다.
 
 
 
 ## 	I’m preparing ~ ('-를 준비중입니다')
-> ** I’m preparing to change job 
-** 나는 이직을 준비중입니다.
+> ** I’m preparing to change job ** 나는 이직을 준비중입니다.
+> ** I’m preparing to party in my house ** 우리 집에서 파티를 준비하고 있어요.
 
 
 
 ## 	 ~ is intense 
  ('-이 ~빡세다~힘들다.')
 > **Work is not intense** 일은 힘들지 않다.
+> **Always Study is intense** 공부는 힘들다.
 
 
 ## I learned ~ ('나는 -배웠다')
-> **I learned computer science in my University**
+> **I learned computer science in my University** 나는 대학에서 컴퓨터를 전공했다.
+> **I learned baking bread** 나는 빵굽기를 배웠다.
 
 ##  I want to ~ ('-하고 싶습니다.')
-> **I want to hold your hand**
+> **I want to hold your hand** 당신의 손을 잡고 싶습니다.
+> **I want to change job!** 이직하고 싶어요!
 
 
 ##  I'm good at ~ ('나는 -잘해')
-> **I'm good at make smile**
+> **I'm good at make smile** 나는 미소를 잘 짓습니다.
+> **I'm good at cleaning my room** 나는 내방 청소를 잘해요
+
 
 ##  I'm about to ~ ('나는 -할 예정이다')
-> **I'm about to go to bed**
+> **I'm about to go to bed** 나는 자러갈 예정이다.
+> **I'm about to study english** 나는 영어공부를 할 예정이다.
 
 ```
 Benefits & Drawbacks (장점 & 단점)
@@ -48,7 +55,7 @@ Take your time (천천히)
 Achievement (성취감)
 Working late (야근) 
 Intense (빡센) 
-Regular job = 
+Regular job = 정규직
 Stable job = 안정감 있는 직업 
 Objective / Goal = 목표
 Regret = 후회

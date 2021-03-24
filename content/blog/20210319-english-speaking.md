@@ -21,12 +21,15 @@ toc: true
 
 ## attempt to ~ ('-를 시도하다.') 
 > **they are attempt to find something** 그들은 무언갈 찾으려 한다.
+> **i attempt to speaking english** 나는 영어로 말하길 시도한다.
 
 ## I had a meeting ~ ('-를 만났다.') 
 > **I had a meeting with english teacher** 나는 영어 선생님과 Meeting을 가졌다.(만났다.)
+> **I had a meeting with my friends** 나는 친구를 만났다
 
 ## - means ~ ('-의 뜻은 -입니다') 
 > **my name's means a victory ** 내 이름은 승리를 의미합니다.
+> **'팽-하' means '펭수 하이' ** '펭-하'는 '펭수-하이'를 뜻합니다.
 
 ## adv. accurate ('정확한') 
 > **Do you think the information on the table is accurate? ** 테이블의 정보가 정확하다고 생각하나요?

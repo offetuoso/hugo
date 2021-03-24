@@ -15,9 +15,11 @@ toc: true
 
 ## 	Did you take a look at ~? ('-보셨나요?')
 > **Did you take a look at the Book** 책 보셨나요?
+> **Did you take a look at sky?** 하늘을 보셨나요?
 
 ## I took a look at ~ ('나는 -를 보았다.') 
 > **I took a look at the book, 1 hour ago** 1 시간 전에 책을 봤어요.
+> **I was took a look at sky last day** 나는 어제 하늘을 봤어요
 
 ## adv. impressed ('깊은 인상') 
 
@@ -25,9 +27,11 @@ toc: true
 
 ## I’m impressed by ~ ('나는 당신의 -에 감동받았습니다.')
 > **I’m impressed by your letter** 나는 당신의 편지에 감동받았습니다.
+> **I’m impressed by your passion** 나는 당신의 열정에 감동받았습니다.
 
 ## related to ~ ('-와 연관되다.')
 > **I think, he is related to crime** 그는 범죄와 관련된 것 같아요.
+> **my homework relate to math** 나의 숙제는 수학과 관련있다.
 
 ## v. skim 
 > **He always skimmed the book** 그는 항상 책을 훑어보았다.
