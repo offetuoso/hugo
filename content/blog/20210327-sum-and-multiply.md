@@ -4,7 +4,7 @@ image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2021-03-24
+date: 2021-03-27
 slug: "sum-and-multiply"
 description: "최고의 숫자가 되기 위하여 더하기 혹은 곱하기를 진행"
 keywords: ["Algorism", "CodingTest", "Python", "Java"]
@@ -62,58 +62,91 @@ print(list) # ['new', 'a', 'b', 'c']
 
 
 
-###make_one.py
+###sum_or_multiply.py
 ```
-n, k = map(int, input().split()) 	#n=13, k=5
+s = input()
 
-result = 0
+result=0
 
-while True :
-    # n을 K로 나눈 몫에 k를 곱하여,
-    # 나눌수 있는 값을 계산             # roof 1 step                         # roof 2 step
-    target = (n // k) * k 		#target = 10 						#target = 0
-    result += (n - target)       #result += 3  <<한번에 카운트 3을 추가하고     #result(4) += 2
-    n = target                   #n = target   <<13을 10으로 만듬          #n=0
+for n in list(s) :
+    if result == 0 or n == 0 or result == 1 or n == 1 :    
+        result += int(n)
+    else :
+        result *= int(n)
 
-    if n < k :                   #false                                #true
-        break
-    result += 1				#나눗셈에 대한 result(3) +1	
-    n //= k					#n = 2
-
-result += (n - 1)                                                      #result(6) += -1   <n을 0까지 만들면서, 횟수 -1
-print(result)                                                          #5        
-
+print(result)
+   
 ```
 
-###MakeOne.java
+### 모범답안 파이썬
+```
+data = input()
+
+result = int(data[0])
+
+for i in range(1,len(data)) :
+    num = int(data[i])
+    if num <= 1 or result <= 1:
+    	result += num
+    else:
+    	result *= num
+    	 
+print(result)
+   
+```
+
+
+###SumOrMultiply.java
 ```
 package ex.algorism.greedy;
 import java.util.Scanner;
 
-public class MakeOne {
+public class SumOrMultiply {
 	
 	public static void main(String[] args) {
 		
 		Scanner sc = new Scanner(System.in);
 		
-		int n = sc.nextInt();
-		int k = sc.nextInt();
+		String s = sc.nextLine();
 		int result = 0;
 		
-		while (true) {
-			int target = (n/k)*k;
-			result += n-target;
-			n = target;
-			
-			if(n < k) {
-				break;
+		for (int i = 0; i < s.length(); i++) {
+			int n = Integer.parseInt(s.substring(i, i+1));
+			if(result == 0 || n == 0 || result == 1 || n == 1) {
+				result += n;
+			}else {
+				result *= n;
 			}
-			
-			n = n / k;
-			result++;
-			
 		}
-		result += (n-1);
+
+		System.out.println(result);
+	}
+}
+```
+
+###모범답안 자바
+```
+package ex.algorism.greedy;
+import java.util.Scanner;
+
+public class SumOrMultiply {
+	
+	public static void main(String[] args) {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		String str = sc.nextLine();
+		
+		long result = str.charAt(0) - '0';
+		for(int i=1; i < str.length();i++) {
+			int num = str.charAt(i) - '0';
+			if (num <= 1 ||result <= 1) {
+				result += num;
+			}else {
+				result *= num;
+			}
+		}
+		
 		System.out.println(result);
 	}
 }
@@ -121,9 +154,9 @@ public class MakeOne {
 ```
 
 ###[문제] 정당성 분석
-> 1을 빼는 것보다 나누는 것이 더 기하급수적으로 빠르게 줄일 수 있다.
-> K가 2보다 크다면, K로 나누는 것이 1을 빼는것 보다 항상 빠르게 N을 줄일 수 있다.
-> 또한 N은 항상 1에 도달하게 됨.
+> 곱하는 것보다 더하는 것이 더 큰 값을 얻을 수 있다.
+> 곱해서 0또는 1이되는 상황보다, 곱하는게 큰 값을 얻는다
+
  
 
 
