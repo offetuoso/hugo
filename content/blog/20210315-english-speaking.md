@@ -56,4 +56,8 @@ I started in-door climbing recently. / I’m into sth. = having a great interest
 
 ```
 
+본 게시물은 개인 복습용이라 수업내용과 별개 입니다.
+예시로 만든 문장은 문법적 오류가 있을 수 있습니다. 
+잘못된 점이 있다면 댓글로 남겨주시면 수정하겠습니다. 
+
 ## end
