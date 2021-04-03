@@ -35,8 +35,6 @@ toc: true
 ## n. belief  ('신뢰')
 >	belief is very important ('믿음은 매우 중요합니다.')
 
->	동학개미 had some influence on the national stock market. ('동학 개미는 전국 주식 시장에 영향을 미쳤습니다.')
->	I think, he has achievement  that influence on some developer ('그는 일부 개발자에게 영향을 미치는 업적을 가지고 있다고 생각합니다.')
 
 ## tend to do  ('경향이 있다.')
 >	Believer is tend to pray before have a eating ('신자는 먹기 전에기도하는 경향이 있습니다 ')
