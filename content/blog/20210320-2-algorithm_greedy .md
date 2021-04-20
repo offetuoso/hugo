@@ -7,9 +7,9 @@ opacity: "0.4"
 date: 2021-03-20
 slug: "greedy-algorithm"
 description: "그리디 알고리즘."
-keywords: ["algorithm", "CodingTest"]
+keywords: ["Algorism", "CodingTest"]
 draft: false
-tags: ["java"]
+tags: ["Algorism"]
 math: false
 toc: true
 ---

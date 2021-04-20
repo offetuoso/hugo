@@ -1,12 +1,12 @@
 ---
-title: "1이 될때까지 (그리디 알고리즘)"
+title: "모험가 길드 (그리디 알고리즘)"
 image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2021-03-23
-slug: "make-one"
-description: "1이 될때까지 알고리즘."
+date: 2021-04-03
+slug: "adventurer-guild"
+description: "모험가 파티를 만드는 알고리즘"
 keywords: ["Algorism", "CodingTest", "Python","Java"]
 draft: false
 tags: ["Algorism"]

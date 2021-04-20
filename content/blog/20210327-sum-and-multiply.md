@@ -9,7 +9,7 @@ slug: "sum-and-multiply"
 description: "최고의 숫자가 되기 위하여 더하기 혹은 곱하기를 진행"
 keywords: ["Algorism", "CodingTest", "Python", "Java"]
 draft: false
-tags: ["java"]
+tags: ["Algorism"]
 math: false
 toc: true
 ---
