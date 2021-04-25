@@ -105,16 +105,55 @@ print(result)
 
 ###LawOfLargeNumber.java
 ```
-```
+package ex.algorism.greedy;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Scanner;
 
-###[문제] 정당성 분석
-> 1을 빼는 것보다 나누는 것이 더 기하급수적으로 빠르게 줄일 수 있다.
-> K가 2보다 크다면, K로 나누는 것이 1을 빼는것 보다 항상 빠르게 N을 줄일 수 있다.
-> 또한 N은 항상 1에 도달하게 됨.
- 
+public class LawofLargeNumber {
+	
+	public static void main(String[] args) {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		int result = 0;
+		
+		String str1 = sc.nextLine();
+		String str2 = sc.nextLine();
+		
+		int n = Integer.parseInt(str1.split(" ")[0]);
+		int m = Integer.parseInt(str1.split(" ")[1]);
+		int k = Integer.parseInt(str1.split(" ")[2]);
+		String list[] = str2.split(" ");
+		Arrays.sort(list);
+		
+		int first = Integer.parseInt(list[n-1]);
+		int second = Integer.parseInt(list[n-2]);
+		
+		//System.out.println("n"+n);
+		//System.out.println("m"+m);
+		//System.out.println("k"+k);
+		//System.out.println("first"+first);
+		//System.out.println("second"+second);
+		
+		//5 5 4 5 5 4 5
+		
+		int count = (m/(k+1))*k;
+		count += m%(k+1);
+		int count2 = m-count; 
+		
+		//System.out.println(count);
+		
+		result = (count*first) + (count2*second);
+				
+		System.out.println(result);
+	}
+}
+
+```
 
 
 이 자료는 나동빈님의 이코테 저서를 보고 정리한 자료입니다.
-
+   
 
 
