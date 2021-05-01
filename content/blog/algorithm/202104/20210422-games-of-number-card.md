@@ -42,7 +42,7 @@ toc: true
 > 입력예시
 >	3 3
 >   3 1 2
->   4 1 4
+>   4 1 4                                                
 >   2 2 2
 
 > 출력예시
@@ -78,6 +78,55 @@ for i in range(n):
 print(result) 
 
 ```
+
+### GameOfCard.java
+```
+package ex.algorism.greedy;
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class GameOfCard {
+	
+	public static void main(String[] args) {
+		
+		Scanner sc = new Scanner(System.in);
+		int result = 0;
+		
+		String n = sc.nextLine();
+		String m = null;
+
+		String arr[] =  n.split(" ");
+		
+		int maximum = 0;
+		for (int i = 0; i < Integer.parseInt(arr[0]); i++) {
+			m = sc.nextLine();
+			String row[] = m.split(" ");
+			
+			//자바 String배열 -> int배열로 변경 Java8 기준
+			int[] nums = Arrays.asList(row).stream().mapToInt(Integer::parseInt).toArray();
+			
+			/*
+			int[] nums = new int[row.length];
+	         for(int j=0; j<row.length; j++) {
+	            nums[j] = Integer.parseInt(row[j]);
+	         }
+	         */
+			
+			Arrays.sort(nums);
+			
+			if(maximum < nums[0]) {
+				maximum = nums[0];
+			}
+			
+		}
+		
+		System.out.println(maximum);
+	}
+}
+
+    	
+```
+
 
 ### 파이썬 모범답안 1
 ```
@@ -119,6 +168,7 @@ for i in range(n):
 print(result)
     	
 ```
+
 
 
 

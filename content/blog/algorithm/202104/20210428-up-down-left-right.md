@@ -54,30 +54,56 @@ D: 아래로 한 칸 이동
 > 출력예시
 >	3 4
 
+
+###up-down-left-right1.py
+```
+n = int(input()) 		# map의 최대 크기
+m = list(map(str, input().split())) 		#공백으로 구분된 이동플랜
+
+x, y = 1, 1		# 시작위치
+
+for move in m: 	# 입력받은 이동 커맨드
+    if (move == "U") and (x - 1) > 0:   	# U (x-1, y)를 x-1이 1보다 작아지지 않는 선에서 수행 
+        x -= 1
+    elif (move == "D") and (x + 1) <= n :  # D (x+1, y)를 x+1이 n보다 커지지 않는 선에서 수행 
+        x += 1
+    elif (move == "L") and (y - 1) > 0:    # L (x, y-1)를 y-1이 1보다 작아지지 않는 선에서 수행 
+        y -= 1
+    elif (move) == "R") and (y + 1) <= n : # R (x, y+1)를 y+1이 n보다 커지지 않는 선에서 수행 
+        y += 1
+
+print(x,' ',y) 
+            
+```
+
+
 ###up-down-left-right1.py
 ```
 n = int(input())
-m = list(map(str, input().split()))
+m =  input().split()
 
-x = 1
-y = 1
+x, y = 1, 1
+
+move_type = ['U','D','L','R']
+
+dx = [-1, +1, 0, 0]
+dy = [0, 0, -1, +1]
+
 
 for move in m:
 
-    if (move.upper() == "U") and (x - 1) > 0:    
-        x -= 1
-    elif (move.upper() == "D") and (x + 1) <= n :
-        x += 1
-    elif (move.upper() == "L") and (y - 1) > 0:    
-        y -= 1
-    elif (move.upper() == "R") and (y + 1) <= n :
-        y += 1
-
-    print(move,' ',x,' ',y)
+    for i in range(0, len(move_type)) :
+        if move == move_type[i] :
+            if( 1 <= x+dx[i] <= n and 1 <= y+dy[i] <= n )  :
+                x += dx[i]
+                y += dy[i]
 
 print(x,' ',y)
             
 ```
+
+
+
 
 ### 파이썬 모범답안 1
 ```
