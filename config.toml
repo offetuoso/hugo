@@ -2,7 +2,7 @@
 theme = "hugo-theme-codex" 
 themesDir = "/themes" 
 
-# 이 설정을 자신의 것으로
+# 이 설정을 자신의 것으로 수정
 title = "offetuoso's Blog"
 languageCode = "ko-KR"
 baseURL = "https://offetuoso.github.io/"
