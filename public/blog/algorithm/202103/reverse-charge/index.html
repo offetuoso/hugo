@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko-KR">
+
+<head>
+  <title>거스름돈 (그리디 알고리즘) | offetuoso&#39;s Blog</title>
+
+  <meta charset="UTF-8">
+  <meta name="language" content="en">
+  <meta name="description" content="그리디 알고리즘.">
+  <meta name="keywords" content="Algorism , CodingTest , Python , Java">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="google-site-verification" content="eiictgcSx2RHATKZuDBO51sg4TWwfugKXhNbcHglc9s" />
+
+  
+  
+
+  <script src="/js/lib/jquery-3.5.1.js"></script>
+  <script src="/js/lib/jquery-ui.js"></script>
+  <script src="/js/lib/jquery.mark.min.js"></script>
+  <script src="/js/lib/jquery.tmpl.min.js"></script>
+  <script src="/js/lib/fuse.js"></script>
+  <script src="https://offetuoso.github.io/js/lib/search.js"></script>
+  <script src="https://offetuoso.github.io/js/common.js"></script>
+
+  <link type="text/css" rel="stylesheet" href="https://offetuoso.github.io/css/lib/jquery-ui.css"/>
+  <link type="text/css" rel="stylesheet" href="https://offetuoso.github.io/css/lib/font-awesome/css/font-awesome.css"/>
+  <link type="text/css" rel="stylesheet" href="https://offetuoso.github.io/css/common.css"/>
+	
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
+
+
+  
+  
+    
+ 
+  
+  
+  
+  
+  
+  
+    
+    <link type="text/css" rel="stylesheet" href="/css/post.min.b60e0932fe1c50c3d7c5b4f83ee9e4592363654d0f2abf05bbd0678d5b8a214c.css" integrity="sha256-tg4JMv4cUMPXxbT4PunkWSNjZU0PKr8Fu9BnjVuKIUw="/>
+  
+    
+    <link type="text/css" rel="stylesheet" href="/css/custom.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css" integrity="sha256-47DEQpj8HBSa&#43;/TImW&#43;5JCeuQeRkm5NMpJWZG3hSuFU="/>
+  
+  
+   
+   
+    
+
+<script type="application/ld+json">
+  
+    {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/offetuoso.github.io\/"
+      },
+      "articleSection" : "blog",
+      "name" : "거스름돈 (그리디 알고리즘)",
+      "headline" : "거스름돈 (그리디 알고리즘)",
+      "description" : "그리디 알고리즘.",
+      "inLanguage" : "en-US",
+      "author" : "",
+      "creator" : "",
+      "publisher": "",
+      "accountablePerson" : "",
+      "copyrightHolder" : "",
+      "copyrightYear" : "2021",
+      "datePublished": "2021-03-20 00:00:00 \u002b0000 UTC",
+      "dateModified" : "2021-03-20 00:00:00 \u002b0000 UTC",
+      "url" : "https:\/\/offetuoso.github.io\/blog\/algorithm\/202103\/reverse-charge\/",
+      "wordCount" : "286",
+      "keywords" : ["Algorism", "CodingTest", "Python", "Java", "Blog"]
+    }
+  
+  </script>
+</head>
+
+<body>
+  <div class="popup search-popup local-search-popup" style="display: none;">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+  <div class="burger__container">
+  <div class="burger" aria-controls="navigation" aria-label="Menu">
+    <div class="burger__meat burger__meat--1"></div>
+    <div class="burger__meat burger__meat--2"></div>
+    <div class="burger__meat burger__meat--3"></div>
+  </div>
+</div>
+ 
+  <nav class="nav" id="navigation">
+  <ul class="nav__list">
+    
+    
+      <li>
+        <a  href="/">about</a>
+      </li>
+    
+      <li>
+        <a  class="active"
+         href="/blog">blog</a>
+      </li>
+    
+  </ul>
+</nav>
+
+  
+  <main>
+    
+    
+
+    <div class="flex-wrapper">
+      <div class="post__container">
+        <div class="post">
+          <header class="post__header">
+             
+            	<div class="header-inner" style="background-image: url('/images/bg-index.jpg');">
+            
+			      <div class="overlay" style="opacity:   0.4 ;"></div>
+				<div class="page-heading">
+		             <h1 class="post__title" style="color:white;font-size: 28px;">
+		            	거스름돈 (그리디 알고리즘)
+		              </h1>
+		        </div>	
+	        </div>
+	        <h1 class="post__title" id="post__title" style="  display:none; ">
+		       	거스름돈 (그리디 알고리즘)
+            </h1>		
+            <time datetime="2021-03-20 00:00:00 &#43;0000 UTC" class="post__date">2021-03-20</time> 
+          </header>
+          <article class="post__content">
+              
+<h2 id="문제1-거스름돈">[문제1] 거스름돈<a class="anchor" href="#문제1-거스름돈">#</a></h2>
+<p>###[문제] 거스름돈 : 문제 설명</p>
+<blockquote>
+<p>당신은 음식점의 계산을 도와주는 점원입니다. 카운트에서는 거스름돈으로 사용할 500원, 100원, 50원, 10원짜리 동전이 무한히 존재한다고 가정합니다.
+손님에게 거슬러 주어야 할 돈이 N원일 때, 거슬러 주어야 할 동전의 최소 개수를 구하세요. 단, 거슬로 줘야 할 돈은 N은 항상 10의 배수입니다.</p>
+</blockquote>
+<p>###[문제] 거스름돈 : 문제 해결 아이디어</p>
+<blockquote>
+<ul>
+<li>최적의 해를 빠르게 구하기 위해서는 가장 큰 화폐의 단위부터 돈을 거슬러 주면 됩니다.</li>
+<li>N원을 거슬러 줘야 할 때, 가장먼저 500원으로 거슬러 줄 수 있을 만큼 거슬러줍니다.</li>
+<li>이후에 100원, 50원, 10원짜리 동전을 차례대로 거슬러 줄 수 있을 만큼 거슬러주면 됩니다.</li>
+<li>N = 1,260일 때의 예시를 확인해 봅시다.</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>1,260 원을 500원부터 거슬러 준다면 아래와 같이</p>
+</blockquote>
+<p><img src="/images/greedy_question_01_01.PNG" alt="contact"></p>
+<table>
+<thead>
+<tr>
+<th>화페단위</th>
+<th>500</th>
+<th>100</th>
+<th>50</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>손님이 받은 개수</td>
+<td>2</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>###[문제] 거스름돈 : 정당성 분석</p>
+<blockquote>
+<ul>
+<li>가장큰 화폐단위부터 돈을 거슬러 주는 것이 최적의 해를 보장하는 이유는 무엇일까요?</li>
+<li>가지고 있는 동전중에서 <mark>큰 단위가 항상 작은 단위의 배수이므로 작은 단위의 동전들을 종합해 다른 해가 나올 수 없기 때문</mark>입니다.</li>
+<li>만약 800원을 거슬러 주어야 하는데 화폐 단위가 500원 400원 100원이라면 어떻게 될까요 ? -&gt; 400원 짜리 2개가 정답이됨</li>
+<li>그리디 알고리즘 문제에서는 이처럼 문제 풀이를 위한 최소한의 아이디어를 떠올리고 이것이 정당한지 검토할 수 있어야 합니다.</li>
+</ul>
+</blockquote>
+<p>###reverse_change.py</p>
+<pre><code>n =1260
+count  = 0 
+
+array = [500,100,50,10]
+
+for coin in array:
+    count += n / coin
+    n %= coin 
+
+print(count)
+</code></pre>
+<p>###ReverseCharge.java</p>
+<pre><code>package ex.algorism.greedy;
+
+public class ReverseCharge {
+	
+	public static void main(String[] args) {
+		
+		int n = 1260;
+		int[] coins = {500,100,50,10};
+		int count = 0;
+		
+		for (int coin : coins) {
+			count += n/coin;
+			n %= coin;
+		}
+		
+		System.out.println(count);
+	}
+}
+</code></pre>
+<p>####[문제] 거스름돈 : 시간 복잡도 분석</p>
+<blockquote>
+<ul>
+<li>화폐의 종류가 K라고 할때, 소스코드의 시간복잡도는 O(K)이다.</li>
+<li>이 알고리즘의 시간복잡도는 거슬러줘야 하는 금액과는 무관하며, 동전의 총 종류에만 영향을 받는다.</li>
+</ul>
+</blockquote>
+<p>이 자료는 나동빈님의 이코테 유튜브 영상을 보고 정리한 자료입니다.
+<br></p>
+<p><a href="https://www.youtube.com/watch?v=m-9pAwq1o3w&amp;list=PLRx0vPvlEmdAghTr5mXQxGpHjWqSz0dgC">참고 : <a href="http://www.youtube.com/watch?v=m-9pAwq1o3w&amp;amp;list=PLRx0vPvlEmdAghTr5mXQxGpHjWqSz0dgC">www.youtube.com/watch?v=m-9pAwq1o3w&amp;amp;list=PLRx0vPvlEmdAghTr5mXQxGpHjWqSz0dgC</a></a></p>
+
+
+              
+          </article>
+          
+
+<ul class="tags__list">
+    
+    <li class="tag__item">
+        <a class="tag__link" href="https://offetuoso.github.io/tags/algorism/">Algorism</a>
+    </li>
+    <li class="tag__item">
+        <a class="tag__link" href="https://offetuoso.github.io/tags/greedy/">Greedy</a>
+    </li>
+    <li class="tag__item">
+        <a class="tag__link" href="https://offetuoso.github.io/tags/%EC%9D%B4%EC%BD%94%ED%85%8C/">이코테</a>
+    </li></ul>
+
+ <div class="pagination">
+  
+    <a class="pagination__item" href="https://offetuoso.github.io/blog/algorithm/202103/greedy-algorithm/">
+        <span class="pagination__label">Previous Post</span>
+        <span class="pagination__title">그리디 알고리즘</span>
+    </a>
+  
+
+  
+    <a class="pagination__item" href="https://offetuoso.github.io/blog/algorithm/202103/make-one/">
+      <span class="pagination__label">Next Post</span>
+      <span class="pagination__title" >1이 될때까지 (그리디 알고리즘)</span>
+    </a>
+  
+</div>
+
+          
+             <script src="https://utteranc.es/client.js"
+        repo="offetuoso/offetuoso.github.io"
+        issue-term="pathname"
+        label="✨💬✨"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+          <footer class="post__footer">
+            
+
+
+<div class="social-icons">
+  
+     
+    
+      <a class="social-icons__link" rel="me" title="GitHub"
+         href="https://github.com/offetuoso"
+         target="_blank" rel="noopener">
+        <div class="social-icons__icon icon_github" style="background-image: url('https://offetuoso.github.io/svg/github.svg')"></div>
+      </a>
+    
+  
+     
+    
+      <a class="social-icons__link" rel="me" title="Email"
+         href="mailto:offetuoso@gmail.com,offetuoso@naver.com"
+         target="_blank" rel="noopener">
+        <div class="social-icons__icon icon_email" style="background-image: url('https://offetuoso.github.io/svg/email.svg')"></div>
+      </a>
+    
+  
+     
+    
+      <a class="social-icons__link" rel="me" title="Instagram"
+         href="https://instagram.com/offetuoso"
+         target="_blank" rel="noopener">
+        <div class="social-icons__icon icon_instagram" style="background-image: url('https://offetuoso.github.io/svg/instagram.svg')"></div>
+      </a>
+    
+  
+     
+    
+      <a class="social-icons__link" rel="me" title="search"
+         href="#"
+         target="_blank" rel="noopener">
+        <div class="social-icons__icon icon_search" style="background-image: url('https://offetuoso.github.io/svg/search.svg')"></div>
+      </a>
+    
+     
+</div>
+
+            <p>© 2021</p>
+          </footer>
+          </div>
+      </div>
+      
+      <div class="toc-container">
+          <div class="toc-post-title">거스름돈 (그리디 알고리즘)</div> 
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#문제1-거스름돈">[문제1] 거스름돈</a></li>
+  </ul>
+</nav>
+      </div>
+      
+    </div>
+    
+
+  </main>
+
+   
+
+  
+  <script src="/js/index.min.49e4d8a384357d9b445b87371863419937ede9fa77737522ffb633073aebfa44.js" integrity="sha256-SeTYo4Q1fZtEW4c3GGNBmTft6fp3c3Ui/7YzBzrr&#43;kQ=" crossorigin="anonymous"></script>
+  
+  
+  <script src="https://unpkg.com/prismjs@1.20.0/components/prism-core.min.js"></script>
+
+  
+  <script src="https://unpkg.com/prismjs@1.20.0/plugins/autoloader/prism-autoloader.min.js"
+    data-autoloader-path="https://unpkg.com/prismjs@1.20.0/components/"></script>
+
+  
+    <script src="/js/table-of-contents.js"></script>
+  
+
+
+  
+  
+<script id="search-result-template" type="text/x-js-template">
+    <article class="list__item post search-result-list" id="summary-${key}">
+      <header class="list__header">
+        <h3 class="list__title post__title ">
+          <a href="${link}" rel="bookmark">
+            ${title} 
+          </a>         
+        </h3>
+        <div class="list__meta meta">
+          <div class="meta__item-categories meta__item">
+            <svg class="meta__icon icon icon-tag" width="16" height="16" viewBox="0 0 32 32"><path d="M32 19c0 1-1 2-1 2L21 31s-1 1-2 1-2-1-2-1L2 16c-1-1-1.4-2-1.4-2S0 12.5 0 11V3C0 1.5.8.8.8.8S1.5 0 3 0h8c1.5 0 3 .6 3 .6S15 1 16 2l15 15s1 1 1 2zM7 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
+            <span class="meta__text">
+              ${ isset tags } ${tags} ${ end }
+            </span>
+          </div>
+        </div>
+      </header>
+      <div class="content list__excerpt post__content clearfix">
+        ${snippet}
+      </div>
+    </article>
+</script>
+</body>
+
+</html>
