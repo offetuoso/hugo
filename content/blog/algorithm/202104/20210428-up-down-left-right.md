@@ -9,7 +9,7 @@ slug: "up-down-left-right"
 description: "코딩테스트 구현 알고리즘 상하좌우"
 keywords: ["Algorism", "CodingTest", "Python", "Java"]
 draft: false
-tags: ["Algorism", "이코테"]
+tags: ["Algorism", "Implementation", "이코테"]
 math: false
 toc: true
 ---
@@ -101,20 +101,6 @@ for move in m:
 print(x,' ',y)
             
 ```
-
-
-
-
-### 파이썬 모범답안 1
-```
-
-
-```
-### 파이썬 모범답안 2
-```
-    	
-```
-
 
 
 

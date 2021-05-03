@@ -9,7 +9,7 @@ slug: "games-of-number-card"
 description: "코딩테스트 숫자 카드 게임"
 keywords: ["Algorism", "CodingTest", "Python", "Java"]
 draft: false
-tags: ["Algorism", "이코테"]
+tags: ["Algorism", "Greedy", "이코테"]
 math: false
 toc: true
 ---

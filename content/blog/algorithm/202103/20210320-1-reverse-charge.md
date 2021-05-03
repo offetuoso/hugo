@@ -9,7 +9,7 @@ slug: "reverse-charge"
 description: "그리디 알고리즘."
 keywords: ["Algorism", "CodingTest", "Python","Java"]
 draft: false
-tags: ["Algorism"]
+tags: ["Algorism", "Greedy","이코테"]
 math: false
 toc: true
 ---

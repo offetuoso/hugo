@@ -9,7 +9,7 @@ slug: "law-of-large-number"
 description: "코딩테스트 큰수의 법칙"
 keywords: ["Algorism", "CodingTest", "Python","Java"]
 draft: false
-tags: ["Algorism", "이코테", "수열"]
+tags: ["Algorism",, "Greedy" "이코테", "수열"]
 math: false
 toc: true
 ---

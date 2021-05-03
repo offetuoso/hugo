@@ -7,7 +7,7 @@ opacity: "0.4"
 date: 2021-04-03
 slug: "adventurer-guild"
 description: "모험가 파티를 만드는 알고리즘"
-keywords: ["Algorism", "CodingTest", "Python","Java"]
+keywords: ["Algorism", "Greedy", "CodingTest", "Python","Java"]
 draft: false
 tags: ["Algorism"]
 math: false

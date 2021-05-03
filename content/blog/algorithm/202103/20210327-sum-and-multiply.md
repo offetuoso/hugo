@@ -7,7 +7,7 @@ opacity: "0.4"
 date: 2021-03-27
 slug: "sum-and-multiply"
 description: "최고의 숫자가 되기 위하여 더하기 혹은 곱하기를 진행"
-keywords: ["Algorism", "CodingTest", "Python", "Java"]
+keywords: ["Algorism", "Greedy", "CodingTest", "Python", "Java"]
 draft: false
 tags: ["Algorism"]
 math: false
