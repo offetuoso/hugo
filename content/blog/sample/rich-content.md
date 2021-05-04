@@ -25,6 +25,8 @@ Hugo ships with several [Built-in Shortcodes](https://gohugo.io/content-manageme
 {{< youtube ZJthWmvUzzc >}}
 
 
+<code class="single">$ hugo</code>
+
 ## Twitter Simple Shortcode
 
 {{< tweet 1085870671291310081 >}}
