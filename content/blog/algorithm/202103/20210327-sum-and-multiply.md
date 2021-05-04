@@ -16,7 +16,7 @@ toc: true
 
 ## [문제1] 곱하기 혹은 더하기
 
-###[문제] 곱하기 혹은 더하기 : 문제 설명
+### [문제] 곱하기 혹은 더하기 : 문제 설명
 > 각 자리가 숫자(0부터 9)로만 이루어진 문자열 S가 주어졌을 때, 왼쪽부터 오른쪽으로
 하나씩 모든 숫자를 확인하며 숫자 사이에 'x' 혹은 '+' 연산자를 넣어 결과적으로 만들어질 수 있는
 가장 큰 수를 구하는 프로그램을 작성. 단, + 보다 x를 먼저 계산하는 일반적인 방식과는 달리,
@@ -27,7 +27,7 @@ toc: true
 
 
 
-###[문제] 조건 
+### [문제] 조건 
 
 > 입력조건
 >	첫째 줄에 여러개의 숫자로 구성된 하나의 문자열 S가 주어집니다.(1<=S의 길이 <=20)
@@ -62,7 +62,7 @@ print(list) # ['new', 'a', 'b', 'c']
 
 
 
-###sum_or_multiply.py
+### sum_or_multiply.py
 ```
 s = input()
 
@@ -96,7 +96,7 @@ print(result)
 ```
 
 
-###SumOrMultiply.java
+### SumOrMultiply.java
 ```
 package ex.algorism.greedy;
 import java.util.Scanner;
@@ -124,7 +124,7 @@ public class SumOrMultiply {
 }
 ```
 
-###모범답안 자바
+### 모범답안 자바
 ```
 package ex.algorism.greedy;
 import java.util.Scanner;
@@ -153,7 +153,7 @@ public class SumOrMultiply {
 
 ```
 
-###[문제] 정당성 분석
+### [문제] 정당성 분석
 > 곱하는 것보다 더하는 것이 더 큰 값을 얻을 수 있다.
 > 곱해서 0또는 1이되는 상황보다, 곱하는게 큰 값을 얻는다
 
