@@ -56,18 +56,30 @@ ignoreErrors = ["error-remote-getjson"]
       unsafe = true
 
 # 내비게이션 제어
+
 [[menu.main]]
-  identifier = "about"
-  name = "about"
-  title = "About"
+  identifier = "welcome"
+  name = "1"
+  title = "welcome !"
   url = "/"
 
 [[menu.main]]
   identifier = "blog"
-  name = "blog"
-  title = "Blog"
+  name = "2"
+  title = "blog"
   url = "/blog"
-
+  
+[[menu.main]]
+  identifier = "about"
+  name = "4"
+  title = "about me"
+  url = "/about"
+  
+ [[menu.main]]
+  identifier = "search"
+  name = "5"
+  title = "search"
+  url = "/search"
 
 [outputs]
   home = ["HTML", "RSS", "JSON"]
