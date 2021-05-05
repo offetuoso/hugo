@@ -227,7 +227,7 @@ this is True
 > 결과를 보면 어렵진 않다. 컴퓨터는 입력된 파라미터에 따라 어떤 함수를 호출할지 보여준다. 
 예를들면 우리가 많이 사용하는 System.out.println(); 출력 함수가 있다.
 
-![contact](/images/algorithm/overload_example.png)
+![contact](/images/java/overload_example.png)
 
 > 주의할점 
 파라메터의 순서를 다르게 오버라이드 하였지만, int와 long 모두 소숫점이 없는 정수를 입력 가능하기 때문에
