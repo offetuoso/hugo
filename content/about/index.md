@@ -145,7 +145,7 @@ o	Task
 Heungkuk Fire & Marine Insurance [2018.02 ~ 2018.05]
 Audit Information System [Development]
 
-o	Introduction : Responsible for continuous monitoring to alert any anomaly in audit information system, implementation of audit process, and development of follow-up and approval process
+o	Introduction : Responsible for continuous monitoring to alert any anomaly in audit information system, Implements of audit process, and development of follow-up and approval process
 o	Technical
 •	Web backend (Java, Spring Framework, OracleDB)
 •	Web frontend (html, css, JS, jQuery, Jsp)
@@ -155,7 +155,7 @@ o	Task
 •	Development of continuous monitoring
 -	Detected and notified abnormal transactions through scenario-based data analysis
 -	Reduced the cost of time and maintaining reliability by preventing accidents in advance
-•	Implementation of audit
+•	Implements of audit
 -	Provided efficient management of the person in charge through history management and organization of an audit team 
 -	Enabled convenient management of outputs, such as audit plans, audit checklist, review points, reports, etc.
 •	Development of follow-up process

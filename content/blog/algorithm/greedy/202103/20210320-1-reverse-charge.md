@@ -7,9 +7,10 @@ opacity: "0.4"
 date: 2021-03-20
 slug: "reverse-charge"
 description: "그리디 알고리즘."
-keywords: ["Algorism", "CodingTest", "Python","Java"]
+keywords: ["Algorithm", "CodingTest", "Python","Java"]
 draft: false
-tags: ["Algorism", "Greedy","이코테"]
+categories: ["Algorithm"]
+tags: ["Algorithm", "Greedy","이코테"]
 math: false
 toc: true
 ---
@@ -62,7 +63,7 @@ print(count)
 
 ### ReverseCharge.java
 ```
-package ex.algorism.greedy;
+package ex.Algorithm.greedy;
 
 public class ReverseCharge {
 	

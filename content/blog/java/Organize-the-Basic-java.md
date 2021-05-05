@@ -9,6 +9,7 @@ slug: "basic-java"
 description: "자바의 기본 개념정리."
 keywords: ["java", "basic", "tutorial"]
 draft: false
+categories: ["Java"]
 tags: ["java"]
 math: false
 toc: true

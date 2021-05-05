@@ -7,9 +7,10 @@ opacity: "0.4"
 date: 2021-04-20
 slug: "law-of-large-number"
 description: "코딩테스트 큰수의 법칙"
-keywords: ["Algorism", "CodingTest", "Python","Java"]
+keywords: ["Algorithm", "CodingTest", "Python","Java"]
 draft: false
-tags: ["Algorism", "Greedy", "이코테", "수열"]
+categories: ["Algorithm"]
+tags: ["Algorithm", "Greedy", "이코테", "수열"]
 math: false
 toc: true
 ---
@@ -105,7 +106,7 @@ print(result)
 
 ### LawOfLargeNumber.java
 ```
-package ex.algorism.greedy;
+package ex.Algorithm.greedy;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Scanner;

@@ -7,9 +7,10 @@ opacity: "0.4"
 date: 2021-04-03
 slug: "adventurer-guild"
 description: "모험가 파티를 만드는 알고리즘"
-keywords: ["Algorism", "Greedy", "CodingTest", "Python","Java"]
+keywords: ["Algorithm", "Greedy", "CodingTest", "Python","Java"]
 draft: false
-tags: ["Algorism"]
+categories: ["Algorithm"]
+tags: ["Algorithm"]
 math: false
 toc: true
 ---
@@ -66,7 +67,7 @@ print(result)                                                          #5
 
 ### MakeOne.java
 ```
-package ex.algorism.greedy;
+package ex.Algorithm.greedy;
 import java.util.Scanner;
 
 public class MakeOne {

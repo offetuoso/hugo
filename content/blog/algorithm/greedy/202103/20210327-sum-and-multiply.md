@@ -7,9 +7,10 @@ opacity: "0.4"
 date: 2021-03-27
 slug: "sum-and-multiply"
 description: "최고의 숫자가 되기 위하여 더하기 혹은 곱하기를 진행"
-keywords: ["Algorism", "Greedy", "CodingTest", "Python", "Java"]
+keywords: ["Algorithm", "Greedy", "CodingTest", "Python", "Java"]
 draft: false
-tags: ["Algorism"]
+categories: ["Algorithm"]
+tags: ["Algorithm"]
 math: false
 toc: true
 ---
@@ -98,7 +99,7 @@ print(result)
 
 ### SumOrMultiply.java
 ```
-package ex.algorism.greedy;
+package ex.Algorithm.greedy;
 import java.util.Scanner;
 
 public class SumOrMultiply {
@@ -126,7 +127,7 @@ public class SumOrMultiply {
 
 ### 모범답안 자바
 ```
-package ex.algorism.greedy;
+package ex.Algorithm.greedy;
 import java.util.Scanner;
 
 public class SumOrMultiply {

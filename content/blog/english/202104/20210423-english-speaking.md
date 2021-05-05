@@ -8,6 +8,7 @@ date: 2021-04-23
 slug: "20210423-english-speak"
 description: "영어 회화 문법정리"
 draft: false
+categories: ["English"]
 tags: ["english","speak","talk","EngAll","잉그올"]
 math: false
 toc: true

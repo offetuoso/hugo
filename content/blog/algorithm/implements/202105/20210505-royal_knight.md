@@ -1,30 +1,31 @@
 ---
-title: "시각 (구현 알고리즘)"
+title: "왕실의 기사 (구현 알고리즘)"
 image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2021-05-03
-slug: "time"
-description: "코딩테스트 구현 알고리즘 시각"
-keywords: ["Algorism", "CodingTest", "Python", "Java"]
+slug: "royal_knight"
+description: "코딩테스트 구현 알고리즘 왕실의 기사"
+keywords: ["Algorithm", "CodingTest", "Python", "Java"]
 draft: false
-tags: ["Algorism","Implementation" ,"이코테"]
+categories: ["Algorithm"]
+tags: ["Algorithm","Implements" ,"이코테"]
 math: false
 toc: true
 ---
 
-## [문제1] 시각
+## [문제1] 왕실의 기사
 
-### [문제] 시각 : 문제 설명
-> 정수 N이 입력되면 00시 00분 00초부터 N시 59분 59초까지의 모든 시각 중에서 3이 하나라도 포함되는
+### [문제] 왕실의 기사 : 문제 설명
+> 정수 N이 입력되면 00시 00분 00초부터 N시 59분 59초까지의 모든 왕실의 기사 중에서 3이 하나라도 포함되는
 모든 경우의 수를 구하는 프로그램을 작성하라. 예를 들어 1을 입력했을 때
 
->다음은 3이 하나라도 포함되어 있으므로 세어야 하는 시각이다
+>다음은 3이 하나라도 포함되어 있으므로 세어야 하는 왕실의 기사이다
 00시 00분 03초
 00시 13분 30초
 
->반면에 다음은 3이 하나도 포함되어 있지 않으므로 세면 안 되는 시각이다
+>반면에 다음은 3이 하나도 포함되어 있지 않으므로 세면 안 되는 왕실의 기사이다
 00시 02분 55초
 01시 27분 45초
 
@@ -37,7 +38,7 @@ toc: true
 
 
 > 출력
-00시 00분 00초부터 N시 59분 59초까지의 모든 시각 중에서 3이 하나라도 포함되는 모든 경우의 수를 출력한다.
+00시 00분 00초부터 N시 59분 59초까지의 모든 왕실의 기사 중에서 3이 하나라도 포함되는 모든 경우의 수를 출력한다.
 
 > 입력예시
 5
@@ -98,7 +99,7 @@ print(result)
 
 ### Time.java
 ```
-package ex.algorism.implement;
+package ex.Algorithm.implement;
 import java.util.Scanner;
 
 public class Time{

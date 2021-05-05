@@ -7,9 +7,10 @@ opacity: "0.4"
 date: 2021-04-28
 slug: "up-down-left-right"
 description: "코딩테스트 구현 알고리즘 상하좌우"
-keywords: ["Algorism", "CodingTest", "Python", "Java"]
+keywords: ["Algorithm", "CodingTest", "Python", "Java"]
 draft: false
-tags: ["Algorism", "Implementation", "이코테"]
+categories: ["Algorithm"]
+tags: ["Algorithm", "Implements", "이코테"]
 math: false
 toc: true
 ---
