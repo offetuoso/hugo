@@ -4,7 +4,7 @@ image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2021-05-03
+date: 2021-05-05
 slug: "royal_knight"
 description: "코딩테스트 구현 알고리즘 왕실의 기사"
 keywords: ["Algorithm", "CodingTest", "Python", "Java"]
@@ -48,6 +48,7 @@ d4에 있을 때 이동할 수 있는 경우의 수는 8가지이다.
 
 > 출력
 첫째 줄에 나이트가 이동할 수 있는 경우의 수를 출력하시오.
+
 > 입력 예시
 a1
 
@@ -56,7 +57,8 @@ a1
 
 ### 아이디어 
 > 1. 모든 경우를 탐색하는 완전탐색 유형의 문제이다 
-> 2. 문자 -> 아스키 코드를 반환 하는 ord('a') 를 알아야 한다.  참고 <-> chr(97)
+> 2. 문자 -> 아스키 코드를 반환 하는 ord('a') 를 알아야 한다.  
+참고 <-> chr(97)
  
 
 ### royal_knight.py
