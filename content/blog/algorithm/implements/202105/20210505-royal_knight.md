@@ -93,58 +93,12 @@ print(count)
 
 ### 파이썬 모범답안 
 ```
-n = int(input())
-
-result = 0;
-for h in range(n+1) :
-    for m in range(60) :
-        for s in range(60) :
-            if('3' in str(h)+str(m)+str(s)) :
-                result += 1
-
-print(result)
 
 ```
 
-### Time.java
+### RoyalKnight.java
 ```
-package ex.Algorithm.implement;
-import java.util.Scanner;
 
-public class Time{
-	public static void main(String args[]) {
-		
-		Scanner sc = new Scanner(System.in);
-		
-		int n = sc.nextInt();
-		int hour = 0;
-		int minute = 0;
-		int second = 0;
-		int count = 0;
-
-		while (true) {
-			
-			if((""+hour+minute+second).contains("3")) {
-				count++;
-			}
-			
-			second++;
-			
-			if(second == 60){
-				minute ++;
-				second = 0;
-			}
-			if(minute == 60){
-				hour ++;
-				minute = 0;
-			}
-			if(hour == n+1){
-				break;
-			}
-		}
-		System.out.println(count);
-	}
-}
             
 ```
 
