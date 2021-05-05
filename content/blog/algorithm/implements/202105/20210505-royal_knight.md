@@ -96,6 +96,11 @@ print(count)
 
 ```
 
+### 놓친 아이디어 
+> 1. input_data = input(), input_data[0],input_data[1] 로 접근 할 수 있는것을 더 복잡하게 잘라냈다.
+> 2. int(ord(input_data[0])) - int(ord(input_data[a])) + 1 을 사용하여 1 ~ 8로 더 간편히 조회가능. 
+
+
 ### RoyalKnight.java
 ```
 
