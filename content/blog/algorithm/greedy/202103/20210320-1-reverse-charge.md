@@ -32,7 +32,7 @@ toc: true
 
 > 1,260 원을 500원부터 거슬러 준다면 아래와 같이 
 
-![contact](/images/greedy_question_01_01.PNG)
+![contact](/images/algorithm/greedy_question_01_01.PNG)
 
 
    화페단위     | 500   | 100   | 50    | 10    |
