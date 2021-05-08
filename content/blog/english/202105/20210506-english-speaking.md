@@ -14,7 +14,7 @@ math: false
 toc: true
 ---
 
-{{< youtube https://youtu.be/3MqYE2UuN24 >}}
+{{< youtube 3MqYE2UuN24 >}}
 
 ##Grammar Error:
 I went to 소래포구 yesterday. = on Children's Day. I wanted to try 쭈꾸미 샤브샤브  and it was delicious. But, fried shrimp was better; more delicious. And I came back home and studied. 
