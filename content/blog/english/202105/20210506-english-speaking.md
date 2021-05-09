@@ -7,7 +7,7 @@ opacity: "0.4"
 date: 2021-05-06
 slug: "20210506-english-speak"
 description: "영어 회화 문법정리"
-draft: false
+draft: true
 categories: ["English"]
 tags: ["english","speak","talk","EngAll","잉그올"]
 math: false
