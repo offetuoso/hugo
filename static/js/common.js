@@ -1,5 +1,13 @@
 $(document).on("keyup", "input[id='local-search-input']", function () {
-	searchQuery = $("input[id='local-search-input']").val();    
+	searchQuery = $("input[id='local-search-input']").val();
+	
+	//Hangul.disassemble("입력값").join(''); 
+	//Hangul.assemble("입력값");
+	
+	//sconsole.log(Hangul.disassemble(searchQuery).join(''));
+	//searchQuery= Hangul.disassemble(searchQuery).join('');
+	
+	    
     if(searchQuery != ''){
 	    executeSearch(searchQuery);
     }else{

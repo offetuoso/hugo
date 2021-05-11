@@ -34,6 +34,99 @@ toc: true
 
 ![contact](/images/search_1.png)
 
+
+
+#### stack.py
+
+```
+class stack :
+    def __init__(self) :
+        self.items = []
+
+    def push(self, x) :
+        self.items.append(x)
+
+    def pop(self) :
+        if self.isEmpty() :
+            print("stack underflow!")
+        else :        
+            print("pop()", self.items[self.top()])
+            del self.items[self.top()]
+        
+    def top(self) :
+        return len(self.items)-1
+
+    def isEmpty(self) :
+        if (self.top() == -1) :
+            return True
+        else :
+            return False
+
+    def clear(self) : 
+         self.items = []
+
+    def size(self) :
+        return(len(self.items))
+
+    def peek(self) :   
+        return(self.items[self.top()])
+
+    def contains(self, x) :
+        if(x in self.items) :
+            return True 
+        else :
+            return False
+
+    
+    def search(self, x) :
+        for i in range(1,self.size()+1) :
+            if x == self.items[self.size()-i] :
+                return i 
+
+       
+
+
+
+stack1 = stack() 
+
+print(stack1.items)
+
+stack1.push(1)
+print(stack1.items)
+
+
+stack1.push(2)
+print(stack1.items)
+
+
+stack1.push(3)
+print(stack1.items)
+
+stack1.push(4)
+print(stack1.items)
+
+stack1.push(5)
+
+print(stack1.items)
+
+
+print("size() ", stack1.size())
+
+print("contains(1) ", stack1.contains(1))
+print("test1.search(1) ", stack1.search(1))
+print("test1.search(2) ", stack1.search(2))
+
+print("peek() ", stack1.peek())
+stack1.pop()
+stack1.pop()
+stack1.pop()
+
+stack1.clear();
+
+```
+
+
+
 ### 큐
 > 큐는 대기줄에 비유할 수 있는 공정한 자료구조, 단 새치기는 없다고 가정.
 > 이러한 스택의 구조를 <mark>선입선출</mark>구조.

@@ -32,6 +32,28 @@ function executeSearch(searchQuery){
   var result;
   $.getJSON( "/index.json", function( data ) {
     var pages = data;
+    console.log({"data":pages});
+    var fuse = new Fuse(pages, fuseOptions);
+    result = fuse.search(searchQuery);
+    console.log({"matches":result});
+    
+    $("#local-search-result").empty();
+    
+    if(result.length > 0){
+      populateResults(result);
+    }else{
+   	 $('#local-search-result').append("<p>No matches found</p>");
+    }
+    
+  });
+  
+  return result;
+}
+
+function executeSearch_old(searchQuery){
+  var result;
+  $.getJSON( "/index.json", function( data ) {
+    var pages = data;
     //console.log({"data":pages});
     var fuse = new Fuse(pages, fuseOptions);
     result = fuse.search(searchQuery);
