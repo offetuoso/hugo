@@ -39,89 +39,106 @@ toc: true
 #### stack.py
 
 ```
-class stack :
+class Stack :
+    #초기화
     def __init__(self) :
-        self.items = []
+        self.elements = [] #stack 엘리먼츠 생성
 
+    #데이터 추가
     def push(self, x) :
-        self.items.append(x)
+        self.elements.append(x) #stack 엘리먼트 추가
 
+    #최근에 추가된(Top) 데이터 삭제
     def pop(self) :
-        if self.isEmpty() :
-            print("stack underflow!")
+        if self.empty() :
+            return "stack underflow!"
         else :        
-            print("pop()", self.items[self.top()])
-            del self.items[self.top()]
-        
-    def top(self) :
-        return len(self.items)-1
+            del self.elements[self.top()]
+            return self.elements[self.top()]
 
-    def isEmpty(self) :
+    #최근에 추가된(Top) 데이터 삭제
+    def peek(self) :   
+        return(self.elements[self.top()])
+
+    #최근에 추가된 인덱스 반환    
+    def top(self) :
+        return self.size()-1 #인덱스 = (길이-1) 
+
+    #stack의 값이 비었는지 확인, 비었으면 true, 아니면 false
+    def empty(self) :
         if (self.top() == -1) :
             return True
         else :
             return False
 
+    #stack 초기화
     def clear(self) : 
-         self.items = []
+         self.elements = [] #엘리먼츠 초기화
 
+    #stack의 길이 반환
     def size(self) :
-        return(len(self.items))
+        return (len(self.elements))
 
-    def peek(self) :   
-        return(self.items[self.top()])
-
+    #stack의 값이 포함되어있는지 확인, 비었으면 true, 아니면 false
     def contains(self, x) :
-        if(x in self.items) :
+        if(x in self.elements) : #x가 엘리먼츠에 포함되어있는지
             return True 
         else :
             return False
-
     
+    #엘리먼트를 보관한 인덱스 반환(리스트 인덱스의 역방향, 1부터 시작)
     def search(self, x) :
+        result = -1
         for i in range(1,self.size()+1) :
-            if x == self.items[self.size()-i] :
-                return i 
+            if x == self.elements[(self.size()-i)] : 
+                result = i
 
+        return result
        
 
+stack = Stack() 
+
+print(stack.elements)
+
+stack.push(1)
+print(stack.elements)
 
 
-stack1 = stack() 
-
-print(stack1.items)
-
-stack1.push(1)
-print(stack1.items)
+stack.push(2)
+print(stack.elements)
 
 
-stack1.push(2)
-print(stack1.items)
+stack.push('banana')
+print(stack.elements)
+
+stack.push(4)
+print(stack.elements)
+
+stack.push(5)
+
+print(stack.elements)
 
 
-stack1.push(3)
-print(stack1.items)
+print("size() ", stack.size())
 
-stack1.push(4)
-print(stack1.items)
+print("contains(1) ", stack.contains(1))
+print("search(1) ", stack.search(1))
+print("search(2) ", stack.search(2))
 
-stack1.push(5)
+print("peek() ", stack.peek())
+print("pop() ",stack.pop())
+print("pop() ",stack.pop())
+print("pop() ",stack.pop())
 
-print(stack1.items)
+
+print("stack.clear() ")
+stack.clear() 
+
+print("size() ", stack.size())
+print("top() ", stack.top())
+print("pop() ",stack.pop())
 
 
-print("size() ", stack1.size())
-
-print("contains(1) ", stack1.contains(1))
-print("test1.search(1) ", stack1.search(1))
-print("test1.search(2) ", stack1.search(2))
-
-print("peek() ", stack1.peek())
-stack1.pop()
-stack1.pop()
-stack1.pop()
-
-stack1.clear();
 
 ```
 
