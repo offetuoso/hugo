@@ -32,7 +32,21 @@ toc: true
 ## n. effect ('효과')
 >  effect of sleep (수면의 효과)
 
-## strategy ('전략') skills and strategies
+## strategy ('전략') 
+> skills and strategies (기술과 전략)
+
+## Naming center ('작명소')
+> It would be difficult to name my child based on astrology. (점성술에 근거하여 내 아이의 이름을 짓는 것은 어려울 것입니다.)
+
+## make sure ('확실한')
+> Make sure you do the dishes right after you eat. (식사 후 바로 설거지를하세요.)
+> Make sure you give me the file by tomorrow. (내일까지 파일을 주셔야합니다.) = You must give me the file ~
+
+## sure 
+> Are you sure? ('확실합니까?') 
+> Are you sure you sent me the file via email? (이메일로 파일을 보냈습니까?)
+
+## can you tell me again? ('다시 말해줄래?') = Can you repeat it once more?
 
 # Grammar Error:  
 
@@ -40,10 +54,6 @@ My name has an influence on positive effects on my life. (내 이름은 내 삶�
 → My name has an influence on my life. (내 이름은 내 삶에 영향을 미칩니다.)
 / My name has a positive effect on my life. (내 이름은 내 삶에 긍정적 인 영향을 미칩니다.)
 → My name gave/brought a positive effect on my life. (내 이름은 내 삶에 긍정적 인 영향을 미쳤습니다.)
-
-## Naming center (작명소)
-It would be difficult to name my child based on astrology. (점성술에 근거하여 내 아이의 이름을 짓는 것은 어려울 것입니다.)
-
 
 
 

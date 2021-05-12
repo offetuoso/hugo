@@ -19,7 +19,6 @@ toc: true
 > **I'm used to working overtime** 난 야근에 익숙해
 
 
-
 ## 	I'm afraid ~ ('유감스럽지만,')
 > **I'm afraid Rainy outside** 유감이지만, 밖에 비가 오는 것 같아
 > **I'm afraid ** 유감이지만, 밖에 비가 오는 것 같아
