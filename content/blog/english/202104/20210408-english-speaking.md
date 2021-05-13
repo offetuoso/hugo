@@ -16,7 +16,23 @@ toc: true
 
 {{< youtube knJWF4km3y0 >}} 
 
-##Grammar Error:  
+## a. touching ('감동시키는')
+## a. entertaining ('재미있는')
+> It was really entertaining and the storyline was also a bit touching(sad).  (정말 재미 있었고 스토리 라인도 약간 감동적이었습니다.)
+
+## These days ('요즘')  = Nowadays
+> These day , I go to bed in 1 am and (get up) 7 am (요즘은 새벽 1시에 자고 아침 7시에 일어나)
+
+## On weekends ('주말에')
+## get up at (~ time) ('-시에 일어나')
+## still ('여전히')
+> On weekends, I get up at 1 pm and still go to bed the same  (주말에는 오후 1시에 일어나도 똑같이 잠자리에 든다)
+
+## ~ hours ('-시간')
+> I sleep for 9 hours (난 9시간 동안 잔다.)
+
+## 문법오류
+```  
 It was so funny and also sad. → It was really entertaining and the storyline was also a bit sad/touching.
 These days (Nowadays) , I go to bed in 1 am and (get up) 7 am → at + time
 When I weekend, then I get up at 1pm but I still go to bed at 1 am. 
@@ -36,8 +52,11 @@ be V-ing. ; I am drinking a coffee, I am trying to get some sleep, I am learning
 c.f. how I can get to 안양천, how to get to 안양천
 She is having a rest → She is taking a rest.
 What are you doing? → I am doing ~. 
+```
 
-##New expressions learned today: 
+
+## 새로배운 표현
+```
 remain 남다, remaining 남아있는
 the question remains = there lies the question, the question is “-”
 The remaining amount
@@ -53,7 +72,7 @@ When I was a high school student, I had a hard time studying at school.
 frustrating (a)
 This problem set is so frustrating.
 Coding is so frustrating. / Coding really frustrates me.
-
+```
 
 
 본 게시물은 개인 복습용이라 수업내용과 별개 입니다.

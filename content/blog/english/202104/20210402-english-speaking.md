@@ -48,16 +48,18 @@ toc: true
 
 ## can you tell me again? ('다시 말해줄래?') = Can you repeat it once more?
 
-# Grammar Error:  
+## 문법오류
 
+```
 My name has an influence on positive effects on my life. (내 이름은 내 삶에 긍정적 인 영향을 미칩니다.)
 → My name has an influence on my life. (내 이름은 내 삶에 영향을 미칩니다.)
 / My name has a positive effect on my life. (내 이름은 내 삶에 긍정적 인 영향을 미칩니다.)
 → My name gave/brought a positive effect on my life. (내 이름은 내 삶에 긍정적 인 영향을 미쳤습니다.)
+```
 
 
-
-# New expressions learned today: 
+## 새로배운 표현
+```
 to affect positively/negatively = to bring a positive/negative effect on sth
 mean (v) → meaning (n)
 S(n) + V (+ O(n) / + Adj.) (+ Adv.)
@@ -75,7 +77,7 @@ strategy - skills and strategies
 Can you tell me again? = Can you repeat it once more?
 I’d like to know when the due date is.
 Pardon me for asking, but where can I sign up for the membership?
-
+```
 
 본 게시물은 개인 복습용이라 수업내용과 별개 입니다.
 예시로 만든 문장은 문법적 오류가 있을 수 있습니다. 

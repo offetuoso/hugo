@@ -93,11 +93,11 @@ say-speak-talk-tell은 아래 홈페이지에서 참조
 		3. Them
 
 ## plural ('복수형 more than one')
-	-  adv. the first person plural
+	-  a. the first person plural
 	-  n. the first person plural
 	
 ## singular  ('단수형 one')
-	-  adv. the third person singular form of the verb
+	-  a. the third person singular form of the verb
 	-  n. the first person singular
 
 ## 	pass down ('전달받다, 물려받다') (casual) 

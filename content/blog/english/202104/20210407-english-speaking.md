@@ -39,9 +39,10 @@ toc: true
 ## I’d like to know how to get to the ~. ('-에가는 방법을 알고 싶습니다.')
 > I’d like to know how to get to the 안양천 (안양천에가는 방법을 알고 싶습니다.)
 
-##purpose ('목적')
+## purpose ('목적')
 
-##Grammar Error:  
+## Grammar Error:
+```  
 I go to the workspace and → I went to the company and there were flowers (cherry blossoms) on the side of the roads nearby the company building.
 
 New expressions learned today: 
@@ -59,7 +60,7 @@ Can you tell me how I can use this machine?
 Can you tell me how to use this machine?
 I’d like to know how to get to the _(location)_.
 Pardon me for asking, but ...
-
+```
 
 
 

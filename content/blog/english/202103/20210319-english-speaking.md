@@ -32,7 +32,7 @@ toc: true
 > **my name's means a victory ** 내 이름은 승리를 의미합니다.
 > **'팽-하' means '펭수 하이' ** '펭-하'는 '펭수-하이'를 뜻합니다.
 
-## adv. accurate ('정확한') 
+## a. accurate ('정확한') 
 > **Do you think the information on the table is accurate? ** 테이블의 정보가 정확하다고 생각하나요?
 
 ## familiar with ('익숙한') 

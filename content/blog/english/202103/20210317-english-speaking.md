@@ -22,7 +22,7 @@ toc: true
 > **I took a look at the book, 1 hour ago** 1 시간 전에 책을 봤어요.
 > **I was took a look at sky last day** 나는 어제 하늘을 봤어요
 
-## adv. impressed ('깊은 인상') 
+## a. impressed ('깊은 인상') 
 
 ## n. impression ('인상')
 
@@ -39,7 +39,7 @@ toc: true
 
 ## v. scan
 
-## adv. intermediate (중급의) 
+## a. intermediate (중급의) 
 	beginners → intermediate → high/advanced level
 > **He was in intermediate class, 3 month ago** 그는 3개월 전에 중급반이였다.
 
