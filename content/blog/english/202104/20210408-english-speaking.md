@@ -7,7 +7,7 @@ opacity: "0.4"
 date: 2021-04-08
 slug: "20210408-english-speak"
 description: "영어 회화 문법정리"
-draft: true
+draft: false
 categories: ["English"]
 tags: ["english","speak","talk","EngAll","잉그올"]
 math: false
@@ -30,6 +30,64 @@ toc: true
 
 ## ~ hours ('-시간')
 > I sleep for 9 hours (난 9시간 동안 잔다.)
+
+##  When A, then B. ('A 하면 B합니다.')
+> When I very tired, then has insomnia. (내가 매우 피곤하면 불면증이 생깁니다.)
+> → I have a hard time falling asleep quickly, especially when I’m very tired. (나는 특히 내가 매우 피곤할 때 빨리 잠들기가 힘듭니다.)
+
+## especially ('특히')
+
+## I am always ('난 항상')
+~I always a little tired and I drinking a lot of coffee.~
+> I am always a little tired and I drink a lot of coffee. (나는 항상 조금 피곤하고 커피를 많이 마신다.)
+
+## a lot ('많이')
+> I watch Netflix a lot. (나는 넷플릭스를 많이 봅니다.)
+> I had drinking a lot of coffee. (나는 커피를 많이 마셨다.)
+
+
+## Have p.p ('-했다.'  현재완료 시점)
+> I have be growth (나는 성장했다.)
+
+## Have been p.p ('-되어졌다.' 현재완료 시점)
+> I Have been healthed (나는 건강해졌다.)
+> I Have been fired (나는 해고당했다.)
+
+## Have been ~ing ('-해 오고 있다.' 현재완료 진행형으로)
+> I have been learning English for three weeks. (저는 3 주 동안 영어를 배우고 있습니다.)
+
+## be ~ing ('-하고 있어')
+> I am drinking a coffee (나는 커피를 마시고 있다)
+> I am trying to get some sleep (잠을 좀 자려고 해요)
+> I am learning English  (나 영어 배우고 있어)
+> I am having a talk with A (나 A와 이야기 하고 있어요)
+
+## how I can get to A / how to get to A ('A에가는 방법')
+> how I can get to 안양천
+> how to get to 안양천
+
+## remain ('남다')
+> the question remains (문제가 남아있다.)
+
+## remaining ('남아있는')
+> The remaining amount (남은 금액)
+
+## recommend ('추천하다/권장하다')
+
+## recommended ('추천하는/권장되는')
+> recommended posts, groups that are relative to you
+
+## strongly recommend ('강력추천')
+
+## The recommended amount of ~ ('-권장량')
+> The recommended amount of sleep (권장 수면량)
+
+## I had a hard time ('나는 힘들었다.')
+## fluently ('유창한')
+> I have a hard time speaking English fluently (영어를 유창하게 말하는 것이 힘들다)
+
+## frustrating ('좌절/실망')
+> This solution is so frustrating. (이 솔루션은 너무 실망 스럽습니다)
 
 ## 문법오류
 ```  
