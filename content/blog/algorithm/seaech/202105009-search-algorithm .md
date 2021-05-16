@@ -291,11 +291,7 @@ print("deQueue() ",queue.deQueue())
 print("size() ", queue.size())
 print("deQueue() ",queue.deQueue())
 
-
 ```
-
-
-
 
 ![contact](/images/search_2.png)
 
