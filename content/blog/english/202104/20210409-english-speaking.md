@@ -16,11 +16,25 @@ toc: true
 
 {{< youtube knJWF4km3y0 >}} 
 
+<a href="https://www.ted.com/talks/matt_walker_how_much_sleep_do_you_really_need">참고 : https://www.ted.com/talks/matt_walker_how_much_sleep_do_you_really_need</a>
 
-## It is dangerous to ~ ('-하는 것은 위험합니다.')
+
+## It is dangerous to ~ ('-하는 것은 위험합니다.') 
 > It is dangerous to sleep too much (너무 많이자는 것은 위험합니다)
+> Having too much sleep is dangerous. (너무 많은 수면을 취하는 것은 위험합니다.)
 
+## A are recommended for the B. ('A는 B에 권장됩니다.')
+> 7-9 hours are recommended for the average adult to sleep (평균적인 성인이 수면을 취하려면 7-9 시간이 권장됩니다)
+> 1-3 hours a day are recommended for the average adult to exersize (평균적인 성인이 운동을하기 위해서는 하루에 1-3 시간이 권장됩니다.)
 
+## leads to ~ ('-로 이끌다')
+> oversleep leads to high mortality risk. (늦잠은 높은 사망 위험을 초래합니다.)
+
+## Is it good for your health the more you sleep? ('많이 잘 수록 건강에 좋을까요 ?')
+> ~ No, it’s not. Because too many sleep leads to high mortality risk. ~
+> → Because too much sleep leads to high mortality risk.
+> People they too much sleep and too little sleep that leads to high mortality risk. (사람들은 너무 많은 수면과 너무 적은 수면으로 인해 높은 사망 위험이 있습니다.)
+> → Both lack of sleep and oversleep leads to high mortality risk. (수면 부족과 늦잠은 모두 높은 사망 위험을 초래합니다.)
 
 ##Grammar Error:  
 people has long sleep is dangerous  → It is dangerous to sleep too much; Having too much sleep is dangerous.
