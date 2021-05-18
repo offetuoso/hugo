@@ -2,3 +2,6 @@
 	path = public
 	url = https://github.com/offetuoso/offetuoso.github.io.git
 	branch = master
+[submodule "themes/hugo-theme-codex"]
+	path = themes/hugo-theme-codex
+	url = https://github.com/offetuoso/hugo-theme-codex.git
