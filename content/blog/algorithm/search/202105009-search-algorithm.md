@@ -186,6 +186,9 @@ print("pop() ",stack.pop())
 
 
 #### linearQueue.py
+##### 리스트로 만든 선형큐 
+>                                 
+
 ```
 MAX = 5
 class LinearQueue :
@@ -221,7 +224,6 @@ class LinearQueue :
             return("queue is Empty!")
 
         else :
-            
             
             self.front += 1
             result = self.elements[self.front]
@@ -292,6 +294,90 @@ print("size() ", queue.size())
 print("deQueue() ",queue.deQueue())
 
 ```
+
+
+#### linearDequeue.py
+> 파이썬의 deque를 이용한 선형큐
+ 
+
+```
+from collections import deque
+
+class LinearDequeue :
+    #초기화 
+    def __init__(self, max = MAX) :
+        self.elements = deque()
+
+    #queue의 값이 비었는지 확인, 비었으면 true, 아니면 false
+    def isEmpty(self) :
+        if len(self.elements) == 0 : 
+            result = True
+        else : 
+            result = False 
+        return result
+
+    #queue의 제일 뒷부분에 데이터 추가 
+    def enQueue(self, x) :
+        self.elements.append(x)
+    
+    #queue의 제일 앞의 데이터 삭제 및 반환
+    def deQueue(self) :
+        
+        if self.isEmpty() : #queue가 비어있는지 확인
+            return("queue is Empty!")
+        else :  
+            return self.elements.popleft()  
+
+        
+    #queue의 제일 앞의 데이터 반환
+    def peek(self) :
+        return self.elements[0]
+    
+    #queue의 사이즈 반환
+    def size(self) :
+     return len(self.elements)
+
+
+queue = LinearDequeue(5);
+
+print(queue.elements)
+
+queue.enQueue(1)
+print(queue.elements)
+
+
+queue.enQueue(2)
+print(queue.elements)
+
+
+queue.enQueue('banana')
+print(queue.elements)
+
+queue.enQueue(4)
+print(queue.elements)
+
+queue.enQueue(5)
+
+print(queue.elements)
+
+
+print("size() ", queue.size())
+
+
+print("peek() ", queue.peek())
+print("deQueue() ",queue.deQueue())
+print("deQueue() ",queue.deQueue())
+print("deQueue() ",queue.deQueue())
+
+
+print("size() ", queue.size())
+print("deQueue() ",queue.deQueue())
+
+
+
+```
+
+
 
 ![contact](/images/search_2.png)
 
