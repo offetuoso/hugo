@@ -167,10 +167,6 @@ print("pop() ",stack.pop())
 > 이러한 스택의 구조를 <mark>선입선출</mark>구조.
 
 
-
-
-### 선형 큐
-
 <div style="overflow-x: auto; width:900px;">
 
 | 기능&nbsp;&nbsp;&nbsp;     | 명칭&nbsp;&nbsp;&nbsp;  | 설명&nbsp;&nbsp;&nbsp;                |
@@ -185,9 +181,15 @@ print("pop() ",stack.pop())
 
 
 
+### 선형 큐
+
+> 선형 큐는 데이터를 입력하면 rear가 증가하고 삭제를 통해 front도 증가, 하지만 여러번의 삽입과 삭제를 하면, 삭제된 이후 배열의 앞 공간은 사용할 수 없게 된다. 
+
+![contact](/images/search-queue-1.png)
+
+
 #### linearQueue.py
 ##### 리스트로 만든 선형큐 
->                                 
 
 ```
 MAX = 5
@@ -299,7 +301,7 @@ print("deQueue() ",queue.deQueue())
 #### linearDequeue.py
 > 파이썬의 deque를 이용한 선형큐
  
-
+ 
 ```
 from collections import deque
 
@@ -378,6 +380,150 @@ print("deQueue() ",queue.deQueue())
 ```
 
 
+### 환형큐 
+
+> 선형큐의 공간 낭비의 문제점을 해결하기 위해 고안된 환형큐지만 역시나 문제점이 있다. 
+front 와 rear가 같으면 비어(isEmpty) 있는 상태이지만, 환형 큐가 꽉찬(isFull) 상태 또한 front와 rear가 같아 문제점이 발생한다. 
+
+![contact](/images/search-queue-2.png)
+
+> front와 rear의 위치만으로 큐의 비어있는 상태와 꽉찬 상태를 구분할 수 없기 때문에 이를 위해 큐의 한칸을 비어둔다. 
+한칸을 비움으로써 큐의 비어있는 상태와 꽉찬 상태의 front와 rear 위치를 다르게 하여 해결한다. 
+
+![contact](/images/search-queue-3.png)
+
+#### circularQueue.py
+
+```
+MAX = 5
+class CircularQueue :
+    #초기화 
+    def __init__(self, max = MAX) :
+
+        self.maxSize = max
+        self.elements = [None] * self.maxSize #비어있는 배열은 None으로 초기화
+        self.front = 0 #queue의 앞쪽 인덱스, 삭제 시 증가  
+        self.rear = 0 #queue의 뒤쪽 인덱스 , 삽입 시 증가
+
+    #queue의 값이 비었는지 확인, 비었으면 true, 아니면 false
+    def isEmpty(self) :
+        if self.front == self.rear : #front와 rear가 같으면 비어있음
+            result = True
+        else : 
+            result = False 
+        return result
+
+    def isFull(self) :
+        if self.front == (self.rear+1) % self.maxSize :
+            result = True
+        else :
+            result = False
+        return result
+
+
+    #queue의 제일 뒷부분에 데이터 추가 
+    def enQueue(self, x) :
+        if(self.isFull()) : #rear+1이 maxSize면 오버플로우
+            print("queue Overflow!")
+        else :
+            self.rear = (self.rear+1) % self.maxSize
+            self.elements[self.rear] = x #rear+1에 새로운 데이터 추가
+    
+    #queue의 제일 앞의 데이터 삭제 및 반환
+    def deQueue(self) :
+        
+        if self.isEmpty() : #queue가 비어있는지 확인
+            return("queue is Empty!")
+
+        else :
+            
+            
+            self.front =  (self.front+1) % self.maxSize
+            result = self.elements[self.front]
+            self.elements[self.front] = 'None' #front+1의 데이터 None으로 삭제
+            return result
+
+           #queue가 비어있으면서 front가 마지막 인덱스(maxSize-1) 까지 도달
+            if(self.isEmpty() and self.front == self.maxSize-1) :
+                  self.front = -1 #front를 초기화
+                  self.rear = -1 #rear를 초기화
+
+            """
+            # 삭제 후 한 칸씩 옮기는 로직
+
+            for i in range(0,self.maxSize) :
+                if(i+1 != self.maxSize) :
+                    self.elements[i] = self.elements[i+1]
+                else : 
+                    self.elements[i] = None
+
+            self.front -= 1
+            self.rear -= 1
+            
+            """
+
+    #queue의 제일 앞의 데이터 반환
+    def peek(self) :
+        return self.elements[self.front+1]
+    
+    #queue의 사이즈 반환
+    def size(self) :
+     return self.rear - self.front 
+
+
+queue = CircularQueue(5);
+
+print(queue.elements)
+
+queue.enQueue(1)
+print(queue.elements)
+
+
+queue.enQueue(2)
+print(queue.elements)
+
+
+queue.enQueue('banana')
+print(queue.elements)
+
+queue.enQueue(4)
+print(queue.elements)
+
+queue.enQueue(5)
+print(queue.elements)
+
+queue.enQueue(6)
+print(queue.elements)
+
+print("size() ", queue.size())
+
+
+print("peek() ", queue.peek())
+print("deQueue() ",queue.deQueue())
+print(queue.elements)
+print("deQueue() ",queue.deQueue())
+print(queue.elements)
+print("deQueue() ",queue.deQueue())
+print(queue.elements)
+
+
+queue.enQueue(6)
+print(queue.elements)
+
+queue.enQueue(7)
+print(queue.elements)
+
+queue.enQueue(8)
+print(queue.elements)
+
+
+
+print("size() ", queue.size())
+print("deQueue() ",queue.deQueue())
+
+
+
+```
 
 ![contact](/images/search_2.png)
 

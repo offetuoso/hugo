@@ -16,6 +16,12 @@ toc: true
 
 {{< youtube 3MqYE2UuN24 >}}
 
+## worn out ('닳다')
+
+## I’m worn out ('나는 지쳤다.')
+> I’m worn out from studying. (나는 공부로 지쳤다)
+
+
 ##Grammar Error:  
 I was take enough rest and sleep but studying tires me.
 → I took enough rest and sleep but this long-term studying is wearing me out.
