@@ -303,6 +303,7 @@ print("deQueue() ",queue.deQueue())
  
  
 ```
+MAX = 5
 from collections import deque
 
 class LinearDequeue :
@@ -535,6 +536,36 @@ print("deQueue() ",queue.deQueue())
 
  
 ![contact](/images/search_3.png)
+
+
+> 아래 예제는 입력받은 숫자만큼 부터 카운트다운을 하는 소스이다. 
+
+
+#### countdown.py (재귀함수 사용)
+```
+m = int(input())
+
+def coountdwon(n) :
+    if(n ==0 ) :
+        return 'Happy new year!'
+    else : 
+          print(n)
+
+    return coountdwon(n-1)
+
+coountdwon(m)
+```
+
+#### countdown2.py (반복문사용)
+```
+for i in range(0, m) :
+    print(m-i)
+
+    if (m-i) == 1 :
+        print('Happy new year!')
+```
+
+ 
 
 
 
