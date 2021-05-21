@@ -1,5 +1,5 @@
 ---
-title: "잉그올 영어 회화 21.05.07"
+title: "잉그올 영어 회화 21.05.14"
 image: "bg-post.jpg"
 font_color: "white"
 font_size: 30px
@@ -48,18 +48,6 @@ toc: true
 
 ## Q. How does effect of exercising regularly on our body? ('규칙적인 운동이 우리 몸에 미치는 영향을 미치는가?')
 > when I regularly exercise, I had more energy and less stress at that time. (규칙적으로 운동 할 때 그 당시에는 더 많은 에너지와 스트레스를 덜 받았습니다.)
-
-## Q. What is DOMS and how long does it last? ('DOMS 란 무엇이며 얼마나 오래 지속됩니까?')
->
-
-## Q. What role do mitochondria play in fitness?  ('미토콘드리아는 피트니스에서 어떤 역할을합니까?')
->
-
-## Q. What is VO2 max? ('VO2 Max 란?')
->
-
-## Q. How does regular exercise contribute to lower healthcare expenses? ('규칙적인 운동이 의료비 절감에 어떻게 기여 하는가?')
->
 
 
 ##Grammar Error:  
