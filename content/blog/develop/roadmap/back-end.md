@@ -60,4 +60,16 @@ play framework ?
 마이크로서비스 아키텍처와 REST, gRPC 등 서비스 간 통신에 대한 이해
 golang
 git flow
+
+- 인프라: AWS
+- 메인언어: JavaScript(Node.js), Java
+- 그 외 사용언어: Kotlin, Python
+- 개발환경: macOS, IntelliJ
+- Node.js 기반의 Main server + Sping Boot 기반의 Microservice 구성
+- 통신: REST-like API, WebSocket
+- DBMS: MongoDB, MySQL, PostreSQL, DynamoDB, Redshift
+- 검색: Solr, Elasticsearch
+- 그 외: Redis, RabbitMQ, Kafka, Express, Nginx, Docker 등
+- 하려는 것들: K8s, Service mesh, TypeScript 등
+
 ```

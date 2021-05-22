@@ -1,12 +1,12 @@
 ---
-title: "도커 설치"
+title: "도커 설치 (Docker Install) "
 image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2021-05-22
 slug: "docker-install"
-description: "도커 설치"
+description: "도커 설치"	
 keywords: ["Docker"]
 draft: false
 categories: ["Docker"]
@@ -20,8 +20,24 @@ toc: true
 ![contact](/images/docker/docker_install_0.png)
 
 ## 도커란 ?
-> 도커(Docker)란 가상의 리눅스 컨테이너를 기반으로 하여 특정한 서비스를 패키징하고 배포하는데 유용한 오픈소스 프로그램. 
-> 도커 컨테이너는 하드웨어 에뮬레이션 없이 리눅스 커널을 공유해서 바로 프로세스를 실행합니다.
+> 도커란 리눅스의 응용 프로그램들을 프로세스 격리 기술을 사용해 컨테이너로 실행하고 관리하는 오픈 소스 프로젝트.
+> 도커 웹 페이지의 기능을 인용하면 다음과 같다:
+``` 
+도커 컨테이너는 일종의 소프트웨어를 소프트웨어의 실행에 필요한 모든 것을 
+포함하는 완전한 파일 시스템 안에 감싼다. 
+여기에는 코드, 런타임, 시스템 도구, 시스템 라이브러리 등 서버에 설치되는
+ 무엇이든 아우른다. 
+이는 실행 중인 환경에 관계 없이 언제나 동일하게 실행될 것을 보증한다.
+```
+
+### 도커의 특징
+> 1. 도커의 컨테이너는 각각 독립적이다. 독립적으로 존재하기 때문에 원하는 어떤 환경이든 모듈적으로 관리 가능하다.
+> 2. 하나의 서버에 각각의 여러개의 컨테이너를 갖을 수 있다.
+> 3. 컨테이너는 줄이거나 늘릴 수 있다. 예를 들면 자바 서버의 트래픽이 늘어 난다면, 장고 서버를 줄이고 자바를 더 싣을 수 있다.
+> 4. 도커를 사용하면 서버를 늘릴 때마다 서버를 구매하고 다시 설치할 필요가 없어진다
+> 5. 원하는 개발 환경 파일에 저장을 하면, docker는 이를 원하는 어떤 머신이든 해당 환경을 시뮬레이션 해준다.
+
+     
 
 
 ## 도커 설치 (Window 10)
@@ -35,7 +51,7 @@ toc: true
 
 
 ### 2. 도커 다운로드 및 설치
-> - <a href= "https://hub.docker.com/editions/community/docker-ce-desktop-windows/">도커 페이지</a>에서 Get Docker 클릭 하여 다운로드
+> - <a href= "https://hub.docker.com/editions/community/docker-ce-desktop-windows/">도커 웹 페이지</a>에서 Get Docker 클릭 하여 다운로드
 ![contact](/images/docker/docker_install_2.png)
 
 
@@ -56,3 +72,5 @@ toc: true
 > - 윈도우 트레이 아이콘에서도 확인 할 수 있습니다.
 ![contact](/images/docker/docker_install_7.png)
 
+> 참고 : 
+> - <a href="https://www.docker.com/why-docker">도커 웹 페이지</a>
