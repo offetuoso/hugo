@@ -1,0 +1,55 @@
+---
+title: "도커 설치"
+image: "bg-index.jpg"
+font_color: "white"
+font_size: "28px"
+opacity: "0.4"
+date: 2021-05-22
+slug: "docker-install"
+description: "도커 설치"
+keywords: ["Docker"]
+draft: false
+categories: ["Docker"]
+tags: ["Docker","Install"]
+math: false
+toc: true
+---
+
+
+# 도커 (Docker) 
+
+## 도커란 ?
+
+
+## 도커 설치 (Window 10)
+
+### 1. 도커 설치를 위한 준비
+
+> Windows 10에서 도커를 설치 하기 위해서는 <a href="https://docs.microsoft.com/ko-kr/virtualization/hyper-v-on-windows/about/">Hyper-V</a>를 설치해야 합니다. Hyper-V를 사용하면 Windows에서 가상 머신으로 여러 운영 체제를 실행할 수 있습니다. 
+
+
+![contact](/images/docker/docker_install_1.png)
+
+
+### 2. 도커 다운로드 및 설치
+> - <a href= "https://hub.docker.com/editions/community/docker-ce-desktop-windows/">도커 페이지</a>에서 Get Docker 클릭 하여 다운로드
+![contact](/images/docker/docker_install_2.png)
+
+
+> - Ok를 눌러 넘어갑니다. 
+> - <a href="https://ko.wikipedia.org/wiki/%EB%A6%AC%EB%88%85%EC%8A%A4%EC%9A%A9_%EC%9C%88%EB%8F%84%EC%9A%B0_%ED%95%98%EC%9C%84_%EC%8B%9C%EC%8A%A4%ED%85%9C">WSL2(Windows Subsystem for Linux 2)</a>란? 
+>
+![contact](/images/docker/docker_install_3.png)
+
+
+> - 설치가 완료 되면 "Close and log out" 를 클릭하여 재접속 합니다.
+![contact](/images/docker/docker_install_4.png)
+
+> - 재접속 후에는 Host에 docker의 Localhost가 추가 되어 Window에서 악성코드에 의하여 Host파일이 변경되었다고 알람이 뜰 수도 있습니다. Host 내용 한번 확인하시고 아래와 같은 내용이라면 무시해도 됩니다. 
+![contact](/images/docker/docker_install_5.png)
+
+> - 도커가 실행되며,
+![contact](/images/docker/docker_install_6.png)
+> - 윈도우 트레이 아이콘에서도 확인 할 수 있습니다.
+![contact](/images/docker/docker_install_7.png)
+

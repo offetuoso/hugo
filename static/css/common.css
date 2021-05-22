@@ -1,6 +1,7 @@
-.post a, .post a::before, .post a::after {
-    text-decoration: none;
-    color: #a0c8ff;
+.post__container .post a, .post__container .post a::before, .post__container .post a::after {
+    text-decoration: none !important;
+    color: #a0c8ff !important;
+    font-weight: bold;
 }
 
 
