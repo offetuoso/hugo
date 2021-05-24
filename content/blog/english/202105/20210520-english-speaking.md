@@ -17,8 +17,15 @@ toc: true
 {{< youtube rBUjOY12gJA >}}
 
 
+## found it ~ (- 하다고 느꼈다.) 
+> My friend also found it delicious. (내 친구 또한 맛있다고 느꼈습니다.)
+> = My friend also thought (that) it was delicious.
+
+## Q. What happens when you start exercising regularly? ('규칙적으로 운동을 시작하면 어떻게 되나요?')
+> We can get(=be) more energetic and agile (by exercising more regularly). (우리는 더 활기차고 민첩해질 수 있습니다.)
+
 ## Q. What is DOMS and how long does it last? ('DOMS 란 무엇이며 얼마나 오래 지속됩니까?')
->
+> Mitochondria makes protein using fat and carbs, and that makes your body (more) fit. (미토콘드리아는 지방과 탄수화물을 사용하여 단백질을 생성하므로 신체가 더 건강해집니다.)
 
 ## Q. What role do mitochondria play in fitness?  ('미토콘드리아는 피트니스에서 어떤 역할을합니까?')
 >
@@ -28,7 +35,6 @@ toc: true
 
 ## Q. How does regular exercise contribute to lower healthcare expenses? ('규칙적인 운동이 의료비 절감에 어떻게 기여 하는가?')
 >
-
 
 
 ##Grammar Error:  
