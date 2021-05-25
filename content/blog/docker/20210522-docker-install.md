@@ -83,5 +83,20 @@ toc: true
 > - 윈도우 트레이 아이콘에서도 확인 할 수 있습니다.
 ![contact](/images/docker/docker_install_7.png)
 
+
+## 윈도우에서 sudo 사용하기
+
+> Docker를 공부하는 도중 명령어 중에 sudo가 포함된 명령어를 실행시 cmd 기준 아래와 같은 화면이 나타났다.
+![contact](/images/docker/docker_running_2.png)
+
+> 윈도우에서는 기본적으러 sudo를 지원하지 않기 때문인거같아 choco라는 패키지 관리자를 이용하여 설치를 하여 해결하였다.
+
+> <a href="https://chocolatey.org/">choco</a>라는 패키지 관리자를 통하여 sudo 패키지를 설치하면 된다. 
+```
+choco install sudo
+choco upgrade sudo
+```
+![contact](/images/docker/docker_running_1.png)
+
 > 참고 : 
 > - <a href="https://www.docker.com/why-docker">도커 웹 페이지</a>
