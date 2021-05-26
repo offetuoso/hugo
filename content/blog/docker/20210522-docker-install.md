@@ -1,6 +1,6 @@
 ---
 title: "도커 설치 (Docker Install) "
-image: "bg-index.jpg"
+image: "bg-docker.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
