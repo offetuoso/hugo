@@ -28,7 +28,7 @@ toc: true
 ![contact](/images/docker/docker_ec2_1_005.png)
 ![contact](/images/docker/docker_ec2_1_006.png)
 ![contact](/images/docker/docker_ec2_1_007.png)
-![contact](/images/docker/docker_ec2_1_008.png)
+![contact](/images/docker/docker_ec2_1_008.png)    
 ![contact](/images/docker/docker_ec2_1_009.png)
 ![contact](/images/docker/docker_ec2_1_010.png)
 ![contact](/images/docker/docker_ec2_1_011.png)
