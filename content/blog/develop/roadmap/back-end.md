@@ -23,6 +23,18 @@ toc: true
 ![contact](/images/develop/roadmap/backend/backend-roadmap.png)
 
 
+
+
+## 대비 못한 코테 
+
+```
+RestAPI
+assert test 작성 
+
+```
+
+
+
 ```
 선배님과의 대화
 
@@ -37,7 +49,11 @@ Si > 스타트업 > 테크기업
 개발 언어 책말고 볼만한 책 많음
 
 백엔드 비동기
-Rest api
+Rest api << 공부할것
+
+Restcontroller << 
+
+Unit 테스트 작성 공부 <<<
 
 클러스터링
 캐시 서버 클러스터링 해시
