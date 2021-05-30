@@ -1,5 +1,5 @@
 ---
-title: "REST API (Restful Api)"
+title: "RESTFULL API (RESTful API)"
 image: "bg-rest.png"
 font_color: "white"
 font_size: "28px"
@@ -9,16 +9,13 @@ slug: "restful-api-1"
 description: "레스트풀 API"	
 keywords: ["Restful"]
 draft: false
-categories: ["Restful"]
-tags: ["Restful","Api"]
+categories: ["RESTful"]
+tags: ["REST","RESTful","Api"]
 math: false
 toc: true
 ---
 
-
 # 레스트풀 API(Restful Api)
-
-
 
 ## REST (Representational state transfer) 
 
@@ -39,7 +36,7 @@ toc: true
 이는 REST 아키텍처에 적용되는 제약 조건을 통해 달성됩니다.
 
 ### REST 아키텍처 원칙(아키텍처 스타일, 아키텍처의 제약 조건)
-> 해당 6가지 원칙을 모두 만족한다면, REST 하다 이야기 할 수 있습니다.
+> 해당 <mark>6가지 원칙을 모두 만족</mark>한다면, REST하다 이야기 할 수 있습니다.
 
 
 > 1. 인터페이스 일관성 (using a uniform interface): URI로 지정한 리소스에 대한 조작을 통일되고 한정적인 인터페이스로 수행하는 아키텍처 스타일을 말합니다.
@@ -63,11 +60,11 @@ toc: true
 > - 이러한 멀티 플랫폼에 대한 지원을 위해 서비스 자원에 대한 아키텍처를 세우고 이용하는 방법을 모색한 결과, REST에 관심을 가지게 되었다.
 
 
-## RESTful api ?
+## RESTful API ?
 > RESTful은 위의 REST 아키텍처의 원칙을 모두 만족하는 것을 의미한다.
-> RESTful Api란 REST라는 아키텍처 스타일과 원칙을 모두 만족하는 모두 만족하는 API라는 뜻이다.
+> RESTful API란 REST라는 아키텍처 스타일과 원칙을 모두 만족하는 모두 만족하는 API라는 뜻이다.
 
-![contact](/images/develop/backend/restapi/rest-api 002.png)
+![contact](/images/develop/backend/restapi/rest-api-002.png)
  
 
 ### REST API 디자인
@@ -101,9 +98,10 @@ http://restapi.example.com/users/seller
 
 > - BAD
 
-``` 
-http://restapi.example.com/users/customer/getAdress
-```
+````
+http://restapi.example.com/users/customer/
+
+````
 
 > - Good
 
@@ -127,17 +125,15 @@ http://restapi.example.com/users/customer/get-adress
 ```
  
 
-
-
 >  4.  마지막에 슬래시를 포함하지 않는다.
 > - 슬래시는 계층을 구분하는 것으로, 마지막에는 사용하지 않는다.
 
- 
 
 > - Bad
 
-````
+```
 http://restapi.example.com/users/customer/
+
 ```
 
 > - Good
@@ -148,7 +144,12 @@ http://restapi.example.com/users/customer
 
 > 5. 행위는 포함하지 않는다. 
 > - 행위(동사)는 URL대신 Method를 사용하여 전달한다.(GET, POST, PUT, DELETE 등)
-> - POST(create), GET(read), PUT(update), DELETE(delete)
+
+   Resource   | GET(read)     | POST(create) | PUT(update)     | DELETE(delete)
+--------------|---------------|--------------|-----------------|------
+  /goods      | 상품목록        | 상품추가        | -              |   -          
+  /goods/{id} | {id}값 상품상세  | -            | {id}값 상품 수정  | {id}값 상품 삭제 
+
 
 > - Bad
 
