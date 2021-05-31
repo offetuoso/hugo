@@ -14,9 +14,41 @@ math: false
 toc: true
 ---
 
+## nervous about ~ (- 에 대해 긴장.) 
+> I am nervous about tomorrow’s coding test. (내일 코딩 테스트가 떨려요.)
+
+
+##  conduct ( 실시하다, 행위 )
+> Who is conducting the test? (누가 테스트를 실시합니까?)
+
+##  recruitment ( 모집 )
+> the recruitment of developer (개발자 모집)
+
+##  official (formal) ( 공식 )
+> official recruitment (공식 모집)
+
+##  informal ( 비공식 )
+> informalrecruitment recruitment (비공식 채용 모집)
+
+##  conducted by ~ (- 에 의해 실시/주관 )
+> The test is conducted by 'A회사'. (테스트는 'A 회사'에서 진행합니다.)
+
+## A says sth (A는 sth[주제 요약]이라고 말합니다. ) 주제 요약 (정보)
+> The video says exercising regularly is helpful for our health. (비디오는 규칙적인 운동이 우리의 건강에 도움이된다고 말합니다.)
+
+## A tells us [to] sth (A는 sth[교훈/핵심 메시지]를 알려줍니다. ) 교훈/핵심 메시지
+> The video tells us to start exercising regularly. (비디오는 우리에게 규칙적으로 운동을 시작하라고 알려줍니다.)
+> The video tells us the benefits of a regular exercising habit. (비디오는 규칙적인 운동 습관의 이점을 알려줍니다.)
+
+## A talks about sth ([주제 키워드]에 대한 이야기 ) 주제 키워드
+> The video talks about the benefits of a regular exercising habit. (동영상은 규칙적인 운동 습관의 이점에 대해 설명합니다.)
+
+
+
 ## Grammar Error:  
-```Tomorrow, I have a schedule for the coding test. Nervous. (So, I’m very nervous about it.) → I am nervous about tomorrow’s coding test.
-Delivery Hero conducts the tests. → The test is conducted by Delivery Hero.
+```
+Tomorrow, I have a schedule for the coding test. Nervous. (So, I’m very nervous about it.) → I am nervous about tomorrow’s coding test.
+'A회사' conducts the tests. → The test is conducted by 'A회사'.
 The video says starting exercising regularly. 
 → The video says exercising regularly is helpful for our health. → 주제 요약 (정보)
 → The video tells us to start exercising regularly. → 교훈/핵심 메시지
