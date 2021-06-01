@@ -1,204 +1,340 @@
 ---
-title: "RESTFULL API (RESTful API)"
+title: "SpringBoot를 이용한 RESTful API"
 image: "bg-rest.png"
 font_color: "white"
-font_size: "28px"
+font_size: "22px"
 opacity: "0.4"
-date: 2021-05-29
-slug: "restful-api-1"
+date: 2021-06-01
+slug: "restful-api-2"
 description: "레스트풀 API"	
 keywords: ["Restful"]
-draft: true
+draft: false
 categories: ["Restful"]
 tags: ["Restful","Api"]
 math: false
 toc: true
 ---
 
-# 레스트풀 API(Restful Api)
+# SpringBoot를 이용한 RESTful API
 
-## REST (Representational state transfer) 
+## SpringBoot 
+> 스프링 프레임워크 기반 프로젝트를 복잡한 설정없이 쉽고 빠르게 만들어주는 라이브러리입니다.
+사용자가 일일이 모든 설정을 하지 않아도 자주 사용되는 기본설정을 알아서 해줍니다.
 
-> REST(Representational State Transfer)는 월드 와이드 웹과 같은 분산 하이퍼미디어 시스템을 위한 소프트웨어 아키텍처의 한 형식이다.
-> REST는 로이 필딩(Roy Fielding)의 2000년 박사학위 논문에서 소개
-> 엄격한 의미로 REST는 네트워크 아키텍처 원리의 모음이다.
-> 여기서 '네트워크 아키텍처 원리'란 자원을 정의하고 자원에 대한 주소를 지정하는 방법 전반을 일컫는다.
-> 간단한 의미로는, 웹 상의 자료를 HTTP위에서 SOAP이나 쿠키를 통한 세션 트랙킹 같은 별도의 전송 계층 없이 전송하기 위한 아주 간단한 인터페이스를 말한다.
+> Spring Boot 장점
 
-### REST 구성
+> 1. 라이브러리 관리의 자동화
+> 2. 라이브러리 버전 자동 관리
+> 3. 설정의 자동화
+> 4. 내장 Tomcat
+> 5. 독립적으로 실행 가능한 JAR
+ 
+## 간단한 RESTful API 생성 
 
-> 1.자원(RESOURCE) - URI
-> 2.행위(Verb) - HTTP METHOD
-> 3.표현(Representations)
+### Spring Starter Project로 프로젝트 생성
 
-### REST의 목표
-> REST의 목표는 성능, 확장 성, 단순성, 수정 가능성, 가시성, 이식성 및 안정성을 높이는 것. 
-이는 REST 아키텍처에 적용되는 제약 조건을 통해 달성됩니다.
-
-### REST 아키텍처 원칙(아키텍처 스타일, 아키텍처의 제약 조건)
-> 해당 <mark>6가지 원칙을 모두 만족</mark>한다면, REST하다 이야기 할 수 있습니다.
+> <a href="https://spring.io/">스프링STS4</a>를 실행 하고, file > new > Spring Starter Project를 선택  
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-001.png)
+ 
+ 
+> 서비스에 대한 설정을 할 수 있는 화면이 나오며 Demo라는 프로젝트명 그대로 'next' 진행
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-002.png)
 
 
-> 1. 인터페이스 일관성 (using a uniform interface): URI로 지정한 리소스에 대한 조작을 통일되고 한정적인 인터페이스로 수행하는 아키텍처 스타일을 말합니다.
+> Spring Starter 구성 시 추가할 web > Spring Web <a href="https://howtodoinjava.com/maven/maven-dependency-management/">Dependency</a>를 추가 
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-003.png)
 
-> 2. 무상태성(Stateless): 상태정보를 따로 저장하고 관리하지 않습니다. 세션 정보나 쿠키정보를 별도로 저장하고 관리하지 않기 때문에 API 서버는 들어오는 요청만을 단순히 처리하면 됩니다. 때문에 서비스의 자유도가 높아지고 서버에서 불필요한 정보를 관리하지 않음으로써 구현이 단순해집니다.
+
+> next를 눌러 진행하면, 
+스프링스타터의 서비스를 이용해서 방금전 입력한 항목들을 이용해 템플릿을 만들어 달라고 요청할 URL이며 
+URL을 호출하여, ZIP파일 형태로도 제공 받을수 있습니다. finish를 눌러 마무리합니다.
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-004.png)
+
+
+> 프로젝트 우클릭 > Run as > Spring Boot App을 눌러 실행 
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-005.png)
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-006.png)
+
+ 
+> 콘솔창으로 정상적으로 서비스가 올라가는 것을 볼 수 있습니다.
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-007.png)
+
+
+> 서비스될 Port가 :8080으로 설정된 것도 확인 가능합니다.
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-008.png)
+
+
+> http://localhost:8080/ 로 접속해 보면 매핑되는 URI가 없기 때문에 오류 페이지대신 Whitelabel Error Page 페이지가 보이게 됩니다.
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-009.png)
+
+### RESTful API 작성
+
+#### Model - UserProfile.java 생성
+
+> com.example.demo 밑에  com.example.demo.model 패키지를 생성하고 그 안에 UserProfile이라는 VO 객체(Value Obeject)를 생성
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-010.png)
+
+> String 형의 id, name, phone, address를 Private로 추가 
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-011.png)
+
+> 생성자는 에디터 우클릭 > source > generate constructor using fields 를 사용하여 자동 생성
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-012.png)
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-013.png)
+
+> 소스에 생성자가 추가된 것을 확인
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-014.png)
+
+> private로 생성된 field들에 접근하기 위하여, getter와 setter 또한 generator를 이용하여 생성
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-015.png)
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-017.png)
+
+> 소스에 getter, setter가 추가된 것을 확인
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-018.png)
+
+```
+package com.example.demo.model;
+
+public class UserProfile {
+	private String id;
+	private String name;
+	private String phone;
+	private String address;
 	
-> 3. 캐시 가능(Cacheability): REST의 가장 큰 특징 중 하나는 HTTP라는 기존 웹표준을 그대로 사용하기 때문에, 웹에서 사용하는 기존 인프라를 그대로 활용이 가능합니다. 따라서 HTTP가 가진 캐싱 기능이 적용 가능합니다. 
+	public UserProfile(String id, String name, String phone, String address) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.phone = phone;
+		this.address = address;
+	}
 
-> 4. 클라이언트/서버 구조 (client–server architecture): REST 서버는 API 제공, 클라이언트는 사용자 인증이나 컨텍스트(세션, 로그인 정보)등을 직접 관리하는 구조로 각각의 역할이 확실히 구분되기 때문에 클라이언트와 서버에서 개발해야 할 내용이 명확해지고 서로간 의존성이 줄어들게 됩니다.
+	public String getId() {
+		return id;
+	}
 
-> 5. 계층화(Layered System): REST 서버는 다중 계층으로 구성될 수 있으며 보안, 로드 밸런싱, 암호화 계층을 추가해 구조상의 유연성을 둘 수 있고 PROXY, 게이트웨이 같은 네트워크 기반의 중간매체를 사용할 수 있게 합니다.
+	public void setId(String id) {
+		this.id = id;
+	}
 
-> 6. Code on demand (optional) - 클라이언트는 리소스에 대한 표현을 응답으로 받고 처리해야 하는데, 어떻게 처리해야 하는지에 대한 Code를 서버가 제공하는 것을 의미한다. Html에서의 javascript가 가장 대표적인 예이다. 하지만 서버에서 제공되는 코드를 실행해야 하기 때문에 보안 문제를 야기할 수 있습니다.
-(이 제약조건은 필수는 아님.)
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
+ }
+
+```
+
+#### Controller - UserProfileController.java 생성
+
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-019.png)
+
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-020.png)
+
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-021.png)
+
+> Spring에서 컨트롤러를 지정해주기 위한 <a herf="https://velog.io/@gillog/Spring-Annotation-%EC%A0%95%EB%A6%AC">어노테이션</a>은 @Controller와 @RestController가 있습니다. 하지만 여기서는 @RestController를 추가합니다.
 
 
-### REST가 필요한 이유 
-> - 애플리케이션 분리 및 통합
-> - 다양한 클라이언트의 등장
-> - 최근의 서버 프로그램은 다양한 브라우저와 안드로이드폰, 아이폰과 같은 모바일 디바이스에서도 통신을 할 수 있어야 한다.
-> - 이러한 멀티 플랫폼에 대한 지원을 위해 서비스 자원에 대한 아키텍처를 세우고 이용하는 방법을 모색한 결과, REST에 관심을 가지게 되었다.
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-023.png)
 
 
-## RESTful API ?
-> RESTful은 위의 REST 아키텍처의 원칙을 모두 만족하는 것을 의미한다.
-> RESTful API란 REST라는 아키텍처 스타일과 원칙을 모두 만족하는 모두 만족하는 API라는 뜻이다.
+> UserMap을 만들어 메모리상에서 사용자 정보를 GET, POST, PUT, DELETE 할 수 있게 세팅합니다.
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-025.png)
 
-![contact](/images/develop/backend/restapi/rest-api-002.png)
+```
+package com.example.demo.controller;
+
+import org.apache.catalina.User;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import com.example.demo.model.UserProfile;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+@RestController
+public class UserProfileController {
+	
+	private Map<String, UserProfile> userMap;
+	
+	@PostConstruct
+	public void init() {
+		userMap = new HashMap<String, UserProfile>();
+		userMap.put("1", new UserProfile("1", "홍길동", "111-1111", "서울시 영등포구 신길1동"));
+		userMap.put("2", new UserProfile("2", "김근로", "111-1112", "서울시 영등포구 신길2동"));
+		userMap.put("3", new UserProfile("3", "박영업", "111-1113", "서울시 영등포구 신길3동"));
+	}
+	
+}
+
+
+```
+
+> 아래 표와 같은 기능을 Controller에서 간단히 작성해 보려합니다.
+
+   Resource   | GET(read)     | PUT(create)        | POST(update)     | DELETE(delete)
+--------------|---------------|---------------------|-----------------|------
+  /users      | 사용자 전체 조회  | -                   | -               | -          
+  /users/{id} | {id}사용자 조회  | {id} 신규 사용자 추가   | {id} 사용자 수정   | {id} 사용자 삭제 
+  
+
+### GET 
+> GET : /users/1 과 GET : /users/all 을 구현 
+
+> - @PathVariable은 String3에서 추가된 기능으로 URL에서 {특정값}을 변수로 받아 올 수 있다.
+
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-026.png)
+
+```
+    @GetMapping("/users/{id}")
+	public UserProfile getUserProfile(@PathVariable("id") String id) {
+		return userMap.get(id);
+		
+	}
+	
+	@GetMapping("/users/all")
+	public List<UserProfile> getUserProfile() {
+		
+		return new ArrayList<UserProfile>(userMap.values());
+		
+	}
+
+```
+
+> REST API Client Postman을 이용한 테스트 
+> GET : http://localhost:8080/users/1
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-027.png)
+> GET : http://localhost:8080/users/all
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-028.png)
+
+
+### PUT 
+> PUT : /users/1?name=&phone=&address=
+
+> - @PathVariable은 String3에서 추가된 기능으로 URL에서 {특정값}을 변수로 받아 올 수 있다.
+> - @RequestParam 또한 @PathVariable과 비슷하지만, request의 parameter에서 가져오는 것이다. ?name=홍길동 과 같은 쿼리스트링을 파라미터로 파싱해준다.
+
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-029.png)
+
+```
+     @PutMapping("/users/{id}")
+	public void putUserProfile(@PathVariable("id") String id
+                                 , @RequestParam("name") String name
+                                 , @RequestParam("phone") String phone
+                                 , @RequestParam("address") String address) {
+		
+		UserProfile userProfile = new UserProfile(id,name,phone,address);
+		userMap.put(id,userProfile);
+		
+	}
+
+```
+
+
+> PUT : http://localhost:8080/users/4?name=정운영&phone=111-4444&address=서울시 영등포구 신길4동
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-029-2.png)
+
+> GET : http://localhost:8080/users/4
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-030.png)
+
+
+
+### POST 
+> POST : /users/1?name=&phone=&address=
+
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-031.png)
+
+```
+    @PostMapping("/users/{id}")
+	public void postUserProfile(@PathVariable("id") String id
+								, @RequestParam("name") String name
+								, @RequestParam("phone") String phone
+								, @RequestParam("address") String address) {
+		
+		UserProfile userProfile = userMap.get(id);
+		userProfile.setName(name);
+		userProfile.setPhone(phone);
+		userProfile.setAddress(address);
+	}
+
+```
+
+
+> POST : http://localhost:8080/users/1?name=첫번째&phone=010-1111&address=서울시 영등포구 영등포1동
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-033.png)
+
+> GET : http://localhost:8080/users/1
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-034.png)
+
+
+### DELETE 
+> DELETE : /users/1
+
+
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-035.png)
+
+```
+     @DeleteMapping("/users/{id}")
+	public void deleteUserProfile(@PathVariable("id") String id) {
+		
+		userMap.remove(id);
+		
+	}
+
+```
+
+
+> DELETE : http://localhost:8080/users/1
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-036.png)
+
+> GET : http://localhost:8080/users/all
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-037.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 참고
+> - <a href="https://bamdule.tistory.com/158">SpringBoot</a>
+> - <a href="https://spring.io/">spring.io</a>
+> - <a href="https://howtodoinjava.com/maven/maven-dependency-management/">Dependency</a>
+> - <a href="https://velog.io/@gillog/Spring-Annotation-%EC%A0%95%EB%A6%AC">Annotation</a>
+> - <a href="https://mangkyu.tistory.com/49">@Controller vs @RestController</a>
+
  
-
-### REST API 디자인
-
-> 1. URL을 심플하고 직관적으로 만들자
-> - REST API를 URL만 보고도, 직관적으로 이해할 수 있어야 한다
-> - URL을 길게 만드는것 보다, 최대 2 depth 정도로 간단하게 만드는 것이 이해하기 편하다.
-
-
-> - BAD
-
-``` 
-http://restapi.example.com/customerUsers
-http://restapi.example.com/sellerUsers
-```
-
-> - Good
-
-``` 
-http://restapi.example.com/users/customer
-http://restapi.example.com/users/seller
-
-```
-
-
-
-> 2. 소문자를 사용한다.
-> - 도메인 주소명은 대소문자를 구분하지 않는다. 
-> - 디렉터리 명 이하의 주소는 서버의 운영체제에 따라 다르다. 
-> - 대소문자를 혼용하여 사용하는 주소는 권장되지 않는다.
-
-> - BAD
-
-``` 
-http://restapi.example.com/users/customer/getAdress
-```
-
-> - Good
-
-``` 
-http://restapi.example.com/users/customer/get-adress
-```
-
-> 3. 언더바를 대신 하이픈을 사용한다.
-> 가급적 하이픈의 사용도 최소화하며, 정확한 의미나 표현을 위해 단어의 결합이 불가피한 경우에 사용한다.
-
-> - Bad
-
-```
-http://restapi.example.com/users/customer/get_adress
-```
-
-> - Good
-
-```
-http://restapi.example.com/users/customer/get-adress
-```
- 
-
->  4.  마지막에 슬래시를 포함하지 않는다.
-> - 슬래시는 계층을 구분하는 것으로, 마지막에는 사용하지 않는다.
-
-
-> - Bad
-
-````
-http://restapi.example.com/users/customer/
-```
-
-> - Good
-
-```
-http://restapi.example.com/users/customer
-```
-
-> 5. 행위는 포함하지 않는다. 
-> - 행위(동사)는 URL대신 Method를 사용하여 전달한다.(GET, POST, PUT, DELETE 등)
-
-
-> - POST(create), GET(read), PUT(update), DELETE(delete)
-
-> - Bad
-
-```
-POST :  http://restapi.example.com/users/customer/delete-post/1
-```
-
-> - Good
-
-```
-DELETE :  http://restapi.example.com/users/customer/post/1
-```
-
-
-
-
-> 6. 가급적 명사를 사용하되, 제어 자원을 의미하는 경우 예외적으로 동사를 허용한다.
-
-
-> - Bad
-
-```
-POST :  http://restapi.example.com/users/customer/duplication
-```
-
-> - Good
-
-```
-POST :  http://restapi.example.com/users/customer/duplicate
-```
- 
-
-> 7.파일 확장자는 URI에 포함시키지 않는다.
-> - REST API에서는 메시지 바디 내용의 포맷을 나타내기 위한 파일 확장자를 URI 안에 포함시키지 않습니다. Accept header를 사용하도록 한다.
-
-> - Bad
-
-```
-GET :  http://restapi.example.com/users/customer/profile.png
-```
-
-> - Good
-
-```
-GET http://restapi.example.com/users/customer/profile
-HTTP/1.1 Host: restapi.example.com Accept: image/jpg
-
-```
- 
-
-> 8.     오류 처리를 명확하게 해라.
-> -  HTTP 상태코드를 정하고(많아도 안좋음), 다른 개발자들을 위한 오류 메시지 정의, 상세 정보 링크 등을 넣어주면 도움이 된다.
-
-
-
-
-> - <a href="https://ko.wikipedia.org/wiki/REST">REST wiki</a>

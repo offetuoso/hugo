@@ -145,7 +145,7 @@ http://restapi.example.com/users/customer
 > 5. 행위는 포함하지 않는다. 
 > - 행위(동사)는 URL대신 Method를 사용하여 전달한다.(GET, POST, PUT, DELETE 등)
 
-   Resource   | GET(read)     | POST(create) | PUT(update)     | DELETE(delete)
+   Resource   | GET(read)     | PUT(create) | POST(update)     | DELETE(delete)
 --------------|---------------|--------------|-----------------|------
   /goods      | 상품목록        | 상품추가        | -              |   -          
   /goods/{id} | {id}값 상품상세  | -            | {id}값 상품 수정  | {id}값 상품 삭제 
@@ -205,5 +205,5 @@ HTTP/1.1 Host: restapi.example.com Accept: image/jpg
 
 
 
-
+### 참고
 > - <a href="https://ko.wikipedia.org/wiki/REST">REST wiki</a>
