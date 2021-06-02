@@ -55,3 +55,5 @@ toc: true
 ![contact](/images/develop/backend/database/mysql/mysql-developer-install/mysql-install-010.png)
 
 > 자신의 서버정보에 맞게 입력하면 Mysql Developer를 사용할 수 있다.
+![contact](/images/develop/backend/database/mysql/mysql-developer-install/mysql-install-011.png)
+
