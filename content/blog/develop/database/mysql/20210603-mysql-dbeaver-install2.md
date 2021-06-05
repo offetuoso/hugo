@@ -52,6 +52,6 @@ toc: true
 ![contact](/images/develop/backend/database/mysql/dbeaver-install/mysql-dbeaver-1-018.png)
 
 > 자신의 서버정보에 맞게 입력하면 Mysql을 사용할 수 있다.
-![contact](/images/develop/backend/database/mysql/dbeaver-install/mysql-dbeaver-1-019.png)
+![contact](/images/develop/backend/database/mysql/dbeaver-install/mysql-dbeaver-1-020.png)
 
 
