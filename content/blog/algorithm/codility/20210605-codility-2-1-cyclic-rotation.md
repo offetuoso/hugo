@@ -8,9 +8,9 @@ date: 2021-06-05
 slug: "codility-cyclic-rotation"
 description: "Cyclic Rotation"
 keywords: ["Algorithm", "CodingTest"]
-draft: true
+draft: false
 categories: ["Algorithm"]
-tags: ["Algorithm"]
+tags: ["Algorithm", "CodingTest", "Codility"]
 math: false
 toc: true
 ---
@@ -87,6 +87,8 @@ def solution(A, K):
 
     pass
 ```
+
+![contact](/images/algorithm/codility/CyclicRotation-001.PNG)
 
 ## TestCase
 ```

@@ -70,9 +70,9 @@ main .post mark {
     width: inherit;
 }
 
-.page-heading > h1 {
+.post__container .post .page-heading > h1 {
     position: relative;
-    top: -59px;
+    top:-57px;
     font-size: 80px;
     height:80px;
     margin-top: 0 auto;

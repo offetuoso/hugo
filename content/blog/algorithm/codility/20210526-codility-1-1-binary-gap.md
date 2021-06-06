@@ -8,9 +8,9 @@ date: 2021-05-26
 slug: "codility-binary-gap"
 description: "Binary Gap"
 keywords: ["Algorithm", "CodingTest"]
-draft: true
+draft: false
 categories: ["Algorithm"]
-tags: ["Algorithm"]
+tags: ["Algorithm", "CodingTest", "Codility"]
 math: false
 toc: true
 ---
@@ -71,6 +71,9 @@ class Solution {
     }
 }
 ```
+
+![contact](/images/algorithm/codility/BinaryGap-001.PNG)
+
 
 ## TestCase
 ```
