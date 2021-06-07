@@ -19,7 +19,7 @@ toc: true
 
 ### Reduce()
 
-### lambda
+### lambda 
 
 ### 삼항 연산자
 > [Condition] and [True Condition] or [False Condition]

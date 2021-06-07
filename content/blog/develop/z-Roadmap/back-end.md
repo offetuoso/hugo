@@ -61,7 +61,6 @@ RDBMS, 캐시, 데이터 구조에 대한 이해
 
 
 docker 로 서버 db 돌려보기
-
 AWS
 
 Java8
@@ -71,6 +70,10 @@ SPRING_DATA
 JPA /Hibernate 
 QUERYDSL
 스프링 클라우드 
+
+-- 형근대리 추천
+node & 리엑트 or 뷰 & 앵귤러 or 루비 & 리엑트
+파이어베이스 nosql / 실시간DB
 
 Job queue
 message queue
