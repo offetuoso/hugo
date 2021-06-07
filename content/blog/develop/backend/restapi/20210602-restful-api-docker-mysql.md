@@ -1,14 +1,14 @@
 ---
-title: "RESTful API에 Docker Mysql과 Mybatis 연동"
+title: "RESTful API에 Docker Mysql 컨테이너와 Mybatis 연동"
 image: "bg-rest.png"
 font_color: "white"
 font_size: "22px"
 opacity: "0.4"
-date: 2021-06-02
+date: 2021-06-07
 slug: "restful-api-3"
 description: "레스트풀 API"	
 keywords: ["Restful"]
-draft: true
+draft: false
 categories: ["Restful"]
 tags: ["Restful","Api", "Docker", "Mysql","Mybatis"]
 math: false
@@ -153,6 +153,8 @@ spring.datasource.password = [password]
 ## UserProfile 테이블 생성
 > 기존에 만들었던 com.example.demo.model.UserProfile의 필드들을 토대로 UserProfile 테이블을 생성합니다.
 
+##### UserProfile.java
+
 ```
 package com.example.demo.model;
 
@@ -238,10 +240,260 @@ CREATE TABLE `UserProfile` (
 ![contact](/images/develop/backend/demo-rest-api-2/022.png)
 
 ### UserProfileMapper 
+> interface로 UserProfileMapper를 생성하고 @Mapper를 붙여서 
+스프링에서 Mapper로 인식하게 합니다.
+
+#### UserProfileMapper 작성
 
 ![contact](/images/develop/backend/demo-rest-api-2/025.png)
 
+```
+package com.example.demo.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.example.demo.model.UserProfile;
+
+@Mapper
+public interface UserProfileMapper {
+	
+}
+
+```
+
+#### getUserProfile 작성
+> - @select를 사용하여 select 쿼리를 정의합니다
+> - Mybatis를 통하여 파라미터인 id와 ${id}를 매핑합니다.
+
+```
+	@Select("SELECT * FROM UserProfile WHERE id = ${id}")
+	UserProfile getUserProfile(@Param("id") String id);
+	
+```
+
+#### getUserProfileList 작성
+> - @select를 사용하여 select 쿼리를 정의합니다.
+
+```
+	@Select("SELECT * FROM UserProfile")
+	List<UserProfile> getUserProfileList();
+	
+```
+
+#### putUserProfile 작성
+> - @Insert를 사용하여 insert 쿼리를 정의합니다.
+> - Mybatis를 통하여 UserProfile 컬럼과 파라메터 ${param}를 매핑합니다.
+
+```
+	@Insert("INSERT INTO UserProfile VALUES(${id},${name},${phone},${address})") 
+	int putUserProfile( @Param("id") String id
+			          , @Param("name") String name
+			          , @Param("phone") String phone
+			          , @Param("address") String address);
+	
+```
+
+#### postUserProfile 작성
+> - @Update를 사용하여 update 쿼리를 정의합니다.
+> - Mybatis를 통하여 UserProfile 컬럼과 파라메터 ${param}를 매핑합니다.
+
+```
+	@Update("UPDATE UserProfile SET name = ${name}, phone = ${phone}, address = ${address} WHERE id = ${id})") 
+	int postUserProfile( @Param("id") String id
+			, @Param("name") String name
+			, @Param("phone") String phone
+			, @Param("address") String address);
+	
+```
+
+#### deleteUserProfile 작성
+> - @Delete를 사용하여 delete 쿼리를 정의합니다.
+> - Mybatis를 통하여 UserProfile 컬럼과 파라메터 ${param}를 매핑합니다.
+
+```
+	@Delete("DELETE UserProfile WHERE id = ${id}")
+	int deleteUserProfile(@Param("id") String id);
+	
+```
+
+
 ![contact](/images/develop/backend/demo-rest-api-2/026.png)
 
+##### UserProfileMapper.java
+```
+package com.example.demo.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.example.demo.model.UserProfile;
+
+@Mapper
+public interface UserProfileMapper {
+	
+	@Select("SELECT * FROM UserProfile WHERE id = #{id}")
+	UserProfile getUserProfile(@Param("id") String id);
+	
+	@Select("SELECT * FROM UserProfile")
+	List<UserProfile> getUserProfileList();
+	
+	@Insert("INSERT INTO UserProfile VALUES(#{id},#{name},#{phone},#{address})") 
+	int putUserProfile( @Param("id") String id
+			          , @Param("name") String name
+			          , @Param("phone") String phone
+			          , @Param("address") String address);
+	
+	@Update("UPDATE UserProfile SET name = #{name}, phone = #{phone}, address = #{address} WHERE id = #{id}") 
+	int postUserProfile( @Param("id") String id
+			, @Param("name") String name
+			, @Param("phone") String phone
+			, @Param("address") String address);
+	
+	@Delete("DELETE FROM UserProfile WHERE id = #{id}")
+	int deleteUserProfile(@Param("id") String id);
+	
+}
+	
+```
 
 
+### UserProfileController 수정
+> UserMap을 만들어 메모리상에서 사용자 정보를 GET, POST, PUT, DELETE 하던것을 새롭게 추가한 UserProfileMapper를 사용하여 GET, POST, PUT, DELETE 하게 
+수정합니다.
+
+> UserProfileMapper를 파라미터로 전달받아 내부 참조변수에 저장하는 생성자를 만들면, SpringBoot가 알아서 Mapper 클래스를 만들어 객체를 UserProfileController를 
+생성하면서 생성자로 전달합니다. 
+
+> 이후 전달된 UserProfileMapper 클래스 객체를 통해 메서드를 사용할 수 있습니다.
+
+
+##### UserProfileController.java
+
+```
+package com.example.demo.controller;
+
+import org.apache.catalina.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.mapper.UserProfileMapper;
+import com.example.demo.model.UserProfile;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+@RestController
+public class UserProfileController {
+	
+	private UserProfileMapper mapper;
+	
+	public UserProfileController(UserProfileMapper mapper) {
+		this.mapper = mapper;
+	}
+	
+	@GetMapping("/users/{id}")
+	public UserProfile getUserProfile(@PathVariable("id") String id) {
+		//return userMap.get(id);	//변경전
+		return mapper.getUserProfile(id);
+	}
+	
+	@GetMapping("/users/all")
+	public List<UserProfile> getUserProfileList() {
+
+		//return new ArrayList<UserProfile>(userMap.values()); //변경전
+		return mapper.getUserProfileList();
+		
+	}
+	
+	@PutMapping("/users/{id}")
+	public void putUserProfile(@PathVariable("id") String id
+                                 , @RequestParam("name") String name
+                                 , @RequestParam("phone") String phone
+                                 , @RequestParam("address") String address) {
+
+		int resultCnt = mapper.putUserProfile(id, name, phone, address);
+		
+	}
+	
+	@PostMapping("/users/{id}")
+	public void postUserProfile(@PathVariable("id") String id
+								, @RequestParam("name") String name
+								, @RequestParam("phone") String phone
+								, @RequestParam("address") String address) {
+		
+		int resultCnt = mapper.postUserProfile(id, name, phone, address);
+	}
+	
+	@DeleteMapping("/users/{id}")
+	public void deleteUserProfile(@PathVariable("id") String id) {
+		
+		int resultCnt = mapper.deleteUserProfile(id);
+		
+	}
+}
+
+```
+
+### 테스트 
+> 제일 먼저 PUT 을 통해서 사용자 1건을 추가합니다.
+> HTTP Status 응답이 200인 것을 확인 할 수 있습니다.
+
+![contact](/images/develop/backend/demo-rest-api-2/1-001.png)
+
+> GET의 getUserProfile를 통해 사용자가 입력이 잘 되었는지 확인해 봅니다. 
+
+![contact](/images/develop/backend/demo-rest-api-2/1-002.png)
+
+> Mysql에 잘 저장되었는지 확인해 봅니다.
+
+![contact](/images/develop/backend/demo-rest-api-2/1-008.png)
+
+> 제일 먼저 POST를 통해서 입력한 사용자의 정보를 수정해 봅니다.
+> HTTP Status 응답이 200인 것을 확인 할 수 있습니다.
+
+![contact](/images/develop/backend/demo-rest-api-2/1-003.png)
+
+> Mysql에서 잘 수정되었는지 확인해 봅니다.
+
+![contact](/images/develop/backend/demo-rest-api-2/1-007.png)
+
+> GET의 getUserProfileList를 통해 수정이된 내용을 확인해 봅니다.
+
+![contact](/images/develop/backend/demo-rest-api-2/1-004.png)
+
+> DELETE를 통하여 추가한 사용자를 삭제합니다.
+> HTTP Status 응답이 200인 것을 확인 할 수 있습니다.
+
+![contact](/images/develop/backend/demo-rest-api-2/1-005.png)
+
+> GET의 getUserProfileList를 통해 삭제된 내용을 확인해 봅니다.
+
+![contact](/images/develop/backend/demo-rest-api-2/1-006.png)
+
+> Mysql에서 잘 삭제되었는지 확인해 봅니다.
+
+![contact](/images/develop/backend/demo-rest-api-2/1-009.png)
+
+
+## End 
+ 
+ 
