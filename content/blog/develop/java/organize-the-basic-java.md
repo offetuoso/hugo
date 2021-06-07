@@ -8,7 +8,7 @@ date: 2021-03-15
 slug: "basic-java"
 description: "자바의 기본 개념정리."
 keywords: ["java", "basic", "tutorial"]
-draft: false
+draft: true
 categories: ["Java"]
 tags: ["java"]
 math: false
