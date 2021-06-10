@@ -82,47 +82,6 @@ def solution(X, Y, D):
 
 > 시간 복잡성 O(1)
 
-![contact](/images/algorithm/codility/FrogJmp-001.PNG)
-
-
-```
-▶example
-example test✔OK
-1.0.040 sOK
-collapse allCorrectness tests
-▶simple1
-simple test✔OK
-1.0.040 sOK
-2.0.040 sOK
-▶simple2✔OK
-1.0.040 sOK
-2.0.040 sOK
-▶extreme_position
-no jump needed✔OK
-1.0.040 sOK
-2.0.040 sOK
-▶small_extreme_jump
-one big jump✔OK
-1.0.040 sOK
-collapse allPerformance tests
-▶many_jump1
-many jumps, D = 2✔OK
-1.0.040 sOK
-▶many_jump2
-many jumps, D = 99✔OK
-1.0.040 sOK
-▶many_jump3
-many jumps, D = 1283✔OK
-1.0.040 sOK
-▶big_extreme_jump
-maximal number of jumps✔OK
-1.0.040 sOK
-▶small_jumps
-many small jumps✔OK
-1.0.040 sOK
-
-```
-
 
 ## TestCase
 ```

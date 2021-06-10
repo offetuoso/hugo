@@ -17,7 +17,7 @@ toc: true
 
 # Perm Missing Elem
 
-> Codility - Lesson3 - PermMissingElem - <a href="https://app.codility.com/programmers/lessons/3-time_complexity/perm_missing_elem/">Frog Jmp</a>
+> Codility - Lesson3 - Time Complexity - <a href="https://app.codility.com/programmers/lessons/3-time_complexity/perm_missing_elem/">PermMissingElem</a>
 
 
 ## Task description
@@ -61,7 +61,6 @@ def solution(X, Y, D):
 ```
 
 > 시간 복잡성 O(N) or O(N * log(N))
-
 
 
 

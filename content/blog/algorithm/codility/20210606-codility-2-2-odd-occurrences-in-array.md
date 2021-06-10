@@ -84,36 +84,6 @@ n = 100,003, n = 999,999 시간 초과
 > for 안에서 in을 통해 다시 조회하는 것이 시간 복잡성을 늘린거 같다
 
 
-```
-▶example1
-예제 테스트✔확인
-모두 확장정확성 테스트
-▶simple1
-간단한 테스트 n = 5✔확인
-▶simple2
-간단한 테스트 n = 11✔확인
-▶extreme_single_item
-[42]✔확인
-▶small1
-작은 무작위 테스트 n = 201✘런타임 오류
-테스트 프로그램이 종료 코드 1로 종료되었습니다.
-▶small2
-작은 무작위 테스트 n = 601✔확인
-모두 확장성능 테스트
-▶medium1
-중간 무작위 테스트 n = 2,001✔확인
-▶medium2
-중간 무작위 테스트 n = 100,003✘시간 초과 오류가 종료되었습니다
-. 하드 한도 도달 : 6.000 초
-▶big1
-big random test n = 999,999, 여러 반복✘시간 초과 오류가 종료되었습니다
-. 하드 한도 도달 : 10.000 초.
-▶big2
-빅 랜덤 테스트 n = 999,999✘시간 초과 오류가 종료되었습니다
-. 하드 한도 도달 : 10.000 초.
-```
-
-
 ### 2회차 
 > 1. A배열을 A.sort()를 사용해 asc 정렬
 > 2. 정렬을 하고 0 ~ len(A)까지의 반복문중 인덱스가 홀수면 값저장, 짝수면 홀수와 비교
@@ -142,35 +112,6 @@ def solution(A):
 
 > 시간 복잡성 O(N) or O(N*log(N))
 > 하나의 for에서 처리를 해서 timeout에 걸리지 않았다.
-
-![contact](/images/algorithm/codility/OddOccurrencesInArray-001.PNG)
-
-
-```
-expand allExample tests
-▶example1
-example test✔OK
-expand allCorrectness tests
-▶simple1
-simple test n=5✔OK
-▶simple2
-simple test n=11✔OK
-▶extreme_single_item
-[42]✔OK
-▶small1
-small random test n=201✔OK
-▶small2
-small random test n=601✔OK
-expand allPerformance tests
-▶medium1
-medium random test n=2,001✔OK
-▶medium2
-medium random test n=100,003✔OK
-▶big1
-big random test n=999,999, multiple repetitions✔OK
-▶big2
-big random test n=999,999✔OK
-```
 
 ### 다른 사람 풀이
 > 풀이 방식이 비슷하나 A.sort()와 sorted(A)의 차이가 있다.

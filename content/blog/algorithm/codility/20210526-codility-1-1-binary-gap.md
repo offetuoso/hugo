@@ -72,9 +72,6 @@ class Solution {
 }
 ```
 
-![contact](/images/algorithm/codility/BinaryGap-001.PNG)
-
-
 ## TestCase
 ```
 package coding;

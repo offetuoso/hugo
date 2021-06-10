@@ -88,7 +88,6 @@ def solution(A, K):
     pass
 ```
 
-![contact](/images/algorithm/codility/CyclicRotation-001.PNG)
 
 ## TestCase
 ```
