@@ -1,204 +1,184 @@
 ---
-title: "Codility - Binary Gap"
+title: "전공지식 정리 "
 image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2021-05-26
-slug: "codility-binary-gap"
-description: "Binary Gap"
-keywords: ["Algorithm", "CodingTest"]
-draft: false
-categories: ["Algorithm"]
-tags: ["Algorithm", "CodingTest", "Codility"]
+date: 2021-06-14
+slug: "interview"
+description: "interview"
+keywords: ["interview", "question"]
+draft: true
+categories: ["interview"]
+tags: ["interview", "question"]
 math: false
 toc: true
 ---
 
-# BinaryGap
-
-> Codility - Lesson1 - Iterations - <a href="https://app.codility.com/programmers/lessons/1-iterations/">BinaryGap</a>
-
-## Task description
-
-> 1. 정수 N을 입력받아 2진으로 변환 후
-> 2. 예를 들어 N = 1041이면 함수는 5를 반환해야합니다. N은 이진 표현 10000010001 이고 따라서 가장 긴 이진 간격은 길이 5이기 때문입니다. 
-
-> N = 32이면 함수는 0을 반환해야합니다. N은 이진 표현 '100000'이므로 바이너리 갭이 없습니다.
-
-## Condition
-> - 함수 작성 : class Solution {public int solution (int N); }
-> - N은 [ 1 .. 2,147,483,647 ] 범위 내의 정수 입니다.
-> - 양의 정수 N이 주어지면 가장 긴 이진 간격의 길이를 반환합니다. N에 이진 갭이 없으면 함수는 0을 반환해야합니다.
-
->다음 가정에 대한 효율적인 알고리즘을 작성하십시오 .
+# 전공지식 정리 
 
 
-## Solution
+##  로드밸런싱의 개념 L4, L7
+> - 서버에 가해지는 부하를 분산해주는 장치 또는 기술
+> - 클라이언트와 서버풀 사이에 위치해 한 대의 서보로 부하가 집중되지 않도록 트래픽을 관리
+> - 각각의 서버가 최적의 퍼포먼스를 보일 수 있도록 관리
+> - 스케일 아웃으로 시스템 확장을 했다면, 반드시 동반되어야하는 기술
+ 
 
-```
-// you can also use imports, for example:
-// import java.util.*;
+###  로드 밸런싱 알고리즘
 
-// you can write to stdout for debugging purposes, e.g.
-// System.out.println("this is a debug message");
+> 1. 라운드 로빈 방식(RR, Round Robin)
+> - 서버에 들어온 요청을 순차적으로 배정
+> - 각 서버가 동일한 스펙을 가지고 있고, 세션이 오래 지속되지 않는 경우에 적합
 
-class Solution {
-    public int solution(int N) {
-       int result = 0;
-    	
-        StringBuffer sb = new StringBuffer(Integer.toBinaryString(N));
-    	
-        int buf = 0;
-        int count = 0;
-        
-        for (int i = 0; i < sb.length(); i++) {
-        	 if(i < sb.length()) {
-        		int value = Integer.parseInt(sb.substring(i,i+1).toString());
+ 
+> 2. 가중 라운드로빈 방식(Weighted Round Robin)
+> - 각각의 서버마다 가중치를 매기고 가중치가 높은 서버에 우선적으로 배정
+> - 각각의 서버의 트래픽 처리 속도가 상이한 경우에 적합
 
-        		buf += value;
-        		
-        		if(buf == 1 && value == 0){
-        			count += 1;
-        		}else {
-        			result = Math.max(result, count); 
-        			count = 0;
-        			buf = 1;
-        		}
-        	  }
-		}
-		return result;
-    }
-}
-```
+ 
+> 3. IP 해시 방식(IP Hash)
+> - 클라이언트의 IP 주소를 해시 함수를 통해 특정 서버에 매핑
+> - 사용자가 항상 동일한 서버로 연결되는 것을 보장
 
-## TestCase
-```
-package coding;
+ 
+> 4. 최초 연결 방식(Least Connection)
+> - 요청이 들어온 시점에 가장 적은 연결 상태를 보이는 서버에 우선적으로 배정
+> - 서버에 분배된 트래픽이 일정하지 않은 경우 적합
 
-// you can also use imports, for example:
-// import java.util.*;
+ 
+> 5. 최소 응답시간 방식(Least Response Time)
+> - 서버의 현재 연결 상태와 응답시간을 모두 고려해 트래픽 배분
 
-// you can write to stdout for debugging purposes, e.g.
-// System.out.println("this is a debug message");
 
-class Solution {
-	public static void main(String[] args) {
-		Solution sol = new Solution();
-		System.out.println(sol.solution(2147223647));
-		/*
-		example1
-		example test n=1041=10000010001_2✔OK
-		▶example2
-		example test n=15=1111_2✔OK
-		▶example3
-		example test n=32=100000_2✔OK
-		expand allCorrectness tests
-		▶extremes
-		n=1, n=5=101_2 and n=2147483647=2**31-1✔OK
-		▶trailing_zeroes
-		n=6=110_2 and n=328=101001000_2✔OK
-		▶power_of_2
-		n=5=101_2, n=16=2**4 and n=1024=2**10✔OK
-		▶simple1
-		n=9=1001_2 and n=11=1011_2✔OK
-		▶simple2
-		n=19=10011 and n=42=101010_2✔OK
-		▶simple3
-		n=1162=10010001010_2 and n=5=101_2✔OK
-		▶medium1
-		n=51712=110010100000000_2 and n=20=10100_2✔OK
-		▶medium2
-		n=561892=10001001001011100100_2 and n=9=1001_2✔OK
-		▶medium3
-		n=66561=10000010000000001_2✔OK
-		▶large1
-		n=6291457=11000000000000000000001_2✔OK
-		▶large2
-		n=74901729=100011101101110100011100001✔OK
-		▶large3
-		n=805306373=110000000000000000000000000101_2✔OK
-		▶large4
-		n=1376796946=1010010000100000100000100010010_2✔OK
-		▶large5
-		n=1073741825=1000000000000000000000000000001_2✔OK
-		▶large6
-		n=1610612737=1100000000000000000000000000001_2
-		*/
-		
-		
-		//▶example1
-		System.out.println("example test n=1041=10000010001_2✔OK "+sol.solution(1041));
-		
-		//▶example2
-		System.out.println("example test n=15=1111_2✔OK "+sol.solution(15));
-				
-		//▶example3
-		System.out.println("example test n=32=100000_2✔OK "+sol.solution(32));
-		
-		/*
-		▶extremes
-		n=1, n=5=101_2 and n=2147483647=2**31-1✔OK
-		▶trailing_zeroes
-		n=6=110_2 and n=328=101001000_2✔OK
-		▶power_of_2
-		n=5=101_2, n=16=2**4 and n=1024=2**10✔OK
-		▶simple1
-		n=9=1001_2 and n=11=1011_2✔OK
-		▶simple2
-		n=19=10011 and n=42=101010_2✔OK
-		▶simple3
-		n=1162=10010001010_2 and n=5=101_2✔OK
-		▶medium1
-		n=51712=110010100000000_2 and n=20=10100_2✔OK
-		▶medium2
-		n=561892=10001001001011100100_2 and n=9=1001_2✔OK
-		▶medium3
-		n=66561=10000010000000001_2✔OK
-		▶large1
-		n=6291457=11000000000000000000001_2✔OK
-		▶large2
-		n=74901729=100011101101110100011100001✔OK
-		▶large3
-		n=805306373=110000000000000000000000000101_2✔OK
-		▶large4
-		n=1376796946=1010010000100000100000100010010_2✔OK
-		▶large5
-		n=1073741825=1000000000000000000000000000001_2✔OK
-		▶large6
-		n=1610612737=1100000000000000000000000000001_2
-		*/
-		
-	}
-	
-    public int solution(int N) {
-        // write your code in Java SE 8
-    	
-    	int result = 0;
-    	
-        StringBuffer sb = new StringBuffer(Integer.toBinaryString(N));
-    	
-        int buf = 0;
-        int count = 0;
-        
-    	for (int i = 0; i < sb.length(); i++) {
-        	if(i < sb.length()) {
-        		int value = Integer.parseInt(sb.substring(i,i+1).toString());
-        		System.out.println(value);
-        		buf += value;
-        		
-        		if(buf == 1 && value == 0){
-        			count += 1;
-        		}else {
-        			result = Math.max(result, count); 
-        			count = 0;
-        			buf = 1;
-        		}
-        	}
-		}
-        
-		return result;
-    }
-}
+> 6. 응답 우선 방식 (Fastest Response Time)
+> - 서버가 요청에 대해 응답하는 시간을 체크하여 가장 빠른 서버로 요청을 분배하는 방식입니다.
+ 
 
-```
+### 로드 밸런서 종류
+> - OSI 7 계층에 따라 L1 로드밸런서부터 L7로드 밸런서까지 존재
+> - L4 로드밸런서부터 포트 정보를 바탕으로 로드를 분산하는 것이 가능하므로 L4와 L7이 가장 많이 활용
+> - 한 대의 서버에 다수의 서버 프로그램을 운영하는 경우 최소 L4 이상의 로드밸런서를 사용해야함
+
+
+#### L4 로드밸런서
+> - 네트워크 계층(IP)이나 전송 계층(TCP, UDP)의 정보를 바탕으로 로드 분산
+> - IP 주소, 포트번호, Mac 주소, 전송 프로토콜에 따라 로드 분산
+
+##### 장점
+> 1. 데이터를 확인하지 않고 패킷레벨에서만 로드를 분산하기 때문에 빠르고 효율적
+> 2. 데이터의 내용을 복호화할 필요가 없으므로 안전
+> 3. 저렴
+
+##### 단점
+> 1. 섬세한 라우팅 불가
+> 2. 사용자의 IP가 수시로 바뀌는 경우 연속적인 서비스 제공 불가
+
+ 
+#### L7 로드 밸런서
+
+> - 애플리케이션 계층(HTTP, FTP, SMTP)에서 로드를 분산
+> - HTTP 헤더, 쿠키 등과 같은 사용자 요청을 기준으로 특정 서버에 트래픽 분산 가능
+> - 즉, 패킷의 내용을 확인하고, 그 내용에 따라 로드를 분산 가능
+
+##### 장점
+> 1. 클라이언트의 요청을 보다 세분화해 서버에 전달
+> 2. 캐싱 기능 제공
+> 3. DOS같은 비정상적인 트래픽을 필터링할 수 있어 안전성이 높음
+
+##### 단점
+> 1. 패킷 내용을 복호화 해야하므로 높은 비용
+> 2. 클라이언트와 로드밸런서가 인증서를 공유해야하기 때문에 보안상의 위험이 존재
+
+
+
+##  HTTP / HTTPS 차이
+> - HTTP는 암호화가 추가되지 않았기 때문에 보안에 취약한 반면 속도가 빠르다.
+> - HTTPS는 안전하게 데이터를 주고받을 수 있지만 암호화/복호화의 과정이 필요하기 때문에 HTTP보다 속도가 느리다. 
+> 또한 HTTPS는 인증서를 발급하고 유지하기 위한 추가 비용이 발생하다.
+
+
+##  public private 클라우드 차이 
+### public
+> 퍼블릭 클라우드는 일반적으로 최종 사용자가 소유하지 않은 IT 인프라에서 생성되는 클라우드 환경입니다. 
+가장 대표적인 퍼블릭 클라우드 제공업체로는 Alibaba Cloud, AWS(아마존 웹 서비스), Google Cloud, IBM Cloud, Microsoft Azure, naver 등이 있습니다.
+
+> 환경이 멀티플 테넌트로 파티셔닝 또는 재배포되는 클라우드를 모두 퍼블릭 클라우드라고 볼 수 있습니다. 일부 클라우드 제공업체(예: Massachusettes Open Cloud)는 테넌트가 클라우드를 무료로 사용하도록 허용하기 때문에, 비용 체계 또한 더 이상 퍼블릭 클라우드의 필수 특성으로 볼 수는 없습니다. 퍼블릭 클라우드 공급업체가 사용하는 베어 메탈(bare metal) IT 인프라도 추상화하여 IaaS 형태로 판매하거나 클라우드 플랫폼으로 개발하여 PaaS 형태로 판매할 수 있습니다.
+
+### private
+> 프라이빗 클라우드는 간략하게 말해 단일 최종 사용자 또는 그룹의 전용 클라우드 환경으로, 실행 시 대개 해당 사용자 또는 그룹의 방화벽으로 보호됩니다. 완전히 독립적인 액세스 권한이 있는 단일 고객만 기반 IT 인프라를 독점적으로 사용하는 경우 이러한 모든 클라우드를 프라이빗 클라우드라고 정의할 수 있습니다.
+
+
+
+
+##  SaaS의 의미 
+
+##  Relational DB, No sql 차이
+
+##  no-sql를 예를 들어 설명
+
+##  아키텍쳐란 ? 
+
+##  대용량 트래픽을 버티는 아키텍쳐란 무엇이라 생각하는가
+
+##  브라우저에 gmarket.com을 입력했을때 랜더링 되기 까지의 과정 
+
+##  O2O 
+
+##  전자 상거래 혹은 마케팅에서 온리인과 오프라인이 연결되는 현상
+
+##  디자인패턴이 무엇인지 설명하고, 패던 중 하나를 선택해 정의와 예시를 들어세요
+
+##  thread와 process와의 차이
+
+##  내부 repository를 사용하는 이유 
+
+##  gradle과 maven의 차이
+
+##  o2o 서비스에서 백엔드 개발자의 역할
+
+##  elastic-search와 graph-QL에 대해 설명
+
+##  http/1.1과 restfull-api에 대해 설명하시오
+
+##  동적 스키마 설계 시 고민할 점 
+
+##  절차지향과 객체지향의 차이점 
+
+##  intercepter와 filter의 순서와 차이점 
+
+##  transaction isolation level 종류 및 특징 
+
+##  JTA를 설명 
+
+##  MD5, AES256, SHA256 차이점 암호화 방식에 대해 설명 
+
+##  CDN과 AWS Cloudfront 차이점과 사용이유 설명
+
+##  네임스페이스, 트레잇, 클로저 설명 (for php)
+
+##  trasation과 storage engine의 관계를 설명하시오 
+
+##  static function의 특징을 설명 
+
+##  fault-tolerant 시스템으로 가기 위한 개발 방법에 대한 생각을 말해주세요 
+
+##  CDC는 무엇이고 구현방법 설명
+
+##  MSA에 대해 알고있는지 ? 직접 구현한 마이크로 서비스 아키텍처 설명 및 도식화
+
+##  polyglot programming 이란 ? 개발할때 가장 편하게 사용할 수 있는 언어는 
+
+##  에러와 exception의 차이 
+
+##  DevOps 정의, 장점 ? 
+
+##  DevOps 를 적용할 떄 주의 할점 
+
+##  DevOps을 적용한 케이스가 있는지 
+
+##  AWS 등 클라우드 기반 개발 운영 경험 
+
+##  클라우드 서비스중 가장 많이 사용 하는 것과 편의성이 있다면
+
+##  IDC와 CDN 환경에서 AWS로 옮기는 구성 어떻게 해야하나
