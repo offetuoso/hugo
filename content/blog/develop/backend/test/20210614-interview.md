@@ -1,209 +1,301 @@
+
 ---
-title: "RESTFULL API (RESTful API)"
+title: "interview"
 image: "bg-rest.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2021-05-29
-slug: "restful-api-1"
-description: "레스트풀 API"	
+slug: "interview.md"
+description: "인터뷰 "	
 keywords: ["Restful"]
-draft: false
+draft: true
 categories: ["RESTful"]
 tags: ["REST","RESTful","Api"]
 math: false
 toc: true
 ---
 
-# 레스트풀 API(Restful Api)
-
-## REST (Representational state transfer) 
-
-> REST(Representational State Transfer)는 월드 와이드 웹과 같은 분산 하이퍼미디어 시스템을 위한 소프트웨어 아키텍처의 한 형식이다.
-> REST는 로이 필딩(Roy Fielding)의 2000년 박사학위 논문에서 소개
-> 엄격한 의미로 REST는 네트워크 아키텍처 원리의 모음이다.
-> 여기서 '네트워크 아키텍처 원리'란 자원을 정의하고 자원에 대한 주소를 지정하는 방법 전반을 일컫는다.
-> 간단한 의미로는, 웹 상의 자료를 HTTP위에서 SOAP이나 쿠키를 통한 세션 트랙킹 같은 별도의 전송 계층 없이 전송하기 위한 아주 간단한 인터페이스를 말한다.
-
-### REST 구성
-
-> 1.자원(RESOURCE) - URI
-> 2.행위(Verb) - HTTP METHOD
-> 3.표현(Representations)
-
-### REST의 목표
-> REST의 목표는 성능, 확장 성, 단순성, 수정 가능성, 가시성, 이식성 및 안정성을 높이는 것. 
-이는 REST 아키텍처에 적용되는 제약 조건을 통해 달성됩니다.
-
-### REST 아키텍처 원칙(아키텍처 스타일, 아키텍처의 제약 조건)
-> 해당 <mark>6가지 원칙을 모두 만족</mark>한다면, REST하다 이야기 할 수 있습니다.
+# 전공지식 정리 
 
 
-> 1. 인터페이스 일관성 (using a uniform interface): URI로 지정한 리소스에 대한 조작을 통일되고 한정적인 인터페이스로 수행하는 아키텍처 스타일을 말합니다.
-
-> 2. 무상태성(Stateless): 상태정보를 따로 저장하고 관리하지 않습니다. 세션 정보나 쿠키정보를 별도로 저장하고 관리하지 않기 때문에 API 서버는 들어오는 요청만을 단순히 처리하면 됩니다. 때문에 서비스의 자유도가 높아지고 서버에서 불필요한 정보를 관리하지 않음으로써 구현이 단순해집니다.
-	
-> 3. 캐시 가능(Cacheability): REST의 가장 큰 특징 중 하나는 HTTP라는 기존 웹표준을 그대로 사용하기 때문에, 웹에서 사용하는 기존 인프라를 그대로 활용이 가능합니다. 따라서 HTTP가 가진 캐싱 기능이 적용 가능합니다. 
-
-> 4. 클라이언트/서버 구조 (client–server architecture): REST 서버는 API 제공, 클라이언트는 사용자 인증이나 컨텍스트(세션, 로그인 정보)등을 직접 관리하는 구조로 각각의 역할이 확실히 구분되기 때문에 클라이언트와 서버에서 개발해야 할 내용이 명확해지고 서로간 의존성이 줄어들게 됩니다.
-
-> 5. 계층화(Layered System): REST 서버는 다중 계층으로 구성될 수 있으며 보안, 로드 밸런싱, 암호화 계층을 추가해 구조상의 유연성을 둘 수 있고 PROXY, 게이트웨이 같은 네트워크 기반의 중간매체를 사용할 수 있게 합니다.
-
-> 6. Code on demand (optional) - 클라이언트는 리소스에 대한 표현을 응답으로 받고 처리해야 하는데, 어떻게 처리해야 하는지에 대한 Code를 서버가 제공하는 것을 의미한다. Html에서의 javascript가 가장 대표적인 예이다. 하지만 서버에서 제공되는 코드를 실행해야 하기 때문에 보안 문제를 야기할 수 있습니다.
-(이 제약조건은 필수는 아님.)
-
-
-### REST가 필요한 이유 
-> - 애플리케이션 분리 및 통합
-> - 다양한 클라이언트의 등장
-> - 최근의 서버 프로그램은 다양한 브라우저와 안드로이드폰, 아이폰과 같은 모바일 디바이스에서도 통신을 할 수 있어야 한다.
-> - 이러한 멀티 플랫폼에 대한 지원을 위해 서비스 자원에 대한 아키텍처를 세우고 이용하는 방법을 모색한 결과, REST에 관심을 가지게 되었다.
-
-
-## RESTful API ?
-> RESTful은 위의 REST 아키텍처의 원칙을 모두 만족하는 것을 의미한다.
-> RESTful API란 REST라는 아키텍처 스타일과 원칙을 모두 만족하는 모두 만족하는 API라는 뜻이다.
-
-![contact](/images/develop/backend/restapi/rest-api-002.png)
+##  로드밸런싱의 개념 L4, L7
+> - 서버에 가해지는 부하를 분산해주는 장치 또는 기술
+> - 클라이언트와 서버풀 사이에 위치해 한 대의 서보로 부하가 집중되지 않도록 트래픽을 관리
+> - 각각의 서버가 최적의 퍼포먼스를 보일 수 있도록 관리
+> - 스케일 아웃으로 시스템 확장을 했다면, 반드시 동반되어야하는 기술
  
 
-### REST API 디자인
+###  로드 밸런싱 알고리즘
 
-> 1. URL을 심플하고 직관적으로 만들자
-> - REST API를 URL만 보고도, 직관적으로 이해할 수 있어야 한다
-> - URL을 길게 만드는것 보다, 최대 2 depth 정도로 간단하게 만드는 것이 이해하기 편하다.
+> 1. 라운드 로빈 방식(RR, Round Robin)
+> - 서버에 들어온 요청을 순차적으로 배정
+> - 각 서버가 동일한 스펙을 가지고 있고, 세션이 오래 지속되지 않는 경우에 적합
+
+ 
+> 2. 가중 라운드로빈 방식(Weighted Round Robin)
+> - 각각의 서버마다 가중치를 매기고 가중치가 높은 서버에 우선적으로 배정
+> - 각각의 서버의 트래픽 처리 속도가 상이한 경우에 적합
+
+ 
+> 3. IP 해시 방식(IP Hash)
+> - 클라이언트의 IP 주소를 해시 함수를 통해 특정 서버에 매핑
+> - 사용자가 항상 동일한 서버로 연결되는 것을 보장
+
+ 
+> 4. 최초 연결 방식(Least Connection)
+> - 요청이 들어온 시점에 가장 적은 연결 상태를 보이는 서버에 우선적으로 배정
+> - 서버에 분배된 트래픽이 일정하지 않은 경우 적합
+
+ 
+> 5. 최소 응답시간 방식(Least Response Time)
+> - 서버의 현재 연결 상태와 응답시간을 모두 고려해 트래픽 배분
 
 
-> - BAD
-
-``` 
-http://restapi.example.com/customerUsers
-http://restapi.example.com/sellerUsers
-```
-
-> - Good
-
-``` 
-http://restapi.example.com/users/customer
-http://restapi.example.com/users/seller
-
-```
-
-
-
-> 2. 소문자를 사용한다.
-> - 도메인 주소명은 대소문자를 구분하지 않는다. 
-> - 디렉터리 명 이하의 주소는 서버의 운영체제에 따라 다르다. 
-> - 대소문자를 혼용하여 사용하는 주소는 권장되지 않는다.
-
-> - BAD
-
-````
-http://restapi.example.com/users/customer/
-
-````
-
-> - Good
-
-``` 
-http://restapi.example.com/users/customer/get-adress
-```
-
-> 3. 언더바를 대신 하이픈을 사용한다.
-> 가급적 하이픈의 사용도 최소화하며, 정확한 의미나 표현을 위해 단어의 결합이 불가피한 경우에 사용한다.
-
-> - Bad
-
-```
-http://restapi.example.com/users/customer/get_adress
-```
-
-> - Good
-
-```
-http://restapi.example.com/users/customer/get-adress
-```
+> 6. 응답 우선 방식 (Fastest Response Time)
+> - 서버가 요청에 대해 응답하는 시간을 체크하여 가장 빠른 서버로 요청을 분배하는 방식입니다.
  
 
->  4.  마지막에 슬래시를 포함하지 않는다.
-> - 슬래시는 계층을 구분하는 것으로, 마지막에는 사용하지 않는다.
+### OSI 7
+> 1. 물리 계층(Physical Layer)
+> 2. 데이터 링크 계층(Data Link Layer)
+> 3. 네트워크 계층(Network Layer)
+> 4. 전송 계층(Transport Layer)
+> 5. 세션 계층(Session Layer)
+> 6. 표현 계층(Presentation Layer)
+> 7. 응용 계층(Application Layer)
+
+### 로드 밸런서 종류
+> - OSI 7 계층에 따라 L1 로드밸런서부터 L7로드 밸런서까지 존재
+> - L4 로드밸런서부터 포트 정보를 바탕으로 로드를 분산하는 것이 가능하므로 L4와 L7이 가장 많이 활용
+> - 한 대의 서버에 다수의 서버 프로그램을 운영하는 경우 최소 L4 이상의 로드밸런서를 사용해야함
 
 
-> - Bad
+#### L4 로드밸런서
+> - 네트워크 계층(IP)이나 전송 계층(TCP, UDP)의 정보를 바탕으로 로드 분산
+> - IP 주소, 포트번호, Mac 주소, 전송 프로토콜에 따라 로드 분산
 
-```
-http://restapi.example.com/users/customer/
+##### 장점
+> 1. 데이터를 확인하지 않고 패킷레벨에서만 로드를 분산하기 때문에 빠르고 효율적
+> 2. 데이터의 내용을 복호화할 필요가 없으므로 안전
+> 3. 저렴
 
-```
+##### 단점
+> 1. 섬세한 라우팅 불가
+> 2. 사용자의 IP가 수시로 바뀌는 경우 연속적인 서비스 제공 불가
 
-> - Good
-
-```
-http://restapi.example.com/users/customer
-```
-
-> 5. 행위는 포함하지 않는다. 
-> - 행위(동사)는 URL대신 Method를 사용하여 전달한다.(GET, POST, PUT, DELETE 등)
-
-   Resource   | GET(read)     | PUT(create) | POST(update)     | DELETE(delete)
---------------|---------------|--------------|-----------------|------
-  /goods      | 상품목록        | 상품추가        | -              |   -          
-  /goods/{id} | {id}값 상품상세  | -            | {id}값 상품 수정  | {id}값 상품 삭제 
-
-
-> - Bad
-
-```
-POST :  http://restapi.example.com/users/customer/delete-post/1
-```
-
-> - Good
-
-```
-DELETE :  http://restapi.example.com/users/customer/post/1
-```
-
-
-
-
-> 6. 가급적 명사를 사용하되, 제어 자원을 의미하는 경우 예외적으로 동사를 허용한다.
-
-
-> - Bad
-
-```
-POST :  http://restapi.example.com/users/customer/duplication
-```
-
-> - Good
-
-```
-POST :  http://restapi.example.com/users/customer/duplicate
-```
  
+#### L7 로드 밸런서
 
-> 7.파일 확장자는 URI에 포함시키지 않는다.
-> - REST API에서는 메시지 바디 내용의 포맷을 나타내기 위한 파일 확장자를 URI 안에 포함시키지 않습니다. Accept header를 사용하도록 한다.
+> - 애플리케이션 계층(HTTP, FTP, SMTP)에서 로드를 분산
+> - HTTP 헤더, 쿠키 등과 같은 사용자 요청을 기준으로 특정 서버에 트래픽 분산 가능
+> - 즉, 패킷의 내용을 확인하고, 그 내용에 따라 로드를 분산 가능
 
-> - Bad
+##### 장점
+> 1. 클라이언트의 요청을 보다 세분화해 서버에 전달
+> 2. 캐싱 기능 제공
+> 3. DOS같은 비정상적인 트래픽을 필터링할 수 있어 안전성이 높음
 
-```
-GET :  http://restapi.example.com/users/customer/profile.png
-```
-
-> - Good
-
-```
-GET http://restapi.example.com/users/customer/profile
-HTTP/1.1 Host: restapi.example.com Accept: image/jpg
-
-```
- 
-
-> 8.     오류 처리를 명확하게 해라.
-> -  HTTP 상태코드를 정하고(많아도 안좋음), 다른 개발자들을 위한 오류 메시지 정의, 상세 정보 링크 등을 넣어주면 도움이 된다.
+##### 단점
+> 1. 패킷 내용을 복호화 해야하므로 높은 비용
+> 2. 클라이언트와 로드밸런서가 인증서를 공유해야하기 때문에 보안상의 위험이 존재
 
 
 
-### 참고
-> - <a href="https://ko.wikipedia.org/wiki/REST">REST wiki</a>
+##  HTTP / HTTPS 차이
+> - HTTP는 암호화가 추가되지 않았기 때문에 보안에 취약한 반면 속도가 빠르다.
+> - HTTPS는 안전하게 데이터를 주고받을 수 있지만 암호화/복호화의 과정이 필요하기 때문에 HTTP보다 속도가 느리다. 
+> 또한 HTTPS는 인증서를 발급하고 유지하기 위한 추가 비용이 발생하다.
+
+
+##  public private 클라우드 차이 
+### public
+> 퍼블릭 클라우드는 일반적으로 최종 사용자가 소유하지 않은 IT 인프라에서 생성되는 클라우드 환경입니다. 
+가장 대표적인 퍼블릭 클라우드 제공업체로는 Alibaba Cloud, AWS(아마존 웹 서비스), Google Cloud, IBM Cloud, Microsoft Azure, naver 등이 있습니다.
+
+> 환경이 멀티플 테넌트로 파티셔닝 또는 재배포되는 클라우드를 모두 퍼블릭 클라우드라고 볼 수 있습니다. 일부 클라우드 제공업체(예: Massachusettes Open Cloud)는 테넌트가 클라우드를 무료로 사용하도록 허용하기 때문에, 비용 체계 또한 더 이상 퍼블릭 클라우드의 필수 특성으로 볼 수는 없습니다. 퍼블릭 클라우드 공급업체가 사용하는 베어 메탈(bare metal) IT 인프라도 추상화하여 IaaS 형태로 판매하거나 클라우드 플랫폼으로 개발하여 PaaS 형태로 판매할 수 있습니다.
+
+### private
+> 프라이빗 클라우드는 간략하게 말해 단일 최종 사용자 또는 그룹의 전용 클라우드 환경으로, 실행 시 대개 해당 사용자 또는 그룹의 방화벽으로 보호됩니다. 완전히 독립적인 액세스 권한이 있는 단일 고객만 기반 IT 인프라를 독점적으로 사용하는 경우 이러한 모든 클라우드를 프라이빗 클라우드라고 정의할 수 있습니다.
+
+##  SaaS의 의미 
+>서비스로서의 소프트웨어(Software-as-a-Service, SaaS)는 클라우드 애플리케이션과
+ 기본 IT 인프라 및 플랫폼을 사용자에게 제공하는 클라우드 컴퓨팅 형태입니다.
+
+##  Relational DB, No sql 차이
+RDBMS NOSQL 차이
+데이터베이스에서 크게 두가지로 나뉘는 관계형 데이터베이스와 No SQL에 대해 간략히 정리해봅니다.
+
+
+
+데이터 베이스를 잘 몰라 NOSQL이 처음에는 No SQL이라고 생각을 하였다…
+NO SQL은 Not Only SQL로 관계형 데이터베이스가 아닌 데이터 베이스로 이해하는 것이 좋을 것 같습니다.
+ 그래서 Not Only 혹은 Non relational Database라고도 부른다고 합니다.
+
+
+
+
+RDBMS
+SQL은 Structured Query Language의 약자로 데이터베이스에서 사용하는 쿼리 언어 입니다. SQL을 사용하여 RDBMS에서 데이터를 검색, 저장, 수정, 삭제 등이 가능합니다. RDBMS는 Relational Database Management System으로 말 그대로 관계형 데이터베이스 관리 시스템입니다. RDBMS는 정해져있는 데이터 스키마에 따라 데이터베이스 테이블에 저장되며, 관계를 통한 테이블간 연결을 통해 사용됩니다. 이 때문에 RDBMS는 데이터 관리를 효율적으로 하기위해 구조화가 굉장히 중요합니다.
+
+
+
+스키마
+스키마는 데이터베이스를 구성하는 데이터 개체(Entity), 속성(Attribute), 관계(Relationship) 및 데이터 조작 시 데이터 값들이 갖는 제약 조건 등에 관해 전반적으로 정의한다.
+
+
+
+
+RDBMS 장점
+RDBMS 장점으로는 정해진 스키마에 따라 데이터를 저장하여야 하기 때문에 명확한 데이터 구조를 보장합니다. 그리고 각 데이터에 맞게 테이블을 나누어 데이터 중복을 피해 데이터 공간을 절약 할 수 있습니다.
+
+
+
+RDBMS 단점
+RDBMS 단점으로는 Oracle 같은 시스템을 사용하게 될 경우 비용적으로 부담이 될 수 있습니다. 그리고 RDBMS 관계로 인한 시스템 복잡도를 고려하여 구조화를 해야합니다. 시스템이 복잡해 질수록 Query문이 복잡해지고 성능이 저하됩니다. 또한 수평적확장이 어려워 수직적 확장을 대부분 하기 때문에 한계에 직면할 수 있습니다.
+
+
+
+
+NOSQL
+NOSQL은 위에 설명했듯 Not Only SQL, Non relational Database라고 부른다고 합니다. NOSQL은 관계형 데이터베이스와 반대되는 방식을 사용하여 스키마와 관계라는 개념이 없습니다. RDBMS에서는 스키마에 맞추어 데이터를 관리하여야 하지만 NOSQL은 스키마가 없어 좀 더 자유롭게 데이터를 관리할 수 있습니다. NOSQL에서 테이블과 같은 개념으로 컬렉션이라는 형태로 데이터를 관리합니다.
+
+
+
+
+NOSQL 장점
+NOSQL 장점으로는 정해진 스키마에 따라 저장해야하는 RDBMS 보다 자유롭게 데이터를 추가가 가능합니다. 이는 복잡한 테이블간의 관계를 형성하는 형태의 구조를 신경쓰지 않아도 됩니다. 예로는 조인 등 복잡한 SQL구문으로 인한 문제가 있겠습니다. NOSQL에서는 필요한 데이터가 보통 하나의 컬렉션에 있으며, 이는 자주 변경되지 않는 데이터에 큰 장점이 있다고 합니다. 그리고 다른 장점으로는 수평적 확장이 어려운 RDBMS보다는 수평적 확장이 쉽다는 점 입니다.
+
+
+
+NOSQL은 분산처리 목적으로 나왔기 때문에 프레임워크에서 분산처리 기능을 포함하고 있다고 합니다.
+
+
+
+NOSQL 단점
+NOSQL 단점으로는 자유롭게 데이터가 추가가 가능하기 때문에 컬렉션에 중복된 데이터가 저장이 가능합니다. 데이터 업데이트시 중복되어 저장되어있는 데이터를 똑같이 관리(업데이트)해 주어야 합니다.
+
+
+
+##  no-sql를 예를 들어 설명
+
+##  아키텍쳐란 ? 
+
+##  대용량 트래픽을 버티는 아키텍쳐란 무엇이라 생각하는가
+
+##  브라우저에 gmarket.com을 입력했을때 랜더링 되기 까지의 과정 
+
+##  O2O 
+
+##  전자 상거래 혹은 마케팅에서 온리인과 오프라인이 연결되는 현상
+
+##  디자인패턴이 무엇인지 설명하고, 패던 중 하나를 선택해 정의와 예시를 들어세요
+
+##  thread와 process와의 차이
+
+##  내부 repository를 사용하는 이유 
+
+##  gradle과 maven의 차이
+
+##  o2o 서비스에서 백엔드 개발자의 역할
+
+##  elastic-search와 graph-QL에 대해 설명
+
+##  http/1.1과 restfull-api에 대해 설명하시오
+
+##  동적 스키마 설계 시 고민할 점 
+
+##  절차지향과 객체지향의 차이점 
+
+##  intercepter와 filter의 순서와 차이점 
+
+##  transaction isolation level 종류 및 특징 
+
+##  JTA를 설명 
+
+##  MD5, AES256, SHA256 차이점 암호화 방식에 대해 설명 
+
+##  CDN과 AWS Cloudfront 차이점과 사용이유 설명
+
+##  네임스페이스, 트레잇, 클로저 설명 (for php)
+
+##  trasation과 storage engine의 관계를 설명하시오 
+
+##  static function의 특징을 설명 
+
+##  fault-tolerant 시스템으로 가기 위한 개발 방법에 대한 생각을 말해주세요 
+
+##  CDC는 무엇이고 구현방법 설명
+
+##  MSA에 대해 알고있는지 ? 직접 구현한 마이크로 서비스 아키텍처 설명 및 도식화
+
+##  polyglot programming 이란 ? 개발할때 가장 편하게 사용할 수 있는 언어는 
+
+##  에러와 exception의 차이 
+
+##  DevOps 정의, 장점 ? 
+
+##  DevOps 를 적용할 떄 주의 할점 
+
+##  DevOps을 적용한 케이스가 있는지 
+
+##  AWS 등 클라우드 기반 개발 운영 경험 
+
+##  클라우드 서비스중 가장 많이 사용 하는 것과 편의성이 있다면
+
+##  IDC와 CDN 환경에서 AWS로 옮기는 구성 어떻게 해야하나
+
+## 넷플럭스 
+
+## AWS RDS
+
+## AWS EC2
+
+## 2PC (TWO PHASE COMMIT)
+
+## JTA
+
+## JPA
+
+## 엘레스틱서치
+
+## JVM 위의 언어 JAVA, 코틀린, groovy
+
+## 스프링클라우드
+
+## 스프링 VS 스프링 부트
+
+## DI 
+
+## AOC
+
+## 자바8 
+
+### 람다
+
+### 타임
+
+### 스트림
+
+### 디폴트함수 
+
+### 옵셔널
+
+## 자바스크립트 스코프  
+
+## MSA 사용
+
+## DOCKER
+
+## 도커와 가상머신
+
+##  도커 이미지
+
+## 쿠버네티스
+
+## 대용량 트래픽 처리방법
+
+## 분산처리방법 
+
+##  캐시 DBE
+
