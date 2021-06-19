@@ -26,7 +26,7 @@ toc: true
 > 1. 수평으로 두 칸 이동한 뒤에 수직으로 한 칸 이동하기
   2. 수직으로 두 칸 이동한 뒤에 수평으로 한 칸 이동하기
 
-![contact](/images/royal_knight_1.png)
+![contact](/images/algorithm/implements/royal_knight/royal_knight_1.png)
 
 >이처럼 8 × 8 좌표 평면상에서 나이트의 위치가 주어졌을 때 나이트가 이동할 수 있는 경우의 수를 출력하는
 프로그램을 작성하라. 왕실의 정원에서 행 위치를 표현할 때는 1부터 8로 표현하며, 열 위치를 표현할 때는
@@ -36,7 +36,7 @@ a 부터 h로 표현한다
 a1에 있을 때 이동할 수 있는 경우의 수는 2가지이다
 d4에 있을 때 이동할 수 있는 경우의 수는 8가지이다.
 
-![contact](/images/royal_knight_2.png)
+![contact](/images/algorithm/implements/royal_knight/royal_knight_2.png)
 
 
 ### [문제] 조건 

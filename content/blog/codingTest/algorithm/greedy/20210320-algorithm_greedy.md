@@ -30,11 +30,11 @@ toc: true
 	
 >	Q. 최적의 해는 무엇인가요 ?
 
-![contact](/images/greedy_q_01.PNG)
+![contact](/images/algorithm/greedy/greedy_q_01.PNG)
 
 >	Q. 단순히 매 상황에서 가장큰 값을 고른다면 어떻게 될까요?
 
-![contact](/images/greedy_q_02.PNG)
+![contact](/images/algorithm/greedy/greedy_q_02.PNG)
 
 
 >	- 일반적인 상황에서 그리디알고리즘은 최적의 해를 보장할 수 없을때가 많다.
