@@ -22,70 +22,65 @@ toc: true
 
 ## Task description
 
-> This is a demo task.
+> 처음에는 0으로 설정된 N 개의 카운터가 제공되며 두 가지 가능한 작업이 있습니다.
 
-You are given N counters, initially set to 0, and you have two possible operations on them:
+> 증가 (X) -카운터 X가 1 증가합니다.
+최대 카운터 -모든 카운터는 모든 카운터의 최대 값으로 설정됩니다.
+M 개의 정수로 구성된 비어 있지 않은 배열 A가 제공됩니다. 이 배열은 연속 작업을 나타냅니다.
 
-increase(X) − counter X is increased by 1,
-max counter − all counters are set to the maximum value of any counter.
-A non-empty array A of M integers is given. This array represents consecutive operations:
+> A [K] = X, 즉 1 ≤ X ≤ N이면 연산 K는 증가 (X), 
+A [K] = N + 1이면 작업 K는 최대 카운터입니다.
+예를 들어, 정수 N = 5이고 배열 A가 다음과 같은 경우 :
 
-if A[K] = X, such that 1 ≤ X ≤ N, then operation K is increase(X),
-if A[K] = N + 1 then operation K is max counter.
-For example, given integer N = 5 and array A such that:
+```
+    A [0] = 3 
+    A [1] = 4 
+    A [2] = 4 
+    A [3] = 6 
+    A [4] = 1 
+    A [5] = 4 
+    A [6] = 4
+```
 
-    A[0] = 3
-    A[1] = 4
-    A[2] = 4
-    A[3] = 6
-    A[4] = 1
-    A[5] = 4
-    A[6] = 4
-the values of the counters after each consecutive operation will be:
+> 각 연속 작업 후 카운터 값은 다음과 같습니다.
 
-    (0, 0, 1, 0, 0)
-    (0, 0, 1, 1, 0)
-    (0, 0, 1, 2, 0)
-    (2, 2, 2, 2, 2)
-    (3, 2, 2, 2, 2)
-    (3, 2, 2, 3, 2)
+```
+    (0, 0, 1, 0, 0) 
+    (0, 0, 1, 1, 0) 
+    (0, 0, 1, 2, 0) 
+    (2, 2, 2, 2, 2) 
+    (3, 2, 2 , 2, 2) 
+    (3, 2, 2, 3, 2) 
     (3, 2, 2, 4, 2)
-The goal is to calculate the value of every counter after all operations.
+```
 
-Write a function:
+> 목표는 모든 작업 후 모든 카운터의 값을 계산하는 것입니다.
 
-class Solution { public int[] solution(int N, int[] A); }
+> 정수 N과 M 개의 정수로 구성된 비어 있지 않은 배열 A가 주어지면 카운터 값을 나타내는 정수 시퀀스를 반환합니다.
+결과 배열은 정수 배열로 반환되어야합니다.
+예를 들면 다음과 같습니다.
 
-that, given an integer N and a non-empty array A consisting of M integers, returns a sequence of integers representing the values of the counters.
-
-Result array should be returned as an array of integers.
-
-For example, given:
-
-
-    A[0] = 3
-    A[1] = 4
-    A[2] = 4
-    A[3] = 6
-    A[4] = 1
-    A[5] = 4
-    A[6] = 4
+```
+    A [0] = 3 
+    A [1] = 4 
+    A [2] = 4 
+    A [3] = 6 
+    A [4] = 1 
+    A [5] = 4 
+    A [6] = 4
+```
+  
+> 함수는 위에서 설명한대로 [3, 2, 2, 4, 2]를 반환해야합니다.
 
 
-the function should return [3, 2, 2, 4, 2], as explained above.
-
-Write an efficient algorithm for the following assumptions:
-
-N and M are integers within the range [1..100,000];
-each element of array A is an integer within the range [1..N + 1].
 
 
 
 ## Condition
-> - def solution(X, A)
+> - def solution(N, A)
 > - 다음 가정에 대한 효율적인 알고리즘을 작성하십시오 .
-> - N 및 X는 [ 1 .. 100,000 ] 범위 내의 정수입니다 .
-> - 배열 A의 각 요소는 [ 1 .. X ] 범위 내의 정수 입니다.
+> - N 및 M은 [ 1 .. 100,000 ] 범위 내의 정수입니다 .
+> - 배열 A의 각 요소는 [ 1 .. N + 1 ] 범위 내의 정수 입니다.
 
 
 ## Solution 
@@ -112,9 +107,6 @@ def solution(N, A):
     max_value = 0
 
     for X in A :
-        
-        
-        #print(K,X)
 
         if 1 <= X <= N : 
             if  count.get(X) is None :
@@ -126,14 +118,10 @@ def solution(N, A):
             count.clear()
             max_count = 0
 
-    
     result = [max_value] * N
-
-
 
     for key, value in count.items() :
         result[key-1] += value
-        
 
     return result
 ```
