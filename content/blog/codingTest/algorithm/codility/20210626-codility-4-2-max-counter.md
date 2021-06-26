@@ -8,7 +8,7 @@ date: 2021-06-26
 slug: "max-counter"
 description: "MaxCounter"
 keywords: ["Algorithm", "CodingTest"]
-draft: true
+draft: false
 categories: ["Algorithm"]
 tags: ["Algorithm", "CodingTest", "Codility"]
 math: false
@@ -73,25 +73,36 @@ A [K] = N + 1이면 작업 K는 최대 카운터입니다.
 > 함수는 위에서 설명한대로 [3, 2, 2, 4, 2]를 반환해야합니다.
 
 
-
-
-
 ## Condition
 > - def solution(N, A)
 > - 다음 가정에 대한 효율적인 알고리즘을 작성하십시오 .
-> - N 및 M은 [ 1 .. 100,000 ] 범위 내의 정수입니다 .
+> - N은 [ 1 .. 100,000 ] 범위 내의 정수입니다 .
 > - 배열 A의 각 요소는 [ 1 .. N + 1 ] 범위 내의 정수 입니다.
 
 
 ## Solution 
-> 1. total = sum(range(X+1)) 			
-> 2. chked = [None for i in range(X)] 	# 체크 배열을 None으로 초기화 하여 생성
-> 3. 루프로 A를 순회
-> 4.  if( chked[A[i]-1]  == None) : #체크 배열에 값이 없는지 체크
-> 4-1. chked[A[i]-1]에 A[i] 세팅
-> 4-2. chk_sum에 A[i]을 합함
-> 5. if total == chk_sum :  #
+> 이번 문제 풀이의 핵심은 increase(X) 보다, max counter를 루프를 돌지 않고 해결하는가 였습니다. 
+> 카운트는 0부터 값을 세지만, max counter 이후에는 max counter 시점의 최대 카운트 값부터 다시 카운트를 세고,
+> max counter 시점의 최대 카운트 값을 모든 배열에 적용 후 각각의 카운트 값(다시 카운트를 센 카운트 값)을 더해주면 
+> 루프 없이 해결할 수 있습니다.
 
+
+> 1. count라는 딕셔너리를 생성
+> 2. 배열 A를 루프로 선회하며, 값은 X (A[K])
+
+> 3. increase(X) 기능 (1 <= X <= N 일때)
+	> - count에 키가 X인 딕셔너리가 없으면 0으로 생성
+	> - count[X] 1증가
+	> - max_count(현재 최대 카운트) 값 구함
+
+> 4. 1 <= X <= N 아닌 ( N+1 == X) 경우
+	> - max counter 실행시 최대 카운트 세팅 
+	> - 모든 count 값 삭제
+	> - 현재 최대 카운트 값 0으로 초기화
+
+> 5. N개의 요소를 가지는 결과 배열을 max_value(max counter 실행시 최대 카운트) 값으로 생성
+> 6. count 딕셔너리로 루프 
+	> - max_value 부터 추가된 count[X]의 값 결과 배열 result[X-1]에 세팅 # -1 은 인덱스 번호로 변경 0~ X-1
 
 
 
@@ -103,25 +114,26 @@ A [K] = N + 1이면 작업 K는 최대 카운터입니다.
 def solution(N, A):
     count = {}
 
-    max_count = 0
-    max_value = 0
+    max_count = 0 # 현재 최대 카운트 값
+    max_value = 0 # max counter 이후에는 max counter 시점의 최대 카운트 값
 
     for X in A :
 
-        if 1 <= X <= N : 
-            if  count.get(X) is None :
+        if 1 <= X <= N : 	# increase(X) 기능 (1 <= X <= N 일때)
+            if  count.get(X) is None :				# count에 키가 X인 딕셔너리가 없으면 0으로 생성
                 count[X] = 0
-            count[X] += 1
-            max_count = max(count[X], max_count)            
-        else :
-            max_value += max_count
-            count.clear()
-            max_count = 0
+            count[X] += 1							# count[X] 1증가
+            max_count = max(count[X], max_count)        	# 현재 최대 카운트 값 구함    
+            
+        else : 			# max counter 기능 (N+1 == X인 경우)
+            max_value += max_count					# max counter 실행시 최대 카운트 세팅 
+            count.clear()							# 모든 count 값 삭제
+            max_count = 0							# 현재 최대 카운트 값 0으로 초기화
 
-    result = [max_value] * N
+    result = [max_value] * N 						# N개의 요소를 가지는 결과 배열을 max_value(max counter 실행시 최대 카운트) 값으로 생성
 
-    for key, value in count.items() :
-        result[key-1] += value
+    for X, value in count.items() :
+        result[X-1] += value						# max_value 부터 추가된 count[X]의 값 결과 배열 result[X-1]에 세팅 # -1 은 인덱스 번호로 변경 0~ X-1
 
     return result
 ```
