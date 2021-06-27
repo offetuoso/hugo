@@ -28,69 +28,57 @@ toc: true
 ## Condition
 > - 첫째 줄에 N이 주어진다. (3 ≤ N ≤ 5000)
 
+## input output
 
-> 입력예시
->	18
-
-> 출력예시
->	4
-
-
-> 입력예시
->	4
-
-> 출력예시
->	-1
-
-
-> 입력예시
->	6
-
-> 출력예시
->	2
-
-
-> 입력예시
->	9
-
-> 출력예시
->	3
-
-
-> 입력예시
->	11
-
-> 출력예시
->	3
+case   | input  | ouput
+-------|--------|-------
+1      | 18     | 4
+2      | 4      | -1
+3      | 6      | 2
+4      | 9      | 3
+5      | 11     | 3
 
 
 ## Solution 
-
+> 1. 5로 최대한 나눈다. 
+> 2. 5로 나누어 몫이 0인경우, 0이 아닌경우로 나누어진다. <br>
+	1. 5로 나누어 <mark>몫이 0인경우 5의 배수이므로 5로 나눈 값(division) 이 결과</mark>
+> 3. 5로 나누어 몫이 아닌경우 <br>
+	1. <mark>5로 나눌수 없고(값이 0) 3으로 나누어 떨어지지 않는경우 -1 이 결과</mark>  <br>
+	2. 5로 나눈 몫을 3으로 나누어 몫이 0인 경우 <mark>5로 나눈 값(division)와 5로 나눈 몫을 3으로 나눈 값(quotient//3)을 더한 값이  	결과</mark> ; 
+	3. 5로 나눈 몫을 3으로 나누어 몫이 0이 아닌경우 1~ 5로 나눈 값 까지 루프를 생성
+		1. <mark>5로 나눈것을 1단계씩 되돌려, 3으로 나누어 몫이 0으로 나누어 떨어지는 값 찾으면, (division-i)+(quotient+(5*i)) 이 값</mark>
+		2. 끝까지 못찾았을때 -1이 결과
 
 ```
 N = int(input())
-a = N//5
-aa = N%5
+division = N//5 # 5로 나눈 값
+quotient = N%5  # 5로 나눈 몫
 
 result = 0
 
-if aa == 0 :
-    result += a
-else : 
-    if a == 0 and not N % 3 == 0 :
+if quotient == 0 : # 5로 나누어 떨어지면 
+    result = division # 5로 나눈 값이 결과
+    
+else : 			# 5로 나누어 몫이 남는 경우
+
+    if division == 0 and not N % 3 == 0 :	# 5로 나눌수 없고(값이 0) 3으로 나누어 떨어지지 않는경우 -1 이 결과
         result = -1
 
-    elif aa%3 == 0 : 
-        result = a
-        result += aa // 3
-    else :
-        for i in range(1, a+1) :
-            if (aa+(5*i)) %3 == 0 :
-                result = (a-i)
-                result += (aa+(5*i)) // 3
+    elif quotient%3 == 0 : 				# 5로 나눈 몫을 3으로 나누어 몫이 0인 경우 <mark>5로 나눈 값(division)와 5로 나눈 몫을 3으로 나눈 값(quotient//3)을 더한 값이 결과
+        result = division
+        result += quotient // 3
+        
+    else :							# 5로 나눈 몫을 3으로 나누어 몫이 0이 아닌경우
+        for i in range(1, division+1) : 	# 1~ 5로 나눈 값 까지 루프
+        
+            if (quotient+(5*i)) %3 == 0 :	# 5로 나눈것을 1단계씩 되돌려, 3으로 나누어 몫이 0으로 나누어 떨어지는 값 찾으면, (division-i)+(quotient+(5*i)) 이 값
+                result = (division-i) 	
+                result += (quotient+(5*i)) // 3
                 break
+                
             else :
-                if i == a :
+                if i == division :	# 끝까지 못찾았을때 -1이 결과
                     result = -1
                     break
 
