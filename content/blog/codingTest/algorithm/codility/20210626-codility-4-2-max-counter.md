@@ -1,3 +1,4 @@
+
 ---
 title: "Codility - MaxCounter"
 image: "bg-index.jpg"
