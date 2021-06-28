@@ -78,6 +78,23 @@ toc: true
 
 
 ## Solution 
+> 1. 조건1 배열 A는 순열 [1 ... N]
+> 2. 
+	1. A.sort()
+	2. N = A[-1] ( A.sort()후 A[-1]은 배열의 최대값)
+	
+> 3. SUM(A)는 는 순열 A 배열의 합 
+> 4. B(비교대상) =  N*(N+1)//2  (수열의 합 공식; 1 ~  N 까지의 합) 
+
+> 5. SUM(A) == B 는 배열의 합과 수열의 합 공식이 맞는지 비교
+	1. solution[9, 5, 7, 3, 2, 7, 3, 1, 10, 8] 의 경우 합이 55가 되며, B와 같다. 이를 해결하기 위해서 중복된 숫자를 제거<br>
+		A = list(set(A))
+	2. set을 통해 중복제거 시 [1,1] 의 경우 문제가 생긴다. <br>
+		중복제거후 [1],과 1*(1+1)//2 는 1로 통과가 되는 논리적 오류가 발생한다. <br>
+		이를 해결하기 위해 중복 제거하기 전 A배열의 길이와 N값과 비교 <br>
+		예를 들어, [1,2,3,4] 1부터 4까지의 수열이 있다면 길이와 마지막 숫자는 같을 수 밖에 없으므로 <br>
+		length = N
+		
 
 ```
 
@@ -85,19 +102,17 @@ toc: true
 # print("this is a debug message")
 
 def solution(A):
-    length = len(A)
-    A = list(set(A))
-    A.sort()
-    #print(A)
+    length = len(A) 	# 중복 제거하기 전 A배열의 길이
+    A = list(set(A))	# 중복제거
+    A.sort()			# 정렬
     
-    N = A[-1]
-    B =  N*(N+1)//2
+    N = A[-1]			# A의 제일 큰 수
+    B =  N*(N+1)//2	# 수열의 합의 공식
     
-    if B == sum(A) and length == A[-1]: 
-            return 1
+    if sum(A) == B and length == N : # 배열 A와 수열의 합이 공식이 같고, 중복 제거하기 전 A배열의 길이와 N의 값이 같은지 체크
+        return 1
     else :
         return 0
-    
     pass
 
 #solution([4,1,3,2])
