@@ -4,7 +4,7 @@ image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2021-06-27
+date: 2021-06-29
 slug: "ox-quiz"
 description: "백준 OX 퀴즈"
 keywords: ["Algorithm", "CodingTest"]
