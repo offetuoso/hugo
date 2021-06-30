@@ -1,5 +1,5 @@
 ---
-title: "BAEKJOON - 셀프 넘버"
+title: "BAEKJOON - 4673 셀프 넘버"
 image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"

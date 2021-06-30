@@ -1,5 +1,5 @@
 ---
-title: "BAEKJOON - 설탕배달"
+title: "BAEKJOON - 2839 설탕배달"
 image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"

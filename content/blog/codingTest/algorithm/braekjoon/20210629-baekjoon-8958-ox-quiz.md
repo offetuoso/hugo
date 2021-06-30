@@ -1,5 +1,5 @@
 ---
-title: "BAEKJOON - OX 퀴즈"
+title: "BAEKJOON - 8958 OX 퀴즈"
 image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
