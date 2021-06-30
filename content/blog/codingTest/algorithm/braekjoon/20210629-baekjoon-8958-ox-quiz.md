@@ -51,23 +51,33 @@ OOOOXOOOOXOOOOX
 30
 ```
 
+
 ## Solution 
+> 1. 입력 받은 N 만큼 케이스를 입력받아 반복한다.
+> 2. 케이스를 입력받고 길이만큼 반복한다.
+> 3. 점수(score)와 더해줄 값(addition)을 0으로 초기화 한다.
+> 4. 케이스를 문자열로 변경하고 문자열 하나씩 슬라이스하여 str에 저장.
+> 5. str의 값을 비교하여
+	1. O인경우, addition을 1 증가시키고 score에 addition을 더해준다.
+	2. X인경우, addition을 0 으로 초기화 시킨다.
+> 6. 케이스의 마지막 str일때 score를 출력한다. 
 
 ```
-n = int(input())
-for i in range(n):
-    case = input()
-    score = 0
-    addition = 0
+n = int(input()) 		# 입력받을 케이스 갯수
 
-    for j in range(0,len(case)):
-        str = case[j]
-        if str == 'O' :
+for i in range(n): 	# 입력받은 수 만큼 반복
+    case = input()	# 케이스 입력받음 ex) OOXXOXXOOO
+    score = 0			# 케이스의 점수
+    addition = 0		# 점수에 더해지는 값
+
+    for j in range(0,len(case)):	# 케이스의 길이 만큼 len(OOXXOXXOOO)
+        str = case[j] 				# 케이스를 인덱스로 1개씩 순회
+        if str == 'O' :			# O인경우 addtion 1증가 score에 addtion 더함
                 addition +=1
                 score += addition      
-        else : 
+        else : 					# X인경우 addtion 0으로 초기화
             addition = 0
-        if j == len(case) -1 :
+        if j == len(case) -1 :		# 케이스의 마지막 str인 경우 score 출력
             print(score)
 ```
 

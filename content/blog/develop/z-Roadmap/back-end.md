@@ -53,6 +53,8 @@ Rest api << 공부할것
 
 Restcontroller << 
 
+MTS stands for Microsoft Transaction Server (Viper)
+
 Unit 테스트 작성 공부 <<<
 
 클러스터링
