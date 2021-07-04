@@ -6,7 +6,7 @@ font_size: "28px"
 opacity: "0.4"
 date: 2021-07-03
 slug: "baekjoon-7578-tomato"
-description: "백준 미로"
+description: "백준 토마토"
 keywords: ["Algorithm", "CodingTest"]
 draft: false
 categories: ["Algorithm"]
