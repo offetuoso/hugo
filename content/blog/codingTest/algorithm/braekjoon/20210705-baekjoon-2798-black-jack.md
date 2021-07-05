@@ -4,7 +4,7 @@ image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2021-07-04
+date: 2021-07-05
 slug: "baekjoon-2798-black-jack"
 description: "백준 블랙잭"
 keywords: ["Algorithm", "CodingTest"]
