@@ -73,6 +73,8 @@ JPA /Hibernate
 QUERYDSL
 스프링 클라우드 
 
+RabbitMQ
+
 -- 형근대리 추천
 node & 리엑트 or 뷰 & 앵귤러 or 루비 & 리엑트
 파이어베이스 nosql / 실시간DB
