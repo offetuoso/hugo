@@ -6,7 +6,7 @@ font_size: "28px"
 opacity: "0.4"
 date: 2021-07-08
 slug: "baekjoon-10872-factorial"
-description: "백준 하노이 탑 이동 순서"
+description: "백준 팩토리얼"
 keywords: ["Algorithm", "CodingTest"]
 draft: false
 categories: ["Algorithm"]
