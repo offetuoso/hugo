@@ -1,11 +1,11 @@
 ---
-title: "BAEKJOON - 11728 하노이 탑 이동 순서"
+title: "BAEKJOON - 11729 하노이 탑 이동 순서"
 image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2021-07-07
-slug: "baekjoon-11728-hanoi-tower-travel-order"
+slug: "baekjoon-11729-hanoi-tower-travel-order"
 description: "백준 하노이 탑 이동 순서"
 keywords: ["Algorithm", "CodingTest"]
 draft: false
@@ -15,11 +15,11 @@ math: false
 toc: true
 ---
 
-# BAEKJOON - 11728 하노이 탑 이동 순서(Hanoi Tower Travel Order)
+# BAEKJOON - 11729 하노이 탑 이동 순서(Hanoi Tower Travel Order)
 
 ## Task description
 
-원문 : <a href="https://www.acmicpc.net/problem/11728">백준 11728 링크</a>
+원문 : <a href="https://www.acmicpc.net/problem/11729">백준 11729 링크</a>
 
 > 세 개의 장대가 있고 첫 번째 장대에는 반경이 서로 다른 n개의 원판이 쌓여 있다. <br>
 각 원판은 반경이 아래서 부터 큰 순서대로 쌓여있다. <br>
@@ -74,8 +74,6 @@ for item in result :
 	print(item)
 	
 ```
-
-
 
 
 ## TestCase
