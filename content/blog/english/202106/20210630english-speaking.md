@@ -14,6 +14,31 @@ math: false
 toc: true
 ---
 
+## Same old days./ Nothing special./ Same as always. ('별일 없어요')
+> - A : how was day? (오늘어땠어?)
+> - B : Same old days. [Nothing special./ Same as always.]
+
+## lose some weight ('살빼다')
+> I need lose some weight (나는 다이어트가 필요해) 
+
+> you need lose some weight (너는 다이어트가 필요해)
+
+
+## I have a allergy to A ('나는 A에 알레르기가 있습니다.')
+> I have a weak allergy to 옻 (나는 옻에 약한 알레르기가 있습니다.)
+
+## can’t live without A ('A 없이는 살 수없다.')
+> Most of the Korean people can’t live without Kimchi. (많은 한국인 대부분은 김치 없이는 살 수 없습니다.)
+
+> I can’t live without my car. (나는 내차 없이는 살 수 없다)
+
+> I can’t live without You (너 없이는 살 수 없다)
+
+## What [kind of A] do you like? ('어떤 A를 좋아하세요?')
+
+> What sauce do you like? (어떤 소스를 좋아하세요)
+
+
 ## Grammar Error: 
 
 Same old days.; Nothing special.; Same as always.
