@@ -8,7 +8,7 @@ date: 2021-07-10
 slug: "baekjoon-1541-lost-parenthesis"
 description: "백준 잃어버린 괄호 "
 keywords: ["Algorithm", "CodingTest"]
-draft: true
+draft: false
 categories: ["Algorithm"]
 tags: ["Algorithm", "CodingTest", "BAEKJOON"]
 math: false
