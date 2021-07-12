@@ -39,6 +39,9 @@ toc: true
 > I enjoy trying out new foods. (나는 새로운 음식을 즐깁니다.)
 > I enjoy trying out new menus / dishes. (나는 새로운 메뉴/요리를 시도하는 것을 즐깁니다.)
 
+## leek ('부추')
+
+## sesame oil ('참기름')
 
 ## I prefer A ('나는 A를 선호한다.')
 > I prefer shopping (groceries) online (나는 온라인 쇼핑(식료품)을 선호한다)
