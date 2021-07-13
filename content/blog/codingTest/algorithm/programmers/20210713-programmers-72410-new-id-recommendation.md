@@ -5,7 +5,7 @@ font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2021-07-13
-slug: "programmers-72410-players-who-did-not-finish"
+slug: "programmers-72410-new-id-recommendation"
 description: "Programmers 신규 아이디 추천"
 keywords: ["Algorithm", "CodingTest"]
 draft: false
