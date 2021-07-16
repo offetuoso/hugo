@@ -5,7 +5,7 @@ font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2021-05-29
-slug: "restful-api-1"
+slug: "restful-api"
 description: "레스트풀 API"	
 keywords: ["Restful"]
 draft: false
