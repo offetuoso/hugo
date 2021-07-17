@@ -5,7 +5,7 @@ font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2021-07-16
-slug: "programmers-64061-crane puppet game"
+slug: "programmers-64061-crane-puppet-game"
 description: "Programmers 크레인 인형 뽑기"
 keywords: ["Algorithm", "CodingTest"]
 draft: false
