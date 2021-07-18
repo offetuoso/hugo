@@ -79,18 +79,29 @@ Lombok의 @Data 어노테이션을 이용하면, 소스를 추가 하지 않아�
 
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_009.png)
 
-### CompanyMapper.java 추가
-> commpany Table에 접근할 Mapper 인터페이스를 생성
-
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_010.png)
 
 
+### CompanyMapper.java 추가
+> commpany Table에 접근할 Mapper 인터페이스를 생성
 
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_011.png)
+
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_012.png)
+
+### Company.java 추가
+> commpany Data 객체를 생성
+
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_013.png)
+
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_014.png)
+
+#### Lombok의 @Data 어노테이션 추가
+> @Data 어노테이션을 추가하여, getter와 setter, toString 등 기능을 자동으로 적용 <br>
+> @Data 어노테이션 추가후, getter setter 인식 안될때 <a>Lumbok 설치</a>
+
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_015.png)
+
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_016.png)
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_017.png)
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_018.png)
