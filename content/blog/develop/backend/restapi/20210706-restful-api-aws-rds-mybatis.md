@@ -73,6 +73,7 @@ CREATE TABLE `company` (
 
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_008.png)
 
+
 ### Lombok 라이브러리 추가
 > 자바의 데이터 객체를 만들다 보면 getter와 setter, toString을 생성해줘야 하는데, <br>
 Lombok의 @Data 어노테이션을 이용하면, 소스를 추가 하지 않아도 자동으로 getter, setter 등<br> 기타 메소드를 인식해준다.
@@ -81,6 +82,9 @@ Lombok의 @Data 어노테이션을 이용하면, 소스를 추가 하지 않아�
 
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_010.png)
 
+### application.properties 설정
+
+![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_024.png)
 
 ### CompanyMapper.java 추가
 > commpany Table에 접근할 Mapper 인터페이스를 생성
@@ -96,25 +100,31 @@ Lombok의 @Data 어노테이션을 이용하면, 소스를 추가 하지 않아�
 
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_014.png)
 
+![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_017.png)
+
+![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_018.png)
+
 #### Lombok의 @Data 어노테이션 추가
 > @Data 어노테이션을 추가하여, getter와 setter, toString 등 기능을 자동으로 적용 <br>
-> @Data 어노테이션 추가후, getter setter 인식 안될때 <a>Lumbok 설치</a>
+> @Data 어노테이션 추가후, getter setter 인식 안될때 <a href="https://offetuoso.github.io/blog/develop/troubleshooting/spring/lombok-error/">Lumbok 설치</a>
 
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_015.png)
 
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_016.png)
-![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_017.png)
-![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_018.png)
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_019.png)
 
 ### CompanyController.java 추가
 > CompanyController는 company에 관련된 요청을 처리할 컨트롤러입니다.
 
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_020.png)
+
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_021.png)
+
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_022.png)
+
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_023.png)
-![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_024.png)
+
+
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_025.png)
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_026.png)
 ![contact](/images/develop/backend/demo-rest-api-3/springboot_mybatis_027.png)
