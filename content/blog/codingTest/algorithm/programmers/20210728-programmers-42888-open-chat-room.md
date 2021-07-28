@@ -100,6 +100,8 @@ record	| result
 
 
 ## Solution 
+>1. record의 아이디별 최종 변경된 닉네임을 딕셔너리에 등록
+>2. record Enter와 Leave의 메시지와 변경된 닉네임으로 결과에 추가
 
 ```
 def solution(record):
