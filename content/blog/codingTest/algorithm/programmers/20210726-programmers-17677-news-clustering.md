@@ -87,96 +87,83 @@ E=M*C^2	|	e=m*c^2	|	6553644"
 ## Solution 
 
 ```
-from collections import Counter
-
-def solution(str1, str2):
-    str1_low = str1.lower()
-    str2_low = str2.lower()
-    
-    str1_lst = []
-    str2_lst = []
-    
-    for i in range(len(str1_low)-1):
-        if str1_low[i].isalpha() and str1_low[i+1].isalpha():
-            str1_lst.append(str1_low[i] + str1_low[i+1])
-    for j in range(len(str2_low)-1):
-        if str2_low[j].isalpha() and str2_low[j+1].isalpha():
-            str2_lst.append(str2_low[j] + str2_low[j+1])
-            
-    Counter1 = Counter(str1_lst)
-    Counter2 = Counter(str2_lst)
-    
-    inter = list((Counter1 & Counter2).elements())
-    union = list((Counter1 | Counter2).elements())
-    
-    if len(union) == 0 and len(inter) == 0:
-        return 65536
-    else:
-        return int(len(inter) / len(union) * 65536)
-```
-
-## Others Solution 
-```
 import math
 from collections import Counter
 
 def makeArr(str) :
     arr = [] 
-    temp = ''
-    for i in range(0,len(str)) :
-        prev = temp
-        curr = str[i]
-
-        temp += curr
-        if len(temp) > 1 and (prev.isalpha() and curr.isalpha()):
-            arr.append(temp) 
-        temp = curr
-        
-       
+    prv = ''
+    for crr in str : 
+        if prv != '' :
+            if crr.isalpha() and prv.isalpha() :
+                arr.append(prv+crr)
+        prv = crr
     return sorted(arr)
 
-def J(A,B) :
-    answer = 0 
+def J(A, B):
+    answer = 0
+    intersection = []
+    union = []
 
-    if A == 0 or B == 0 :
-        return 1*65536
-    else :
-        return math.trunc(A/B*65536)
+    try :
 
-    
+        for i in range(len(A)) : 
+            for j in range(len(B)) : 
+                if A[i] == B[j] :
+                    intersection.append(A[i])
+                    union.append(A[i])
+                    B[j] = None
+                    A[i] = None    
+        
+        for a in A : 
+            if a is not None :
+                union.append(a)
+        for b in B : 
+            if b is not None :
+                union.append(b)
+
+        if answer == 0 and len(union) != 0:
+            answer = len(intersection)/len(union)
+        elif answer == 0 and len(union) == 0:
+            answer = 1
+
+    except :
+        answer = 1
+
+    return math.trunc(answer*65536)
 
 def solution(str1, str2):
     
-    arr1 = []
-    arr2 = []    
-    str1 = str1.lower().ljust(len(str2), " ")
-    str2 = str2.lower().ljust(len(str1), " ")
-
-    arr1 = makeArr(str1)
-    arr2 = makeArr(str2)
+      
+    str1 = str1.lower()
+    str2 = str2.lower()
+    A = makeArr(str1)
+    B = makeArr(str2)
     
+    return J(A, B)
+```
 
-    Counter1 = Counter(arr1)
-    Counter2 = Counter(arr2)
-    
-
-    intersection = list((Counter1 & Counter2).elements())
-    union = list((Counter1 | Counter2).elements())
-
-    
-    print (arr1,arr2)
-    print(len(intersection),len(union))
-    
-    for i in range(0,len(arr1)) :
-        for j in range(0,len(arr2)) : 
-            if(arr1[i] == arr2[j]) :
-                intersection.append(arr1[i])
-                arr2[j] = 'x'
+## Others Solution 
 
 
+```
+import re
+import math
 
-    
-    return J(len(intersection),len(union))
+def solution(str1, str2):
+    str1 = [str1[i:i+2].lower() for i in range(0, len(str1)-1) if not re.findall('[^a-zA-Z]+', str1[i:i+2])]
+    str2 = [str2[i:i+2].lower() for i in range(0, len(str2)-1) if not re.findall('[^a-zA-Z]+', str2[i:i+2])]
+
+    gyo = set(str1) & set(str2)
+    hap = set(str1) | set(str2)
+
+    if len(hap) == 0 :
+        return 65536
+
+    gyo_sum = sum([min(str1.count(gg), str2.count(gg)) for gg in gyo])
+    hap_sum = sum([max(str1.count(hh), str2.count(hh)) for hh in hap])
+
+    return math.floor((gyo_sum/hap_sum)*65536)
 ```
 
 ## TestCase

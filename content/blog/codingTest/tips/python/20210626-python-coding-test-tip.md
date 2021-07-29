@@ -22,6 +22,13 @@ toc: true
 > array = [0] * 5
 > - [0, 0, 0, 0, 0]
 
+> 문자열을 잘라 2자리씩 배열로 생성
+> str1 = [str1[i:i+2] for i in range(0,len(str1)-1)]
+> [str2[i:i+2].lower() for i in range(0, len(str2)-1) if not re.findall('[^a-zA-Z]+', str2[i:i+2])]
+
+
+
+
 ### dictionary
 
 mydictionary = {} #빈 딕셔너리 생성 시 {}사용
