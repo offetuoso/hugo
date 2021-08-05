@@ -39,3 +39,10 @@ mydictionary["cat"] = 1 # key("cat")에 대한 value(1) 생성
 
 >mydictionary = {i:0 for i in range(1,5+1)}
 > - {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+
+
+기능 | 설명 | 예
+----|-----|-----
+ permutations()  |순열을 조합해 주는 함수 | ['A', 'B', 'C'] -> 'ABC', 'ACB', 'BAC', 'BCA', 'CAB', 'CBA'
+ eval()  | 문자열을 수식으로 계산해주는 함수 | eval('100'+'+'+'200') ->300
+ re.split(r'(\D)',expression) | 숫자와 문자를 분리 시켜켜 배열로 만들어주는 정규식 | '10+20' -> '10','+'+'20'
