@@ -60,10 +60,16 @@ docker/getting-started   latest    3ba8f2ff0727   2 months ago   27.9MB
 ![contact](/images/docker/docker_mysql_3.png)
 
 ### Mysql 컨테이너 설정 
-> sudo docker run -d -p 9876:3306 -e MYSQL_ROOT_PASSWORD=passw0rd --name test_mysql mysql:5.6
+> sudo docker run -d -p 9876:3306 -e MYSQL_ROOT_PASSWORD=<password> --name test_mysql mysql:5.6
 
 ```
 PS C:\> sudo docker run -d -p 9876:3306 -e MYSQL_ROOT_PASSWORD=passw0rd --name test_mysql mysql:5.6
+```
+
+> docker run --name mysql-test -e MYSQL_ROOT_PASSWORD=<password> -d -p 3306:3306 mysql:5.7
+```
+PS C:\> docker run --name mysql-test -e MYSQL_ROOT_PASSWORD=passw0rd -d -p 3306:3306 mysql:5.7
+fb4e8d8a5dd23d2c2b8068b311105f28bd8bd97067e78a7f4779d7da5bb3a483
 ```
 
 #### docker 옵션 
