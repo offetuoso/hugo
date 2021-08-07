@@ -149,6 +149,53 @@ def solution(info, query):
     return answer
 ```
 
+> -까지 포함된 모든 경우의 수를 키로 만들어 dic 으로 점수를 저장
+> dic을 정렬하고 2진검색을 사용하여 검색
+
+```
+def solution(info, query):
+    answer = []
+    dic = {}
+    comb = [0, 1, 2, 3]
+    for i in info:
+        data = i.split()
+        conditions = data[:-1]
+        score = int(data[-1])
+
+        for j in range(5):
+            for k in list(combinations(comb, j)):
+                temp = conditions.copy()
+                for idx in k:
+                    temp[idx] = '-'
+                key = ''.join(temp)
+                if key in dic:
+                    dic[key].append(score)
+                else:
+                    dic[key] = [score]
+
+    for value in dic.values():  
+        value.sort()
+
+    for i in query:
+        q_list = []
+        for j in i.split():
+            if j == 'and':
+                continue
+            q_list.append(j)
+
+        key = ''.join(q_list[:-1])
+        value = int(q_list[-1])
+     
+        if key in dic:
+            dic_list = dic[key]
+
+            index = bisect_left(dic_list, value)
+            answer.append(len(dic_list) - index)
+        else:
+            answer.append(0)
+            continue
+    return answer
+```
 
 ## Others Solution 
 ```
