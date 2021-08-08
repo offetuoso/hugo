@@ -4,7 +4,7 @@ image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2021-08-06
+date: 2021-08-07
 slug: "programmers-72412-rank-search"
 description: "72412 순위 검색"
 keywords: ["Algorithm", "CodingTest"]
