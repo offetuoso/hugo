@@ -5,10 +5,10 @@ font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2021-08-09
-slug: "programmers-83201-mutual evaluation"
+slug: "programmers-83201-mutual-evaluation"
 description: "83201 상호평가"
 keywords: ["Algorithm", "CodingTest"]
-draft: true
+draft: false
 categories: ["Algorithm"]
 tags: ["Algorithm", "CodingTest", "Programmers"]
 math: false
@@ -122,6 +122,8 @@ No.	|0	|1	|2
 
 ```
 def solution(scores):
+    answer = ''
+
     pivot = []
     
     for i in range(0, len(scores)) :
@@ -131,22 +133,18 @@ def solution(scores):
             temp.append(scores[j][i])
         pivot.append(temp)
 
-    #print(pivot)
-
-
     answer = ''
     for i in range(0, len(pivot)) : 
         score = pivot[i]
 
-        
         min_value = min(score)
+        min_cnt  = score.count(min_value)
         max_value = max(score)
-        _score = [ score[k]  for k in range(0, len(score)) if not (i==k and (score[j] == min_value and score.count(score[j]) == 1 or score[j] == max_value)) ]
-        avg = sum(_score)/len(_score)
+        max_cnt  = score.count(max_value)
 
-        print(_score,min_value,max_value)
-        
-       
+        _score = [ score[k]  for k in range(0, len(score)) if i != k or not ( (i == k and min_value == score[k] and min_cnt == 1)  or (i == k and max_value == score[k] and max_cnt == 1) )]
+
+        avg = sum(_score)/len(_score)
 
         if  90 <=  avg:
             answer += 'A'
@@ -158,12 +156,54 @@ def solution(scores):
             answer += 'D'
         elif avg  < 50 : 
             answer += 'F'
-            
+
     return answer
 ```
 
 ## Others Solution 
 ```
+def solution(scores):
+    answer = ''
+
+    for i, score in enumerate(zip(*scores)):
+        avg = (sum(score) - score[i]) / (len(score) - 1) if score[i] in (min(score), max(score)) and score.count(score[i]) == 1 else sum(score) / len(score)
+        answer += "%s" % (
+            "A" if 90 <= avg else
+            "B" if 80 <= avg else
+            "C" if 70 <= avg else
+            "D" if 50 <= avg else
+            "F"
+        )
+
+    return answer
+```
+
+```
+from collections import Counter
+def solution(scores):   
+    answer = ''
+
+    for idx, score in enumerate(list(map(list, zip(*scores)))):
+        length = len(score)
+        if Counter(score)[score[idx]] == 1 and (max(score) == score[idx] or min(score) == score[idx]):
+            del score[idx]
+            length -= 1
+
+        grade = sum(score) / length
+
+        if grade >= 90:
+            answer += 'A'
+        elif grade >= 80:
+            answer += 'B'
+        elif grade >= 70:
+            answer += 'C'
+        elif grade >= 50:
+            answer += 'D'
+        else:
+            answer += 'F'
+
+    return answer
+
 ```
 
 ## TestCase
