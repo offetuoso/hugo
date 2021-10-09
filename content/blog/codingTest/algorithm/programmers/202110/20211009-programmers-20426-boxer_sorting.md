@@ -4,7 +4,7 @@ image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2021-10-08
+date: 2021-10-09
 slug: "programmers-20426-boxer-sorting"
 description: "20426 복서 정렬하기"
 keywords: ["Algorithm", "CodingTest"]
