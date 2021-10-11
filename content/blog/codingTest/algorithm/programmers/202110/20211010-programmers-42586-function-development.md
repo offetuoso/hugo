@@ -1,12 +1,12 @@
 ---
-title: "Programmers 20426 복서 정렬하기"
+title: "Programmers 42586 기능개발"
 image: "bg-index.jpg"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2021-10-09
-slug: "programmers-20426-boxer-sorting"
-description: "20426 복서 정렬하기"
+date: 2021-10-10
+slug: "programmers-42586-function-development"
+description: "42586 기능개발"
 keywords: ["Algorithm", "CodingTest"]
 draft: false
 categories: ["Algorithm"]
@@ -15,140 +15,135 @@ math: false
 toc: true
 ---
 
-# Programmers - 20426 복서 정렬하기
+# Programmers - 42586 기능개발
 
 ## Task description
 
-원문 : <a href="https://programmers.co.kr/learn/courses/30/lessons/20426">Programmers 20426 링크</a>
+원문 : <a href="https://programmers.co.kr/learn/courses/30/lessons/42586">Programmers 42586 링크</a>
 
 ### 문제 설명
-> 복서 선수들의 몸무게 weights와, 복서 선수들의 전적을 나타내는 head2head가 매개변수로 주어집니다. 복서 선수들의 번호를 다음과 같은 순서로 정렬한 후 return 하도록 solution 함수를 완성해주세요.
+> 프로그래머스 팀에서는 기능 개선 작업을 수행 중입니다. 각 기능은 진도가 100%일 때 서비스에 반영할 수 있습니다.
+또, 각 기능의 개발속도는 모두 다르기 때문에 뒤에 있는 기능이 앞에 있는 기능보다 먼저 개발될 수 있고, 이때 뒤에 있는 기능은 앞에 있는 기능이 배포될 때 함께 배포됩니다.
 
-> 1. 전체 승률이 높은 복서의 번호가 앞쪽으로 갑니다. 아직 다른 복서랑 붙어본 적이 없는 복서의 승률은 0%로 취급합니다.
-> 2. 승률이 동일한 복서의 번호들 중에서는 자신보다 몸무게가 무거운 복서를 이긴 횟수가 많은 복서의 번호가 앞쪽으로 갑니다.
-> 3. 자신보다 무거운 복서를 이긴 횟수까지 동일한 복서의 번호들 중에서는 자기 몸무게가 무거운 복서의 번호가 앞쪽으로 갑니다.
-> 4. 자기 몸무게까지 동일한 복서의 번호들 중에서는 작은 번호가 앞쪽으로 갑니다.
+> 먼저 배포되어야 하는 순서대로 작업의 진도가 적힌 정수 배열 progresses와 각 작업의 개발 속도가 적힌 정수 배열 speeds가 주어질 때 각 배포마다 몇 개의 기능이 배포되는지를 return 하도록 solution 함수를 완성하세요.
 
 
 
+입출력 예 #2
+모든 기능이 하루에 1%씩 작업이 가능하므로, 작업이 끝나기까지 남은 일수는 각각 5일, 10일, 1일, 1일, 20일, 1일입니다. 어떤 기능이 먼저 완성되었더라도 앞에 있는 모든 기능이 완성되지 않으면 배포가 불가능합니다.
+
+따라서 5일째에 1개의 기능, 10일째에 3개의 기능, 20일째에 2개의 기능이 배포됩니다.
+
+※ 공지 - 2020년 7월 14일 테스트케이스가 추가되었습니다.
 
 
 ## Condition
->- weights의 길이는 2 이상 1,000 이하입니다.
->- weights의 모든 값은 45 이상 150 이하의 정수입니다.
->- weights[i] 는 i+1번 복서의 몸무게(kg)를 의미합니다.
->- head2head의 길이는 weights의 길이와 같습니다.
->- head2head의 모든 문자열은 길이가 weights의 길이와 동일하며, 'N', 'W', 'L'로 이루어진 문자열입니다.
->- head2head[i] 는 i+1번 복서의 전적을 의미하며, head2head[i][j]는 i+1번 복서와 j+1번 복서의 매치 결과를 의미합니다.
->- 'N' (None)은 두 복서가 아직 붙어본 적이 없음을 의미합니다.
->- 'W' (Win)는 i+1번 복서가 j+1번 복서를 이겼음을 의미합니다.
->- 'L' (Lose)는 i+1번 복사가 j+1번 복서에게 졌음을 의미합니다.
->- 임의의 i에 대해서 head2head[i][i] 는 항상 'N'입니다. 자기 자신과 싸울 수는 없기 때문입니다.
->- 임의의 i, j에 대해서 head2head[i][j] = 'W' 이면, head2head[j][i] = 'L'입니다.
->- 임의의 i, j에 대해서 head2head[i][j] = 'L' 이면, head2head[j][i] = 'W'입니다.
->- 임의의 i, j에 대해서 head2head[i][j] = 'N' 이면, head2head[j][i] = 'N'입니다.
-
-###입력 형식
->입출력 예
-
-n	|	result	
----|----
-6	|	8
-16	|	4
-626331 |  -1
-
-weights	| head2head	| result
----|----|--------
-[50,82,75,120]	|["NLWL","WNLL","LWNW","WWLN"]	|[3,4,1,2]
-[145,92,86]	|["NLW","WNL","LWN"]|	[2,3,1]
-[60,70,60]	|["NNN","NNN","NNN"]	|[2,1,3]
+>- 작업의 개수(progresses, speeds배열의 길이)는 100개 이하입니다.
+>- 작업 진도는 100 미만의 자연수입니다.
+>- 작업 속도는 100 이하의 자연수입니다.
+>- 배포는 하루에 한 번만 할 수 있으며, 하루의 끝에 이루어진다고 가정합니다. 예를 들어 진도율이 95%인 작업의 개발 속도가 하루에 4%라면 배포는 2일 뒤에 이루어집니다.
 
 
-입출력 예 #1
 
-다음은 선수들의 정보를 나타낸 표입니다.
+### 입력 형식
+> 입출력 예
 
-선수 | 번호|	vs 1번|	vs 2번|	vs 3번	|vs 4번	|승률|	자기보다 무거운 복서를 이긴 횟수	|몸무게
---|--|--|---|---|---|---|---|---
-1 | 1번	|	-	|	패배	|	승리	|	패배	|	33.33%	|	1회	|50kg
-2 |	2번	|	승	|	-	|	패배	|	패배	|	33.33%	|	0회	|82kg
-3 |	3번	|	패	|	승리	|	-	|	승리	|	66.66%	|	2회	|75kg
-4 |	4번	|	승	|	승리	|	패배	|	-	|	66.66%	|	0회	|120kg
+progresses	|speeds|	return
+-------|-----|---
+[93, 30, 55]|	[1, 30, 5]|	[2, 1]
+[95, 90, 99, 99, 80, 99]|	[1, 1, 1, 1, 1, 1]|	[1, 3, 2]
+
+#### 입출력 예 설명
+
+>입출력 예 #1
+첫 번째 기능은 93% 완료되어 있고 하루에 1%씩 작업이 가능하므로 7일간 작업 후 배포가 가능합니다.<br>
+두 번째 기능은 30%가 완료되어 있고 하루에 30%씩 작업이 가능하므로 3일간 작업 후 배포가 가능합니다. 하지만 이전 첫 번째 기능이 아직 완성된 상태가 아니기 때문에 첫 번째 기능이 배포되는 7일째 배포됩니다. <br>
+세 번째 기능은 55%가 완료되어 있고 하루에 5%씩 작업이 가능하므로 9일간 작업 후 배포가 가능합니다.<br>
+따라서 7일째에 2개의 기능, 9일째에 1개의 기능이 배포됩니다.<br>
 
 
 ## Solution 
 
 ```
-def solution(weights, head2head):
+from collections import deque
+import copy
+
+
+def solution(progresses, speeds):
+
+    required_time = []
+
+    for i in range(len(progresses)):
+        print(progresses[i], speeds[i])
+        required = (100 - progresses[i]) // speeds[i]
+        if (100 - progresses[i]) % speeds[i] != 0:
+            required += 1
+        required_time.append(required)
+
+    que = deque(required_time)
     answer = []
-    player = []
 
-    for i in range(len(weights)):
-        win_cnt = 0
-        total_cnt = 0
-        win_heavier_cnt = 0
-        for j in range(len(head2head[i])):
-            if head2head[i][j] != "N": total_cnt += 1
-            if head2head[i][j] == "W":
-                win_cnt += 1
-                if weights[i] < weights[j]:
-                    win_heavier_cnt += 1
+    while que:
+        stack = []
+        tmp = copy.deepcopy(que)
+        first_job = que[0]
 
-        data = []
-        try:
-            rate = (win_cnt / total_cnt) * 1000000
-        except:
-            rate = 0
-        data.append(rate)  # 승률
-        data.append(win_heavier_cnt)  # 무거운 사람에게 승수
-        data.append(weights[i])  # 무게
-        data.append(i + 1)  # 번호
-        player.append(data)
+        for i in range(len(tmp)):
+            if i == 0 or first_job >= tmp[i]:
+                stack.append(tmp[i])
+                que.popleft()
+            else:
+                break
 
-    for i in sorted(player, key=lambda x: (-x[0], -x[1], -x[2], x[3])):
-        answer.append(i[3])
+        answer.append(len(stack))
 
     return answer
+
 
 ```
 
 
 
 ## Others Solution 
-```
-def solution(weights, head2head):
-    result = []
-    l = len(weights)
-    # 한 번에 정렬해서 풀어봅시다!
-    ans = [[0 for _ in range(4)] for _ in range(l)] # 승률, 무거운복서 이긴횟수, 자기 몸무게, 번호(음수로)
-    for i in range(l):
-        ans[i][2] = weights[i]
-        ans[i][3] = -(i+1)
-        cnt = 0 # 판수
-        for j in range(l):
-            if head2head[i][j] == 'W':
-                ans[i][0] += 1 # 일단 이김
-                cnt += 1
-                if weights[i] < weights[j]:
-                    ans[i][1] += 1 # 무거운 복서 이김
-            elif head2head[i][j] == 'L':
-                cnt += 1 # 판수만 늘려준다
-        if cnt == 0:
-            ans[i][0] = 0
-        else:
-            ans[i][0] /= cnt
-    ans.sort(reverse=True) # 역순으로 정렬하면 모든 조건이 한 번에 정렬된다
 
-    for i in range(l):
-        result.append(-ans[i][3])
-    return result
+### 1
+```
+from math import ceil
+
+def solution(progresses, speeds):
+    daysLeft = list(map(lambda x: (ceil((100 - progresses[x]) / speeds[x])), range(len(progresses))))
+    count = 1
+    retList = []
+
+    for i in range(len(daysLeft)):
+        try:
+            if daysLeft[i] < daysLeft[i + 1]:
+                retList.append(count)
+                count = 1
+            else:
+                daysLeft[i + 1] = daysLeft[i]
+                count += 1
+        except IndexError:
+            retList.append(count)
+
+    return retList
+```
+
+### 2
+```
+def solution(progresses, speeds):
+    Q=[]
+    for p, s in zip(progresses, speeds):
+        if len(Q)==0 or Q[-1][0]<-((p-100)//s):
+            Q.append([-((p-100)//s),1])
+        else:
+            Q[-1][1]+=1
+    return [q[1] for q in Q]
 ```
 
 ## TestCase
 ```
-print(solution([50, 82, 75, 120], ["NLWL", "WNLL", "LWNW", "WWLN"]), [3, 4, 1, 2])
-print(solution([145, 92, 86], ["NLW", "WNL", "LWN"]), [2, 3, 1])
-print(solution([60, 70, 60], ["NNN", "NNN", "NNN"]), [2, 1, 3])
-
+print(solution([93, 30, 55], [1, 30, 5]), [2, 1])
+print(solution([95, 90, 99, 99, 80, 99], [1, 1, 1, 1, 1, 1]), [1, 3, 2])
 
 ```
