@@ -84,10 +84,6 @@ message queue
 
 Ruby, Ruby on Rails 웹 개발 프레임웍크 경험
 
-오픈소스 검색 엔진(예: Elasticsearch)을 활용한 서비스 운영 경험이 있으신 분
-ELK 스택을 활용하여 대용량 로그 적재/분석 경험이 있으신 분
-검색 색인기 혹은 검색 API 개발 / 운영 경험이 있으신 분
-
 jUnit과 테스트코드 작성 라이브러리
 Git, Jira, Wiki 등의 협업 도구
  MSA 개발 ? 
@@ -96,6 +92,16 @@ play framework ?
 golang
 git flow
 
+
+
+### 검색관련 
+오픈소스 검색 엔진(예: Elasticsearch)을 활용한 서비스 운영 경험이 있으신 분
+ELK 스택을 활용하여 대용량 로그 적재/분석 경험이 있으신 분
+검색 색인기 혹은 검색 API 개발 / 운영 경험이 있으신 분
+- 다이퀘스트 다이버, ElasticSearch 사용 경험
+ - Search Dictionary 개발 및 운영 경험
+ - Scoring 기반 Sorting 개발 및 운영 경험
+ - Node.js, Typescript, Kotlin 사용 경험
 ```
 
 

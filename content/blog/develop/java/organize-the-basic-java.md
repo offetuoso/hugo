@@ -15,26 +15,26 @@ math: false
 toc: true
 ---
 
-## 자바
+# 자바
 
-### 자바가상머신 (JVM)
+## 자바가상머신 (JVM)
 
-### 자바의 장점
+## 자바의 장점
 
-### 자바의 단점
+## 자바의 단점
 
 ## 자바의 기초 문법
 
 ## 객체지향과 자바
 
-### 객체지향 프로그램 언어
+## 객체지향 프로그램 언어
 
-### 객체
+## 객체
 
-### 상속
+## 상속
 
 
-### 오버라이딩 (Overriding)
+## 오버라이딩 (Overriding)
 
 > 오버라이딩이란?
 
@@ -67,7 +67,7 @@ toc: true
 
 
 
-#### Example.java 
+### Example.java 
 ```
 package ex.java.overriding;
 
@@ -126,7 +126,7 @@ class Japanese extends Person{
 
 ```
 
-#### result
+### result
 ```
 Aaaa
 안녕하세요!
@@ -151,7 +151,7 @@ The method Talk(String) of type Korean must override or implement a supertype  m
 
 ```
 
-### 오버로딩 (Overloading)
+## 오버로딩 (Overloading)
 
 > 오버로딩이란?
 
@@ -175,7 +175,7 @@ The method Talk(String) of type Korean must override or implement a supertype  m
 
 
 
-#### Example.java
+### Example.java
 ```
 package ex.java.overloading;
 
@@ -216,7 +216,7 @@ class Mountain {
 
 ```
 
-#### result
+### result
 ```
 you say Hello
 you have 100 doller
@@ -265,17 +265,17 @@ class Calculator {
 
 
 
-### 다형성 
+## 다형성 
 
 
-#### 오버라이딩을 이용한 다형성 
+### 오버라이딩을 이용한 다형성 
 
 
 > 위에서 오버라이딩을 설명했던 소스와 다른점 한가지가 있다.
 그것은 main 클래스에서 자식 클래스를 선언하는 부분이다. 		
 
 
-#### Example.java 
+### Example.java 
 ```
 package ex.java.overriding;
 
@@ -335,7 +335,7 @@ class Japanese extends Person{
 
 ```
 
-#### result
+### result
 ```
 Aaaa
 안녕하세요!
@@ -343,7 +343,7 @@ Hello!
 Konnichiwa!
 ```
 
-#### 참조변수의 다형성
+### 참조변수의 다형성
 
 > 참조변수가 사용할 수 있는 멤버의 개수가 실제 인스턴스의 멤버 개수보다 같거나 적어야 참조할 수 있다. 클래스는 상속을 통해 확장될 수는 있어도 축소될 수는 없기 때문에, 자식클래스에서 사용할 수 있는 멤버의 개수는 언제나 부모 클래스와 같거나 많게 된다.
 
@@ -362,7 +362,7 @@ Korean korean = new Person();	//오류
 ```
 
 
-#### 참조변수의 형변환
+### 참조변수의 형변환
 
 > 자식클래스를 부모 클래스로 참조할때 자식 클래스로 형 변환 할 수 있다.
 
@@ -389,9 +389,51 @@ Korean korean = new Person();	//오류
 	
 
 ```
+## Collection
 
+> 컬렉션이란 객체의 모음, 그룹이라 할 수 있습니다. 
 
+> Collection과 Map이 컬렉션 클래스의 루트 인터페이스입니다.
 
+> Collection은 List와 Set 그리고 Queue로 구성되어있습니다. 
+
+> Map은 Collection에 포함되지는 않지만 Collection으로 분류합니다.
+
+### 컬렉션 사용이유 
+> 1. 일관된 API 
+> 2. 프로그래밍 노력감소 
+> 3. 프로그램 속도 및 품질향상
+
+### List 인터페이스 
+> 리스트는 연속된 데이터를 순차적으로 처리 할 때 사용합니다.
+
+> 1. ArrayList - 동적 배열을 제공합니다. 배열 보다 느리지만, 엘리먼츠를 추가, 삭제 시 크기가 자동 조절됩니다.
+> 2. LinkedList - 연속된 저장 위치에 저장되지 않고, 데이터와 주소로 구성된 노드라는 요소로 각각의 주소를 연결하고 포인터를 이용해 데이터를 연결하고 삭제합니다.
+> 3. Vector - 동적 배열을 제공하며, 느리지만 많은 움직임을 필요한 프로그램에서 유용합니다. Vector는 동기화 되고 ArrayList는 동기화 되지 않습니다. 동기화란 Thread Safe라고 할 수 있으며, 한번에 하나의 스레드만 백터에 접근할 수 있습니다.
+> 4. Stack - 선입후출의 특성을 가지고 있는 자료구조입니다.
+
+### Set 인터페이스 
+> 중복을 허용하지 않는 정렬되지 않은 데이터 모음입니다. 
+중복을 방지하고 고유한 데이터만 저장하는 경우 사용합니다. 
+
+> 1. HashSet -  HashSet에 입력되는 데이터는 동일한 순서로 삽입되는 것을 보장하지 않습니다. 이 클래스는 NULL 요소 삽입을 허용합니다
+> 2. LinkedHashSet - HashSet과 유사하지만 저장하는 순서를 유지합니다.
+
+### Sorted Set 인터페이스 
+
+> 1. TreeSet - 트리를 이용해 저장합니다. 데이터의 순서는 오름차순대로 유지됩니다.
+
+### Map인터페이스 
+> Map은 데이터의 키와 값으로 매핑을 지원하는 데이터 구조입니다. 키는 중복을 지원하지 않습니다. 속도는 느리지만 키를 기반하는 프로그래밍에 유리합니다.
+
+> 1. HashMap - Hashing이라는 기술을 이용하여 항목이 저장 되어있는 테이블의 주소를 빠르게 접근하는 방식을 사용합니다.
+
+### Queue 인터페이스
+> 대기열 인터페이스 라는 이름에서 알 수 있듯이 선입선출의 특성을 가지고 있습니다. 
+
+> 1. PriorityQueue (우선순위큐) - 우선 순위에 따라 객체를 처리해야할때 사용합니다.
+> 2. Deque - 양방향 큐라고도 불리고 양쪽 끝에서 요소를 추가하고 제거할 수 있는 구조입니다.
+> 3. ArrayDecue - 크기가 조정되는 배열이고, 양끝에서 요소를 추가하고 제거하는 구조입니다. 
 
 ### 추상화
 
@@ -400,4 +442,6 @@ Korean korean = new Person();	//오류
 ### 스트림 API 
 
 #### 스트림 
-> 
+
+
+
