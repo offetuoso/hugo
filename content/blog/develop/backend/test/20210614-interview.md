@@ -71,7 +71,29 @@ toc: true
 
 Java, Javascript, jQuery
 Spring Framework
-AOP 
+
+## AOP 
+
+
+## 웹서버와 WAS 웹어플리케이션서버
+> 웹서버는 정적인 컨텐츠를 제공하고,
+ WAS는 정적인 컨텐츠+ 동적인 컨텐츠를 제공합니다. 
+ 
+### 웹서버와 WAS의 기능분리
+> WAS는 정적인 컨텐츠와 동적 컨텐츠(Servlet, JSP, 등등 비즈니스로직) 둘다 서비스 가능하지만,
+> 큰 프로젝트 진행시 웹서버와 WAS를 분리하는 경우가 있습니다. 
+이는 웹서버로 요청을 받고 웹서버에서 API를 호출하여 비즈니스로직을 호출하는 방식이며, 
+웹서버 하나에 WAS 여러대를 두고 사용할수도 있으며 
+
+
+
+### WAS WEB Server + WEB container
+
+WEB SERVER
+
+ORM
+PERSISTENCE MANAGER
+
 DI
 ioc
 
@@ -87,6 +109,7 @@ Restful API
 join시 속도 
 쿼리 속도 
 자바8
+가비지컬렉션
 
 
 
