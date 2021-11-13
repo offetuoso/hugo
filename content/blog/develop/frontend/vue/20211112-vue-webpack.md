@@ -38,29 +38,7 @@ toc: true
 npm init
 ```
 
-> npm init 시 package 명 입력시 camel case 사용시 오류
-
-```
-package name: (3_끝말잇기) WordRelay
-Sorry, name can no longer contain capital letters.
-```
-
-> 대문자 포함시 오류
-
-```
-package name: (3_끝말잇기) wordRelay
-Sorry, name can no longer contain capital letters.
-```
-
-> why 
-언젠가는 폴더나 파일이 자체 패키지로 추출될 수 있다고 상상해야 합니다. 패키지는 대문자를 포함할 수 없습니다.
-새 패키지는 이름에 대문자가 없어야 합니다. https://docs.npmjs.com/files/package.json#이름
-따라서 camelCase절대 사용해서는 안됩니다. 이 잎 snake_case과 kebab-case.
-kebab-case오늘날 가장 일반적인 협약입니다. 밑줄의 유일한 사용은 내부 노드 패키지용이며 이는 단순히 초기부터의 관례입니다.
-
-<a href="https://stackoverflow.com/questions/18927298/node-js-project-naming-conventions-for-files-folders">StackOverFlow</a>
-
-
+> npm int을 실행하면, package.json이 생성된다. pakage.json은 프로젝트에서 사용한 패키지들의 버전들을 관리하고 빌드 또는 배포하게 된다. 
 
 > package.json
 
