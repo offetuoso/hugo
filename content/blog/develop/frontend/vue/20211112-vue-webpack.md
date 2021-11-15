@@ -81,7 +81,8 @@ npm i css-loader -D								//CSS 로더 설치
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack"  // <<-- 직접 수정해주어야함, npm run build 시 webpack을 사용함
+    // <<-- 직접 수정해주어야함, npm run build 시 webpack을 사용함
+    "build": "webpack --watch" //<-- 자동빌드 옵션  
   },
   "author": "",
   "license": "ISC",
@@ -265,6 +266,47 @@ cacheable modules 229 KiB
   ./main.js 189 bytes [built] [code generated]
 webpack 5.64.0 compiled successfully in 911 ms
 ```
+
+## webpack 자동빌드 
+
+### 1. package.json 설정
+
+```
+{
+  "name": "number-baseball",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --watch" // <<-- --watch 옵션 추가
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "css-loader": "^6.5.1",
+    "vue": "^2.6.14",
+    "vue-loader": "^15.9.8",
+    "vue-style-loader": "^4.1.3",
+    "vue-template-compiler": "^2.6.14",
+    "webpack": "^5.64.0",
+    "webpack-cli": "^4.9.1"
+  }
+}
+
+```
+
+### 2. webpack.config.js 설정
+
+```
+module.exports = { //웹패킹을 할때 모듈을 사용
+    watch: true,
+    watchOptions: {
+        ignored: '**/node_modules',
+    },
+};
+```
+
+<a href="https://webpack.kr/configuration/watch/">webpack wacth 옵션</a>
 
 ## nom run build 시 나올 수 있는 오류 정리
 
