@@ -95,11 +95,249 @@ em.getTransaction().begin();
 
 // 객체를 저장한 상태(영속)
 em.persist(member);
+
+// 객체를 비영속 상태로 변경
+//em.detach(member) 
+
+// 객체를 DB에서 삭제
+//em.remove(member) 
+
+
+tx.commit(); // 실제 쿼리가 실행되는 지점
+
 ```
 
+### 영속성 컨텍스트의 이점
+> 영속성 컨텍스트는 객체와 DB 사이에 하나의 계층이 있는것 
+
+> - 1차 캐시
+> - 동일성(identity) 보장
+> - 트랜잭션을 지원하는 쓰기 지연(transactional write-behind)
+> - 변경 감지(dirty checking)
+> - 지연 로딩(lazy loading)
+
+#### 엔티티 조회, 1차 캐시
+> 영속성 컨텍스트는 내부에 1차 캐시를 가지고 있습니다. @Id가 키가 되고 값은 member객체 자체인 Map이라 생각하면 됩니다.
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-007.png)
+
+```
+// 엔티티를 생성한 상태(비영속)
+Member member = new Member();
+member.setId(3L);
+member.setName("회원3");
+
+// 엔티티를 영속
+em.persist(member);
+
+```
+
+#### 1차 캐시에서 조회
+
+```
+// 엔티티를 생성한 상태(비영속)
+Member member = new Member();
+member.setId(3L);
+member.setName("회원3");
+
+// 1차 캐시에 저장됨
+em.persist(member);
+
+Member findMemeber = em.find(Member.class, "3L");
+
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-008.png)
+
+> 조회를 실행시 우선적으로 1차 캐시에 값으로 객체가 있는지 확인 후 있으면 캐시에서 바로 가져오고, 없는 경우 DB에서 조회를 하여 1차 캐시에 저장하고 객체를 가져오게 됩니다.
 
 
+#### DB에서 조회
+```
+Member findMemeber = em.find(Member.class, "10L");
+```
 
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-009.png)
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-010.png)
+> commit()이후에 Insert를 하지만, Select문이 나오지 않는다. 이미 1차 캐시에서 조회하여 커밋 이전에 출력한다.
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-011.png)
+> 같은 객체를 여러번 조회를 하면, 1번만 Select 문을 날리고 이후 1차 캐시에서 조회
+
+
+### 영속 엔티티의 동일성 보장
+
+```
+  	Member findMember1 = em.find(Member.class, 10L);
+	Member findMember2 = em.find(Member.class, 10L);
+	
+	System.out.println(findMember1 == findMember2);
+
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-012.png)
+
+> 같은 트랜잭션 안에서는 조회한 같은 객체는 동일한 객체로 인식 보장
+
+### 엔티티 등록 - 트랜잭션을 지원하는 쓰기 지연
+
+```
+ EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        tx.begin(); // [트랜잭션] 시작
+
+        try{
+
+            Member meber1 = new Member();
+            Member meber2 = new Member();
+            meber1.setId(11L);
+            meber1.setName("회원11");
+
+            meber2.setId(12L);
+            meber2.setName("회원12");
+
+            // 영속
+            System.out.println("=== BEFORE ===");
+            em.persist(meber1);
+            em.persist(meber2);
+            System.out.println("=== AFTER ===");
+            // 여기까지 DB에 Insert 하지 않는다.
+
+            tx.commit(); // [트랜잭션] 카밋
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-013.png)
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-013-1.png)
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-014.png)
+
+> em.persist()로 memberA와 memberB를 저장할때, 영속 컨텍스트안의 쓰기지연 SQL 저장소에 memberA를 Insert SQL을 저장하고<br>
+> 그리고 이후에 memberB에 대한 Insert SQL을 쓰기지연 SQL 저장소에 저장합니다. 여기 까지 DB에 저장하지 않고 commit과 함께 DB에 저장합니다.
+
+
+#### transaction.commit();
+> 트랜잭션이 커밋될때 좀더 자세히 그림으로 설명하면 아래와 같습니다.
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-015.png)
+
+> 커밋을 하게되면 쓰기지연 저장소에 있는 SQL들을 flush하며, DB에 SQL문들을 DB에 커밋하게 됩니다.
+
+##### Member.java
+
+```
+package hellojpa;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Member {
+
+    @Id
+    private Long id;
+    private String name;
+
+    // JPA 기본적으로 동적으로 객체를 생성하는 기능이 있어, 기본 생성자도 추가해줘야 된다.
+    public Member() {
+    }
+
+    public Member(Long id, String name){
+        this.id = id;
+        this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-016.png)
+
+> 굳이 하나씩 보내도 되는데 왜 커밋과 함께 DB에 Insert 하느냐 하면 성능을 위해 설정하여 튜닝할 수 있는 여지를 주기 위함이라 합니다. <br>
+
+> JPA의 옵션중
+
+#### persistence.xml - hibernate.jdbc.batch_size
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2"
+             xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+    <persistence-unit name="hello">
+        <properties>
+	       ...
+
+            <!-- 한번에 같은 데이터 베이스에 데이터를 집어넣을때 모아서 한번에 인서트 하는 jdbc batch의 수를 지정-->
+            <property name="hibernate.jdbc.batch_size" value="10"/>
+
+		   ...
+        </properties>
+    </persistence-unit>
+</persistence>
+```
+
+> 옵션 하나로 JPA의 성능에 대한 이점을 챙길 수 있습니다.
+
+
+### 엔티티 수정 - 변경 감지(dirty checking)
+> JPA에서는 컬렉션에서 값을 수정하는 것처럼 따로 저장하지 않아도 변경 감지를 통해 commit시 Update 문을 자동으로 수행
+
+```
+EntityMananger em = emf.createEntityManager();
+EntityTransaction tx = em.getTransaction();
+tx.begin(); // [트랜잭션] 시작
+
+// 영속 엔티티 조회
+Member MemberA = em.find(Member.class, 10L);
+
+// 영속 엔티티 데이터 수정
+MemberA.setName("사용자10");
+
+// 이런 코드가 필요하지 않을까?
+//em.update(member);
+
+tx.commit(); // [트랜잭션] 커밋
+
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-017.png)
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-018.png)
+> DB에서 값을 Select 하고 값을 수정만 하고 저장을 따로 하지 않았지만, Update 쿼리까지 실행됩니다.
+
+#### 변경 감지(dirty checking)
+> 커밋하는 시점에 변경 감지를 통해 벌어지는 일을 그림으로 그리면 아래와 같습니다.<br>
+> 커밋을 하게 되면 내부적으로 flush()를 실행하게 되고, 엔티티와 스냅샷을 비교하게됩니다. 스냅샷은 객체를 읽어올 당시의 값을 스냅샷으로 저장합니다. 트랜잭션에서 커밋하는 시점에 플러시가 호출되며 엔티티와 스냅샷을 비교하여, 변경사항을 쓰기 지연 SQL 저장소에 Update SQL을 저장합니다. 그리고 DB에 Update SQL을 반영하고 commit()을 수행합니다.
+
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-019.png)
+
+### 엔티티 삭제
+
+```
+// 삭제할 대상 엔티티 조회
+Member memberA = em.find(Member.class, 11L);
+em.remove(memberA); // 엔티티 삭제
+```
 
 
 
