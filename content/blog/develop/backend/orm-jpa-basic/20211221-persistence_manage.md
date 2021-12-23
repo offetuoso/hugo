@@ -339,6 +339,67 @@ Member memberA = em.find(Member.class, 11L);
 em.remove(memberA); // 엔티티 삭제
 ```
 
+## 플러시
+> 영속성 컨텍스트의 변경내용을 데이터베이스에 반영
+
+### 플러시 발생
+> 트랜잭션이 커밋되면 자동적으로 플로시가 발생되며, 1차 캐시의 변동없음(다른 flush의 비우는 기능과 다름.)
+
+> - 변경감지(dirty checking)
+> - 수정된 엔티티 쓰기 지연 SQL 저장소에 등록
+> - 쓰기 지연 SQL 저장소의 쿼리를 데이터 베이스에 전송(등록, 수정, 삭제 쿼리)
+
+### 영속성 컨텍스트를 플러시 하는 방법
+> - em.flush() - 직접 호출 (잘 사용은 안되지만, 테스트 시 알아두면 유용)
+> - 트랜잭션 커밋 - 플러시 자동 호출
+> - JPQL 쿼리 실행 - 플러시 자동 호출
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-020.png)
+> 다른 예제들과 다르게 라인 "===========" 보다 이전에 flush()를 실행항 당시 변경 사항의 SQL이 로그에 찍히게됨.
+
+### JPQL 쿼리 실행시 플러시가 자동으로 호출되는 이유
+
+```
+em.persist(memberA);
+em.persist(memberB);
+em.persist(memberC);
+
+//중간에 JPQL 실행 
+query = em.createQuery("select m from Member m", Member.class);
+List<Member> members = query.getResultList();
+```
+> 만일 memberA, memberB, memberC를 영속화 하고, Member 테이블의 전체 리스트를 조회하면 아무 결과가 안나올 것입니다. 아직 commit()을 통한 flush()가 실행 되기 이전이기 떄문입니다. 이러한 문제점을 해결하기 위해 JPA에서는 JPQL을 실행할 때 우선 flush()를 실행합니다.
+
+
+### 플러시 모드 옵션
+```
+em.setFlushMode(FlushModeType.COMMIT);
+```
+> - FlushModeType.AUTO - 트랜잭션 커밋이나 쿼리(JPQL)를 실행할 때 플러시(기본값)
+> - FlushModeType.COMMIT - 커밋할 때만 플러시
+
+### 플러시는 !
+> - 영속성 컨텍스트를 비우지 않음
+> - 영속성 컨텍스트의 변경내용을 데이터베이스에 동기화
+> - 트랜잭션이라는 작업 단위가 중요 -> 커밋 직전에만 동기화하면 됨
+
+
+## 준영속 상태
+> - 영속  -> 준영속 
+> 1차 캐시에 있고 JPA가 관리하는 상태
+
+> - 영속 상태의 엔티티가 영속성 컨텍스트에서 분리(detached)
+> - 영속성 컨텍스트가 제공하는 기능을 사용 못함
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-021.png)
+
+
+### 준영속 상태로 만드는 방법
+
+> - em.detach(entity) - 특정 엔티티만 준영속 상태로 전환
+> - em.claer() - 영속성 컨텍스트를 완전히 초기화
+> - em.close() - 영속성 컨텍스트를 종료
+
 
 
 ### 참고
