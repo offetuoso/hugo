@@ -7,6 +7,8 @@ slug: "example-post"
 description: "This is an example post for hugo-theme-codex."
 keywords: ["gohugo", "hugo", "go", "blog"]
 draft: true
+categories: ["test"]
+subcategories: ["test1"]
 tags: ["hugo"]
 math: false
 toc: true

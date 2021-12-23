@@ -5,7 +5,11 @@
 }
 
 
- .post .tags__list .tag__link::before {
+.post .tags__list .tag__link::before {
+    content: "#" !important;
+}
+
+.post .categories__list .category__link::before {
     content: "#" !important;
 }
 

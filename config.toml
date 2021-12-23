@@ -79,4 +79,9 @@ ignoreErrors = ["error-remote-getjson"]
   home = ["HTML", "RSS", "JSON"]
   
  searchEnable = true
-  
+
+ 
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+  subcategory = "subcategories"

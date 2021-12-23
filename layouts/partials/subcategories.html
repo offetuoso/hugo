@@ -1,0 +1,13 @@
+{{ $taxo := "subcategories" }}
+{{ with .Param $taxo }}
+
+<ul class="subcategories__list">
+    {{ range $index, $subcategory := . }}
+    {{ with $.Site.GetPage (printf "/%s/%s" $taxo $subcategory) -}}
+    <li class="subcategory__item">
+        <a class="subcategory__link" href="{{ .Permalink }}">{{ $subcategory }}</a>
+    </li>
+    {{- end -}}
+  {{- end -}}
+</ul>
+{{ end }}

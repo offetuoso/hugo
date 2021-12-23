@@ -4,7 +4,7 @@
 .tags__list {
   list-style: none;
   margin: 0;
-  padding: 0 0 0 50px;
+  padding: 0 0 0 20px;
   flex-shrink: 0;
 
   @media screen and (max-width: $medium - 1) {
@@ -12,11 +12,30 @@
   }
 }
 
-.post__header .tags__list {
-  display: none;
-  padding-left: 0;
+.categories__list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 20px;
+  flex-shrink: 0;
 
   @media screen and (max-width: $medium - 1) {
+    display: none;
+  }
+}
+
+.subcategories__list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 20px;
+  flex-shrink: 0;
+  
+  @media screen and (max-width: $medium - 1) {
+    display: none;
+  }
+}
+
+.post__header .tags__list {
+   @media screen and (max-width: $medium - 1) {
     display: block;
   }
 
@@ -30,6 +49,50 @@
   }
 
   .tag__link {
+    font-size: 0.8rem;
+  }
+}
+
+.post__header .categories__list {
+  display: none;
+  padding-left: 0;
+
+  @media screen and (max-width: $medium - 1) {
+    display: block;
+  }
+
+  .category__item {
+    display: inline-block;
+    margin-right: 10px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .category__link {
+    font-size: 0.8rem;
+  }
+}
+
+.post__header .subcategories__list {
+  display: none;
+  padding-left: 0;
+
+  @media screen and (max-width: $medium - 1) {
+    display: block;
+  }
+
+  .subcategory__item {
+    display: inline-block;
+    margin-right: 10px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .subcategory__link {
     font-size: 0.8rem;
   }
 }
@@ -50,8 +113,100 @@
   }
 }
 
+.category__link {
+  text-decoration: none;
+  color:  #a0c8ff;
+  font-size: 0.9rem;
+
+  &::before {
+    content: "#";
+    font-size: 0.7rem;
+    padding-right: 1px;
+  }
+
+  &:hover {
+    color:  #a0c8ff;
+  }
+}
+
+.subcategory__link {
+  text-decoration: none;
+  color:  #a0c8ff;
+  font-size: 0.9rem;
+
+  &::before {
+    content: "#";
+    font-size: 0.7rem;
+    padding-right: 1px;
+  }
+
+  &:hover {
+    color:  #a0c8ff;
+  }
+}
+
 /* page overrides */
 .post-list__container {
   display: flex;
   justify-content: space-between;
 }
+
+
+
+
+/**
+ * Framework starts from here ...
+ * ------------------------------
+ */
+
+.tree,
+.tree ul {
+  margin:0 0 0 1em; /* indentation */
+  padding:0;
+  list-style:none;
+  color:#369;
+  position:relative;
+}
+
+.tree ul {margin-left:.5em} /* (indentation/2) */
+
+.tree:before,
+.tree ul:before {
+  content:"";
+  display:block;
+  width:0;
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  border-left:1px solid;
+}
+
+.tree li {
+  margin:0;
+  padding:0 1.5em; /* indentation + .5em */
+  line-height:2em; /* default list item's `line-height` */
+  font-weight:bold;
+  position:relative;
+}
+
+.tree li:before {
+  content:"";
+  display:block;
+  width:10px; /* same with indentation */
+  height:0;
+  border-top:1px solid;
+  margin-top:-1px; /* border top width */
+  position:absolute;
+  top:1em; /* (line-height/2) */
+  left:0;
+}
+
+.tree li:last-child:before {
+  background:white; /* same with body background */
+  height:auto;
+  top:1em; /* (line-height/2) */
+  bottom:0;
+}
+
+
