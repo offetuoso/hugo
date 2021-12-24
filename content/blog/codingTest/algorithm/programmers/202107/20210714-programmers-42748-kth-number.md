@@ -10,6 +10,7 @@ description: "Programmers K번째 수"
 keywords: ["Algorithm", "CodingTest"]
 draft: false
 categories: ["Algorithm"]
+subcategories: ["Programmers"]
 tags: ["Algorithm", "CodingTest", "Programmers"]
 math: false
 toc: true

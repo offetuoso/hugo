@@ -10,6 +10,7 @@ description: "Programmers 신규 아이디 추천"
 keywords: ["Algorithm", "CodingTest"]
 draft: false
 categories: ["Algorithm"]
+subcategories: ["Programmers"]
 tags: ["Algorithm", "CodingTest", "Programmers"]
 math: false
 toc: true

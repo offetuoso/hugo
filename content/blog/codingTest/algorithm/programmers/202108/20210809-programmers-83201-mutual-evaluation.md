@@ -10,6 +10,7 @@ description: "83201 상호평가"
 keywords: ["Algorithm", "CodingTest"]
 draft: false
 categories: ["Algorithm"]
+subcategories: ["Programmers"]
 tags: ["Algorithm", "CodingTest", "Programmers"]
 math: false
 toc: true

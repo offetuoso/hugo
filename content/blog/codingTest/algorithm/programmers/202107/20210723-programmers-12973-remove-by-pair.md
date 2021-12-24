@@ -10,6 +10,7 @@ description: "Programmers 짝지어 제거하기"
 keywords: ["Algorithm", "CodingTest"]
 draft: false
 categories: ["Algorithm"]
+subcategories: ["Programmers"]
 tags: ["Algorithm", "CodingTest", "Programmers"]
 math: false
 toc: true

@@ -8,8 +8,9 @@ date: 2021-12-21
 slug: "persistence-manage"
 description: "JPA 내부 동작 방식"	
 keywords: ["ORM"]
-draft: true
-categories: ["ORM"]
+draft: false
+categories: ["Java"]
+subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
 math: false
 toc: true

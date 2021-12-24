@@ -10,6 +10,7 @@ description: "탐색 알고리즘."
 keywords: ["Algorithm", "CodingTest"]
 draft: false
 categories: ["Algorithm"]
+subcategories: ["Search"]
 tags: ["Algorithm"]
 math: false
 toc: true

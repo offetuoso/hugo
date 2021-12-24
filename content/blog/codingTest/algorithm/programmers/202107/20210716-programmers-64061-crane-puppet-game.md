@@ -10,6 +10,7 @@ description: "Programmers 크레인 인형 뽑기"
 keywords: ["Algorithm", "CodingTest"]
 draft: false
 categories: ["Algorithm"]
+subcategories: ["Programmers"]
 tags: ["Algorithm", "CodingTest", "Programmers"]
 math: false
 toc: true

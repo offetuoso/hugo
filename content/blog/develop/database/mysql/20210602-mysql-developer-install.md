@@ -9,7 +9,8 @@ slug: "mysql-developer-install"
 description: "Mysql Developer 설치"	
 keywords: ["Mysql"]
 draft: false
-categories: ["Mysql"]
+categories: ["database"]
+subcategories: ["MySQL"]
 tags: ["Mysql","Developer","MysqlDeveloper","OracleDevelop","Tools"]
 math: false
 toc: true

@@ -9,7 +9,8 @@ slug: "docker-mysql"
 description: "도커에 Mysql 올리기-2"	
 keywords: ["Docker"]
 draft: true
-categories: ["Docker"]
+categories: ["Backend"]
+subcategories: ["Docker"]
 tags: ["Docker","Mysql"]
 math: false
 toc: true

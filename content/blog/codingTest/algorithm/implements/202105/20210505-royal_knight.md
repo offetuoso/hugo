@@ -10,6 +10,7 @@ description: "코딩테스트 구현 알고리즘 왕실의 기사"
 keywords: ["Algorithm", "CodingTest", "Python", "Java"]
 draft: false
 categories: ["Algorithm"]
+subcategories: ["이코테"]
 tags: ["Algorithm","Implements" ,"이코테"]
 math: false
 toc: true

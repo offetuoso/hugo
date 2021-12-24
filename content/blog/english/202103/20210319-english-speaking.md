@@ -8,7 +8,8 @@ date: 2021-03-19
 slug: "20210319-english-speak"
 description: "영어 회화 문법정리"
 draft: false
-categories: ["English"]
+categories: ["English"]    
+subcategories: ["Speaking"]
 tags: ["english","speak","talk","EngAll","잉그올"]
 math: false
 toc: true

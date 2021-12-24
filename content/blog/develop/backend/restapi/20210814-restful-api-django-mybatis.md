@@ -9,7 +9,8 @@ slug: "restful-api-django-mybatis"
 description: "레스트풀 API"	
 keywords: ["Restful"]
 draft: true
-categories: ["Restful"]
+categories: ["Backend"]
+subcategories: ["RESTful"]
 tags: ["Restful","Api", "Django", "RDS", "Mysql","Mybatis"]
 math: false
 toc: true

@@ -10,7 +10,8 @@ description: "최고의 숫자가 되기 위하여 더하기 혹은 곱하기를
 keywords: ["Algorithm", "Greedy", "CodingTest", "Python", "Java"]
 draft: false
 categories: ["Algorithm"]
-tags: ["Algorithm"]
+subcategories: ["이코테"]
+tags: ["Algorithm", "Greedy","이코테"]
 math: false
 toc: true
 ---

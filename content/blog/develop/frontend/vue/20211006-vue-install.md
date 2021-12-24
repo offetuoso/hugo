@@ -9,7 +9,8 @@ slug: "vue-install"
 description: "Vue.js 시작하기"	
 keywords: ["Vue"]
 draft: true
-categories: ["VueJs"]
+categories: ["frontend"]
+subcategories: ["Vue"]
 tags: ["Front","Vue","framework"]
 math: false
 toc: true

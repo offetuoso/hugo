@@ -10,6 +10,7 @@ description: "코딩테스트 숫자 카드 게임"
 keywords: ["Algorithm", "CodingTest", "Python", "Java"]
 draft: false
 categories: ["Algorithm"]
+subcategories: ["이코테"]
 tags: ["Algorithm", "Greedy", "이코테"]
 math: false
 toc: true

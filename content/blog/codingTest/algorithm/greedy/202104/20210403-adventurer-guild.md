@@ -10,7 +10,8 @@ description: "모험가 파티를 만드는 알고리즘"
 keywords: ["Algorithm", "Greedy", "CodingTest", "Python","Java"]
 draft: false
 categories: ["Algorithm"]
-tags: ["Algorithm"]
+subcategories: ["이코테"]
+tags: ["Algorithm", "Greedy", "이코테"]
 math: false
 toc: true
 ---

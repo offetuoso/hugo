@@ -10,6 +10,7 @@ description: "파이썬 코딩테스트 팁"
 keywords: ["Algorithm", "CodingTest"]
 draft: true
 categories: ["Algorithm"]
+subcategories: ["Tips"]
 tags: ["Algorithm"]
 math: false
 toc: true

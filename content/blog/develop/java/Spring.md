@@ -10,7 +10,8 @@ slug: "spring"
 description: "스프링"	
 keywords: ["Spring"]
 draft: true
-categories: ["Spring"]
+categories: ["Java"]
+subcategories: ["Spring"]
 tags: ["Spring","Framework","SpringFramework"]
 math: false
 toc: true

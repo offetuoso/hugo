@@ -1,14 +1,14 @@
-<div style="padding: 0 0 0 20px;">
-	<h4 class="categories__list" style="margin-bottom: 10px;">Categories</h4>
-	<p class="categories__list" style="padding: 0 0 0 0px !important;">blog</p>
+<div style="padding: 0 0 0 20px; width: 90%">
+	<h4 class="categories__list" style="margin-bottom: 10px;padding-left: 0px !important;">Categories</h4>
 	<ul class="tree categories__list">
 	   {{ range $category , $value := $.Site.Taxonomies.categories }}
 	  
 		{{ $list := ( index $.Site.Data.subclist $category ) }}
+	    {{$first := substr $category 0 1}}
 		
 	  <li class="category__item">
-	    <a class="category__link" href="{{ "/categories/" | relLangURL}}{{ $category | urlize }}/">{{ $category }} ({{ len $value }})</a>
-	     {{ $cnt := 0 }}
+	    <a class="category__link" href="{{ "/categories/" | relLangURL}}{{ $category | urlize }}/">{{upper $first}}{{substr $category 1}} ({{ len $value }})</a>
+	     
 		<ul class="subcategories__list">
 		     {{ range $key , $val := $list }}
 		   

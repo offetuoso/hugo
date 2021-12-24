@@ -9,7 +9,8 @@ slug: "database-coding-test-tip"
 description: "데이터베이스 코딩테스트 팁"
 keywords: ["database", "CodingTest"]
 draft: true
-categories: ["CodingTest"]
+categories: ["Algorithm"]
+subcategories: ["Tips"]
 tags: ["CodingTest"]
 math: false
 toc: true

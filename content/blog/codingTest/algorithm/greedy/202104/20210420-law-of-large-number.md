@@ -10,6 +10,7 @@ description: "코딩테스트 큰수의 법칙"
 keywords: ["Algorithm", "CodingTest", "Python","Java"]
 draft: false
 categories: ["Algorithm"]
+subcategories: ["이코테"]
 tags: ["Algorithm", "Greedy", "이코테", "수열"]
 math: false
 toc: true

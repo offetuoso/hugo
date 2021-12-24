@@ -10,6 +10,7 @@ description: "파이썬 기본 개념정리."
 keywords: ["python", "basic", "tutorial"]
 draft: true
 categories: ["Python"]
+subcategories: ["Basic Python"]
 tags: ["python"]
 math: false
 toc: true

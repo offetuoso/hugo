@@ -10,7 +10,8 @@ slug: "Prepare_to_AWS_EC2_for_docker"
 description: "도커를 위한 AWS EC2 서비스"	
 keywords: ["Docker"]
 draft: true
-categories: ["Docker"]
+categories: ["Backend"]
+subcategories: ["Docker"]
 tags: ["Docker","Mysql"]
 math: false
 toc: true

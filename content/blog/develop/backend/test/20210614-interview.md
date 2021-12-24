@@ -7,10 +7,11 @@ font_size: "28px"
 opacity: "0.4"
 date: 2021-05-29
 slug: "interview"
-description: "인터뷰 "	
-keywords: ["Restful"]
+description: "인터뷰"	
+keywords: ["backend"]
 draft: true
-categories: ["RESTful"]
+categories: ["backend"]
+subcategories: ["이직준비"]
 tags: ["REST","RESTful","Api"]
 math: false
 toc: true

@@ -10,7 +10,7 @@ description: "그리디 알고리즘."
 keywords: ["Algorithm", "CodingTest", "Python","Java"]
 draft: false
 categories: ["Algorithm"]
-subcategories: ["Greedy"]
+subcategories: ["이코테"]
 tags: ["Algorithm", "Greedy","이코테"]
 math: false
 toc: true

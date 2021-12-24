@@ -9,7 +9,8 @@ slug: "mysql-dbeaver-install"
 description: "Mysql DBeaver 설치"	
 keywords: ["Mysql"]
 draft: false
-categories: ["Mysql"]
+categories: ["database"]
+subcategories: ["MySQL"]
 tags: ["Mysql","Developer","DBeaver","Tools"]
 math: false
 toc: true

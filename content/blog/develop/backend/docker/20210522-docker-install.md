@@ -9,7 +9,8 @@ slug: "docker-install"
 description: "도커 설치"	
 keywords: ["Docker"]
 draft: false
-categories: ["Docker"]
+categories: ["Backend"]
+subcategories: ["Docker"]
 tags: ["Docker","Install"]
 math: false
 toc: true

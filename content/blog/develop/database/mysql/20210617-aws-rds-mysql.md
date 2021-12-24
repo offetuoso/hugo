@@ -9,7 +9,8 @@ slug: "aws-rds-mysql"
 description: "AWS RDS를 이용한 Mysql"
 keywords: ["RDS"]
 draft: false
-categories: ["AWS"]
+categories: ["Backend"]
+subcategories: ["AWS"]
 tags: ["AWS", "RDS", "MySQL"]
 math: false
 toc: true

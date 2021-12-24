@@ -9,7 +9,8 @@ slug: "vue-webpack"
 description: "Vue.js WebPack 설정하기"	
 keywords: ["Vue"]
 draft: false
-categories: ["VueJs"]
+categories: ["frontend"]
+subcategories: ["Vue"]
 tags: ["Front","Vue","framework"]
 math: false
 toc: true

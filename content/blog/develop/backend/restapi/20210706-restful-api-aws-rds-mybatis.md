@@ -9,7 +9,8 @@ slug: "restful-api-3"
 description: "레스트풀 API"	
 keywords: ["Restful"]
 draft: true
-categories: ["Restful"]
+categories: ["Backend"]
+subcategories: ["RESTful"]
 tags: ["Restful","Api", "AWS", "RDS", "Mysql","Mybatis"]
 math: false
 toc: true

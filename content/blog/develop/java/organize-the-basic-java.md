@@ -10,6 +10,7 @@ description: "자바의 기본 개념정리."
 keywords: ["java", "basic", "tutorial"]
 draft: true
 categories: ["Java"]
+subcategories: ["Basic Java"]
 tags: ["java"]
 math: false
 toc: true
