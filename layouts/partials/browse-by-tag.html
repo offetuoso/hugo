@@ -1,8 +1,11 @@
-<ul class="tags__list">
-  {{ range $tag, $value := $.Site.Taxonomies.tags }}
-  <li class="tag__item">
-    <a class="tag__link" href="{{ "/tags/" | relLangURL}}{{ $tag | urlize }}/">{{ $tag }} ({{ len $value }})</a>
-  </li>
-  {{ end }}
-</ul>
+<div style="padding: 0 0 0 20px; width: 90%">
+	<h4 class="tags__list" style="margin-bottom: 10px;padding-left: 0px !important;">Tags</h4>
+	<ul class="tags__list">
+	  {{ range $tag, $value := $.Site.Taxonomies.tags }}
+	  <li class="tag__item">
+	    <a class="tag__link" href="{{ "/tags/" | relLangURL}}{{ $tag | urlize }}/">{{ $tag }} ({{ len $value }})</a>
+	  </li>
+	  {{ end }}
+	</ul>
+</div>
 

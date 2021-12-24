@@ -4,23 +4,55 @@
 
 {{ define "main" }}
   {{ $dateFormat := .Site.Params.dateFormat | default "Jan 2 2006" }}
-
+  {{$title := lower .Title }}
   <div class="post-list__container">
-    <div class="category__header">
-      <a href="/blog">{{ i18n "all_posts" }}</a><span class="separator">/</span>
-      <h1 class="category__term">{{ .Title }}</h1>
-    </div>
-    <ul class="post-list">
-      {{ range .Data.Pages }}
-      <li class="post">
-        <div class="post__header">
-          <time class="post__date" datetime="{{ .Date }}">{{ .Date.Format $dateFormat }}</time>
-          <h2 class="post__title">
-            <a href="{{.RelPermalink}}">{{ .Title }}</a>
-          </h2>
-        </div>
-      </li>
-      {{ end }}
-    </ul>
+  	<div>
+	    <div class="category__header">
+	      <a href="/blog">{{ i18n "all_posts" }}</a><span class="separator">/</span>
+	      <h1 class="category__term">{{ .Title }}</h1>
+	    </div>
+	    <ul class="post-list">
+	      {{ range .Data.Pages }}
+	      <li class="post">
+	        <div class="post__header">
+	          <time class="post__date" datetime="{{ .Date }}">{{ .Date.Format $dateFormat }}</time>
+	          <h2 class="post__title">
+	            <a href="{{.RelPermalink}}">{{ .Title }}</a>
+	          </h2>
+	           {{ partial "tags.html" .}}
+	        </div>
+	      </li>
+	      {{ end }}
+	    </ul>
+  	</div>
+  	<div>
+      <!-- {{ partial "browse-by-category.html" .}}   -->
+	      <div style="padding: 0 0 0 20px; width: 90%">
+			<h4 class="categories__list" style="margin-bottom: 10px;padding-left: 0px !important;">Categories</h4>
+			<ul class="tree categories__list">
+			   {{ range $category , $value := $.Site.Taxonomies.categories }}
+			  
+				{{ $list := ( index $.Site.Data.subclist $category ) }}
+			    {{$first := substr $category 0 1}}
+			    
+			  	         
+			  {{ if eq $category $title }}
+				  <li class="category__item">
+				    <a class="category__link" href="{{ "/categories/" | relLangURL}}{{ $category | urlize }}/">{{upper $first}}{{substr $category 1}} ({{ len $value }})</a>
+				     
+					<ul class="subcategories__list">
+					     {{ range $key , $val := $list }}
+					   
+						 		<li class="subcategory__item" >
+						 			<a class="subcategory__link" href="{{ "/subcategories/" | relLangURL}}{{ $val | urlize }}?category={{$category}}">{{ $val }}</a>
+						 		</li>
+						 {{end}}
+				 	</ul>
+				  </li>
+				  {{ end }}
+			  {{ end }}
+			</ul>
+		</div>
+  	</div>
   </div>
 {{ end }}

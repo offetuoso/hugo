@@ -3,18 +3,15 @@
     {{ $currentPage := . }}
     {{ range .Site.Menus.main }}
       <li>
-    
-			        <a {{ if or ($currentPage.IsMenuCurrent "main" .) (eq $currentPage.Section .Identifier) (in $currentPage.Page .Identifier) }} class="active"
-			        {{end}} 
-			        
-			        {{if in .Identifier "search"}}
-			        href="javascript:proceedsearch();"
-			       	{{ else }}
-			        href="{{ .URL }}"
-      				{{ end }}
-			        >{{ .Title }}</a>
-      					
-            
+	        <a {{ if or ($currentPage.IsMenuCurrent "main" .) (eq $currentPage.Section .Identifier) (in $currentPage.Page .Identifier) }} class="active"
+	        {{end}} 
+	        
+	        {{if in .Identifier "search"}}
+	        href="javascript:proceedsearch();"
+	       	{{ else }}
+	        href="{{ .URL }}"
+    				{{ end }}
+	        >{{ .Title }}</a>
       </li>
     {{ end }}
   </ul>

@@ -19,7 +19,6 @@ function initSubcategory() {
 	
 	if(window.location.pathname.indexOf('subcategories') > -1){
 		var query = searchParam('category');
-		
 		var category = document.querySelector("#category__link");
 		category.innerHTML = query[0].toUpperCase() + query.slice(1);
 		category.href = "/categories/"+query;
