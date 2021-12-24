@@ -26,8 +26,8 @@
 	    </ul>
   	</div>
   	<div>
-      <!-- {{ partial "browse-by-category.html" .}}   -->
-	      <div style="padding: 0 0 0 20px; width: 90%">
+      {{ partial "browse-by-category.html" .}}   
+	    <!--   <div style="padding: 0 0 0 20px; width: 90%">
 			<h4 class="categories__list" style="margin-bottom: 10px;padding-left: 0px !important;">Categories</h4>
 			<ul class="tree categories__list">
 			   {{ range $category , $value := $.Site.Taxonomies.categories }}
@@ -52,7 +52,7 @@
 				  {{ end }}
 			  {{ end }}
 			</ul>
-		</div>
+		</div>-->
   	</div>
   </div>
 {{ end }}

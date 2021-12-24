@@ -22,7 +22,7 @@ ignoreErrors = ["error-remote-getjson"]
   # 소셜 계정에 대한 링크, 필요에 따라 댓글 / 댓글 제거. 지정된 항목에 대한 아이콘이 표시됩니다.
   #twitter = "https://twitter.com/<your handle>"
   github = "https://github.com/offetuoso"
-  email = "mailto:offetuoso@gmail.com,offetuoso@naver.com"
+  email = "mailto:kihun.oh.developer@gmail.com,offetuoso@gmail.com,offetuoso@naver.com"
   # mastodon = "https://mastodon.social/@nickname"
   # facebook = "https://facebook.com/<your handle>"
   #gitlab = "https://gitlab.com/<your handle>"
