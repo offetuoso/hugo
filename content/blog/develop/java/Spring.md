@@ -169,6 +169,332 @@ L	|LSP|리스코프 치환 원칙 (Liskov substitution principle) “프로그�
 I	|ISP| 터페이스 분리 원칙 (Interface segregation principle) “특정 클라이언트를 위한 인터페이스 여러 개가 범용 인터페이스 하나보다 낫다.”
 D	|DIP| 의존관계 역전 원칙 (Dependency inversion principle) 프로그래머는 “추상화에 의존해야지, 구체화에 의존하면 안된다.” 의존성 주입은 이 원칙을 따르는 방법 중 하나다.
 
+#### SOLID의 SRP(Single Responsibility Principle) 단일 책임 원칙
+> 단일 책임 원칙의 정의는 "클래스는 하나의 책임만 가져야 한다." 라는 규칙입니다. 클래스가 여러 책임을 갖게 되면 그 클래스의 각 책임마다 변경되는 이유가 발생하기 때문에 한 개의 책임만 가져야합니다. 
+
+> - 하나의 책임이라는 것은 모호하다.
+	> - 클 수 있고, 작을 수 있다.
+	> - 문맥과 상황에 따라 다르다.
+> - 중요한 기준은 변경이다. 변경이 있을 때 파급 효과가 적으면 단일 책임 원칙을 잘 따른 것
+> - 예) UI와 SQL 등 분리, 객체의 생성과 사용을 분리
+
+
+##### 단일 책임 원칙의 예제
+> 예를 들어 2개의 값을 더하는 메소드와 입력받은 숫자를 출력해주는 메소드가 있다면, add()는 두수를 입력받아 1개의 숫자로 더해 반환을 해주고, printNumber()는 하나의 값을 받아 그 수를 출력하는 각각의 respansibility(책임)을 가지고 있을때
+
+```
+    public static int add(int a, int b){
+        return a + b;
+    }
+
+    public static void printNumber(int a){
+        System.out.println(a);
+    }
+```
+	
+> 굳이 코드를 줄이기 위해 2가지 책임을 가지는 메소드는 필요없다는 것입니다. 
+
+```
+    public static void addPrint(int a, int b){
+        System.out.println(a + b);
+    }
+```
+
+> 위 설명은 간단하니 좀더 디테일한 설명을 위해 Dog이라는 클래스를 생성해 보겠습니다. 
+
+```
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class Dog {
+    private String name;
+    private int age;
+    private String status;
+
+    Dog(){
+        this.status = "앉은 상태";
+    }
+
+    Dog(String name, int age, String status){
+        this.name = name;
+        this.age = age;
+        this.status = status;
+    }
+
+    public void eat(String food){
+        System.out.println(food+"를 먹습니다.");
+    }
+
+    public void walk(){
+        this.status = "걷는 상태";
+    }
+
+    public void speak(String Message){
+        System.out.println(Message);
+    }
+	
+	// 강아지의 정보를 출력
+    public void printDog(){
+        System.out.println("name= "+this.name+" ,age= "+this.age+" ,status= "+this.status);
+    }
+	
+	//강아지의 정보를 로깅
+    public void loggingDog(){
+        Logger logger = Logger.getGlobal();
+        logger.log(Level.INFO,"name= "+this.name+" ,age= "+this.age+" ,status= "+this.status);
+    }
+}
+
+```
+
+> 위의 코드에서 강아지의 이름과 나이 그리고 상태를 가지고 있고, 먹는 기능, 걷는 기능, 짖는 기능이 있습니다. <br>
+하지만 강아지 정보를 출력하거나 강아지 정보를 로깅하는 것은 강아지에 대한 책임만 있는것이 아니라 강아지의 정보 출력과 강아지 정보 로깅의 책임을 가지고 있어 좋은 코드라 보기 어렵습니다.
+
+```
+    public String getInfo(){
+        return "name= "+this.name+" ,age= "+this.age+" ,status= "+this.status;
+    }
+```
+
+> 강아지의 정보를 얻어 낼 수 있는 기능을 추가하여, 
+
+```
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class srpMain {
+    static Logger logger = Logger.getGlobal();
+    public static void main(String[] args) {
+        Dog happy = new Dog("해피",1,"앉은 상태");
+       /* happy.printDog();
+        happy.loggingDog();*/
+
+        System.out.println(happy.getInfo());
+        logger.log(Level.INFO,happy.getInfo());
+    }
+}
+
+~~~ console ~~~
+
+name= 해피 ,age= 1 ,status= 앉은 상태
+12월 25, 2021 4:04:27 오후 srpMain main
+정보: name= 해피 ,age= 1 ,status= 앉은 상태
+
+```
+
+> 호출하는 부분에서 필요한 강아지의 정보 출력이나, 로깅을 처리하면 Dog 클래스에서는 강아지에 대한 책임만 남게 됩니다.
+
+
+#### SOLID의 OCP 개방-폐쇄의 원칙 (open-closeed principle)
+> - 소프트웨어 요소는 <mark>확장에는 열려</mark>있으나 <mark>변경에는 닫혀</mark> 있어야 한다. 
+> - 다형성을 활용
+> - 인터페이스를 구현한 새로운 클래스를 하나 만들어서 새로운 기능을 구현
+
+> 지금까지 배운 역할과 구현을 분리하여 생각해보자.
+
+```
+public void MemberService(){
+	private MemberRepository memberRepository = MemoryMemberRepository(); //메모리에 맴버를 저장하는 레퍼지토리
+}
+```
+
+```
+public void MemberService(){
+	//private MemberRepository memberRepository = MemoryMemberRepository(); //메모리에 맴버를 저장하는 레퍼지토리
+	private MemberRepository memberRepository = JdbcMemberRepository(); //DB에 맴버를 저장하는 레퍼지토리
+}
+```
+
+> 만약 MemoryMemberRepository에서 JdbcMemberRepository로 memberRepository를 수정할 경우 MemberService가 수정되기 때문에 OCP에 위배 되게 됩니다.
+
+#### OCP 개방-폐쇄 원칙 - 문제점
+> - MemberService 클라이언트가 구현 클래스를 직접 선택
+	> - MemberRepository m = new MemoryMemberRepository()// 기존 소스  
+	> - MemberRepository m = new JdbcMemberRepository()// 변경 소스
+> - 구현 객체를 변경하려면 클라이언트 코드를 변경해야한다.
+> - 분면 다형성을 사용했지만, OCP 원칙을 지킬 수 없다.
+> - 이 문제를 어떻게 해결해야 하나?
+> - 객체를 생성하고, 연관관계를 맺어주는 별도의 조립, 설정자가 필요하다.
+
+> COP원칙을 지키기 위하여 Spring이 DI와 IoC를 지원하여 도움을 줍니다.
+
+##### 개방-폐쇄 원칙의 예제
+> Animal 클래스를 생성하고, 동물의 타입에 따라 동물이 우는(말하는) 기능을 speak() 메소드로 만들어 두었습니다.
+
+
+```
+
+// OCP 위배 1
+package OCP;
+
+class Animal {
+    private String type;
+
+    public Animal(String type) {
+        this.type = type;
+    }
+
+    public void speak() {
+        if (this.type.equals("CAT")) {
+            System.out.println("야옹");
+        }else if (this.type.equals("DOG")) {
+            System.out.println("멍멍");
+        }else {
+            System.out.println("잘못된 타입입니다.");
+        }
+    }
+}
+
+public class OcpMain {
+    public static void main(String[] args) {
+        Animal kitty = new Animal("CAT");
+        Animal happy = new Animal("DOG");
+
+        hey(kitty);
+        hey(happy);
+    }
+
+    public static void hey(Animal animal){
+        animal.speak();
+    }
+}
+
+
+
+~~~ console ~~~
+야옹
+멍멍
+
+```
+
+> 누군가 소와 양을 추가해 달라는 요구사항이 생겨서 
+
+```
+// OCP 위배 2
+package OCP;
+
+class Animal {
+    private String type;
+
+    public Animal(String type) {
+        this.type = type;
+    }
+
+    public void speak() {
+        if (this.type.equals("CAT")) {
+            System.out.println("야옹");
+        }else if (this.type.equals("DOG")) {
+            System.out.println("멍멍");
+        }else {
+            System.out.println("잘못된 타입입니다.");
+        }
+    }
+}
+
+public class OcpMain {
+    public static void main(String[] args) {
+        Animal kitty = new Animal("CAT");
+        Animal happy = new Animal("DOG");
+        Animal cow = new Animal("COW");
+        Animal sheep = new Animal("SHEEP");
+
+        hey(kitty);
+        hey(happy);
+        hey(cow);
+        hey(sheep);
+    }
+
+    public static void hey(Animal animal){
+        animal.speak();
+    }
+}
+
+
+
+~~~ console ~~~
+야옹
+멍멍
+잘못된 타입입니다.
+잘못된 타입입니다.
+
+```
+
+> 소와 양을 추가했지만, speak()에서 지원하는 동물의 범주에 소와 양이 없기 때문에 잘못된 타입이라는 오류를 출력하게 됩니다. 
+> 현재는 확장(extension)을 하기 위해서는 수정이 필요하기 때문에 개방-폐쇄 원칙(open-closed principle)을 위배합니다.
+
+>  개방-폐쇄 원칙을 지킬수 있는 소스로 수정하게 되면
+
+```
+package OCP;
+
+abstract class  Animal {
+    abstract public void speak();
+}
+
+class Cat extends Animal {
+
+    @Override
+    public void speak() {
+        System.out.println("야옹");
+    }
+}
+
+class Dog extends Animal {
+
+    @Override
+    public void speak() {
+        System.out.println("멍멍");
+    }
+}
+
+class Cow extends Animal {
+
+    @Override
+    public void speak() {
+        System.out.println("음머어");
+    }
+}
+
+class Sheep extends Animal {
+
+    @Override
+    public void speak() {
+        System.out.println("메에에");
+    }
+}
+
+public class OcpMain {
+    public static void main(String[] args) {
+        Animal kitty = new Cat();
+        Animal happy = new Dog();
+        Animal cow = new Cow();
+        Animal sheep = new Sheep();
+
+        hey(kitty);
+        hey(happy);
+        hey(cow);
+        hey(sheep);
+
+    }
+
+    public static void hey(Animal animal){
+        animal.speak();
+    }
+}
+
+~~~ console ~~~
+
+야옹
+멍멍
+음머어
+메에에
+
+```
+
+> Animal을 추상화하여 각각 동물들으로 상속받아서 speak()를 구현한다면, 수정없이 Hey()를 이용해 추가된 동물들 까지 부를 수 있습니다. 
+
+>>>>> 코드없는 프로그래밍 리스코프 치환법칙 
+  
 ## 스프링의 특징
 
 > 1. 경량
@@ -315,4 +641,9 @@ Integrations galore
 https://velog.io/@outstandingboy/Spring-%EC%99%9C-%EC%8A%A4%ED%94%84%EB%A7%81-%ED%94%84%EB%A0%88%EC%9E%84%EC%9B%8C%ED%81%AC%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%A0%EA%B9%8C-Spring-vs-EJB-JavaEE#-%EC%8B%9C%EB%A6%AC%EC%A6%88---%EC%8A%A4%ED%94%84%EB%A7%81-50
 
 https://ybdeveloper.tistory.com/29
+
+
+## 참조 
+
+<a href="https://steady-coding.tistory.com/370">제이온님의 블로그</a>
 

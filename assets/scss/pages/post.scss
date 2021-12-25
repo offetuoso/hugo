@@ -42,12 +42,12 @@ $tocBreakpoint: 1024px;
     padding-top: 10px;
 
     .anchor {
-      top: 13px;
+      top: 9px;
       text-decoration: none;
       position: absolute;
       left: -1rem;
       color: #a0c8ff;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: bold;
     }
 
@@ -66,7 +66,7 @@ $tocBreakpoint: 1024px;
       position: absolute;
       left: -1rem;
       color: #a0c8ff;
-      font-size: 1.2rem;
+      font-size: 1.0rem;
       font-weight: bold;
     }
 
@@ -74,6 +74,28 @@ $tocBreakpoint: 1024px;
       color: #a0c8ff;
     }
   }
+  
+  
+  h4 {
+    position: relative;
+    padding-top: 10px;
+
+    .anchor {
+      top: 9px;
+      text-decoration: none;
+      position: absolute;
+      left: -1rem;
+      color: #a0c8ff;
+      font-size: 1.0rem;
+      font-weight: bold;
+    }
+
+    .anchor:hover {
+      color: #a0c8ff;
+    }
+  }
+  
+  
 
   blockquote {
     width: 95%;
