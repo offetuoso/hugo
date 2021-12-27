@@ -206,5 +206,5 @@ HTTP/1.1 Host: restapi.example.com Accept: image/jpg
 
 
 
-### 참고
+## 참고
 > - <a href="https://ko.wikipedia.org/wiki/REST">REST wiki</a>
