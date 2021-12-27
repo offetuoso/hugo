@@ -87,10 +87,15 @@ public class Member {
 > JpaMain.java
 
 ```
-            Member member1 = new Member();
-            member1.setId("ID_A");
+			Member member1 = new Member();
+            member1.setId("USER_A"); // 아이디 채번을 직접하여 할당
             member1.setUserName("유저A");
             em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setId("USER_B");
+            member2.setUserName("유저B");
+            em.persist(member2);
 
             tx.commit();
 ```
@@ -126,8 +131,6 @@ AUTO는 방언에 따라 다르게 생성
     private String id;
     
 ````
-
->  강의를 따라하던중 아래와 같은 에러가 발생하였고, 자동 생성되는 키 값들은 대부분 숫자로 되어있기 때문에 Id를 다시 Integer로 변경하였더니 해결되었습니다. 
 
 ```
 Hibernate: 
@@ -211,17 +214,11 @@ INFO: HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exe
 
 > Member.java
 
-```
-    @Id
-    @GeneratedValue(strategy  = GenerationType.IDENTITY) // 방언에 따라 다르게 생성
-    private Integer id; 
-```
-
-![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-002.png)
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-003.png)
 
 > persistence.xml에서 MySQL 방언으로 다시 실행
 
-![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-003.png)
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-004.png)
 
 > AUTO_INCREMENT로 키를 생성하겠다 설정이 된것을 볼 수 있습니다.
 
@@ -237,9 +234,6 @@ h2 데이터베이스는 꼭 다음 링크에 들어가서 1.4.200 버전을 설
 </a>
 
 > 2.0.200 버전으로 다시 설치 하였습니다. 
-
-이미지 다시 떠야함 ㅠㅠㅠ
-
 
 
 ```
@@ -262,6 +256,228 @@ INFO: HHH10001008: Cleaning up connection pool [jdbc:h2:tcp://localhost/~/test]
 Process finished with exit code 0
 
 ```
+
+
+
+##### GenerationType.SEQUENCE - 특징
+> - 데이터베이스 시퀀스는 유일한 값을 순서대로 생성하는 특별한 데이터베이스 오브젝트( 예) 오라클 시퀀스)
+> - 오라클, PostgreSQL, DB2, H2 데이터베이스에서 사용
+
+> Member.java <br>
+> GeneratedValue 전략을 GenerationType.SEQUENCE 로 변경
+
+````
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private String id;
+
+````
+
+> GeneratedValue(strategy = GenerationType.SEQUENCE) 적용시 오류 발생이 되었고 오류는 아래와 같습니다.
+
+```
+
+javax.persistence.PersistenceException: org.hibernate.id.IdentifierGenerationException: Unknown integral data type for ids : java.lang.String
+	at org.hibernate.internal.ExceptionConverterImpl.convert(ExceptionConverterImpl.java:154)
+	at org.hibernate.internal.ExceptionConverterImpl.convert(ExceptionConverterImpl.java:181)
+	at org.hibernate.internal.ExceptionConverterImpl.convert(ExceptionConverterImpl.java:188)
+	at org.hibernate.internal.SessionImpl.firePersist(SessionImpl.java:807)
+	at org.hibernate.internal.SessionImpl.persist(SessionImpl.java:785)
+	at hellojpa.JpaMain.main(JpaMain.java:22)
+Caused by: org.hibernate.id.IdentifierGenerationException: Unknown integral data type for ids : java.lang.String
+	at org.hibernate.id.IdentifierGeneratorHelper.getIntegralDataTypeHolder(IdentifierGeneratorHelper.java:224)
+	at org.hibernate.id.enhanced.SequenceStructure$1.getNextValue(SequenceStructure.java:98)
+	at org.hibernate.id.enhanced.NoopOptimizer.generate(NoopOptimizer.java:40)
+	at org.hibernate.id.enhanced.SequenceStyleGenerator.generate(SequenceStyleGenerator.java:482)
+	at org.hibernate.event.internal.AbstractSaveEventListener.saveWithGeneratedId(AbstractSaveEventListener.java:119)
+	at org.hibernate.event.internal.DefaultPersistEventListener.entityIsTransient(DefaultPersistEventListener.java:192)
+	at org.hibernate.event.internal.DefaultPersistEventListener.onPersist(DefaultPersistEventListener.java:135)
+	at org.hibernate.event.internal.DefaultPersistEventListener.onPersist(DefaultPersistEventListener.java:62)
+	at org.hibernate.internal.SessionImpl.firePersist(SessionImpl.java:800)
+	... 2 more
+
+
+```
+
+
+> Caused by: org.hibernate.id.IdentifierGenerationException: Unknown integral data type for ids : java.lang.String 
+
+> 알 수 없는 정수 데이터 유형 : String
+
+> Member.java의 Id 가 현재 String이라 나오던 문제였습니다. 
+
+
+> Member.java - String Id -> Long Id로 변경
+
+
+```
+package hellojpa;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
+@Entity
+public class Member {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    @Column(name="name", length = 10) // 엔티티 명은 userName으로, DB 컬럼명을 name으로 매핑하여 사용 지정
+    private String userName;
+
+
+    // JPA 기본적으로 동적으로 객체를 생성하는 기능이 있어, 기본 생성자도 추가해줘야 된다.
+    public Member() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+}
+
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-005.png)
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-006.png)
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-007.png)
+>   call next value for hibernate_sequence 기본 시퀀스를 사용해서 새로운 키값을 생성하게 되는데, 테이블 마다 시퀀스를 따로 관리하고 싶다면 @SequnceGenerator를 사용하면 됩니다.
+
+##### Sequence 전략 - 매핑
+
+> Member.java
+
+
+```
+@Entity
+@SequenceGenerator(
+        name = "MEMBER_SEQ_GENERATOR"
+        , sequenceName = "MEMBER_SEQ" // 매핑할 데이터베이스 시퀀스 이름
+        , initialValue = 1, allocationSize = 1
+)
+
+public class Member {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE
+            , generator = "MEMBER_SEQ_GENERATOR") //사용할 Generator 매핑
+    private Long id;
+
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-008.png)
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-009.png)
+
+##### SEQUENCE - @SequenceGenerator
+> - 주의 allocationSize 기본 값 = 50
+
+속성			|	설명		| 기본값
+-----------|-----------|---------------
+name 		| 식별자 생성기 이름 | 필수
+sequenceName  | 데이터베이스에 등록되어있는 시퀀스 이름 | hibernate_sequence
+initialValue | DDL 생성 시에만 사용됨, 시퀀스 DDL을 생성할 때 처음 시작하는 수를 1로 지정한다. | 1
+allocationSize | 시퀀스 한 번 호출에 증가하는 수(성능 최적화에 사용됨) <br> <mark>데이터베이스 시퀀스 값이 하나씩 증가하도록 설정되어 있으면 이 값을 반드시 1로 설정해야 한다</mark> | <mark>50</mark>
+catalog, schema | 데이터베이스 catalog, schema 이름 |  
+
+
+
+
+##### Table 전략
+> - 키 생성 전용 테이블을 하나 만들어서 데이터베이스 시퀀스를 흉내내는 전략 <br>
+> 장점 : 모든 데이터베이스에 적용 가능 <br>
+> 단점 : 성능
+
+##### Table 전략 - 매핑
+
+> Member.java
+
+````
+@Entity
+@TableGenerator(
+        name = "MEMBER_SEQ_GENERATOR"
+        , table = "MY_SEQUENCE" // 매핑할 테이블명
+        , pkColumnValue = "MEMBER_SEQ" , allocationSize = 1)
+public class Member {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE
+            , generator = "MEMBER_SEQ_GENERATOR") //사용할 Generator 매핑
+    private Long id;
+
+
+````
+
+```
+ctrate table MY_SEQUENCE (
+	sequence_name varchar(255) not null,
+	next_val bigint,
+	primary ket (sequence_name)
+)
+
+```
+
+> 수정하고 애플리케이션 재시작 하면, JPA가 자동으로 MY_SEQUENCE 테이블을 생성해준다. 
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-010.png)
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-011.png)
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-012.png)
+
+
+##### @TableGenerator - 속성
+
+속성 				   | 설명				     |	기본값
+--------------------|---------------------|-----------
+name				| 식별자 생성기 이름	 | 필수
+table				| 키 생성 테이블 이름  | hibernate_sequences
+pkColumnName		| 시퀀스 컬럼명 		| sequence_name
+valueColumnName 	| 시퀀스 값 컬럼명      | next_val
+pkColumnValue  		| 키로 사용할 값 이름		| 엔티티 이름
+initalValue    		| 초기 값, 마지막으로 생성된 값이 기준이다. | 0
+allocationSize 		| 시퀀스 한 번 호출에 증가하는 수 | <mark>50</mark>
+catalog, schema 	| 데이터베이스 catalog, schema 이름 |  
+uniqueConstains(DDL)| 유니크 제약 조건을 지정할 수 있다. | 
+
+
+> 운영에서는 table 전략을 사용하기는 부담스럽고 각 테이블의 sequence를 사용한 sequence 전략을 적극 채용하여 사용한다고 합니다.
+
+
+#### 권장하는 식별자 생성 전략
+> - <mark>기본 키 제약 조건</mark> : null 아님, 유일, <mark>변하면 안된다.</mark>
+> - 미래까지 이 조건을 만족하는 자연키를 찾기 어렵다. 대리키(대체키)를 사용하자. ( 비즈니스와 상관없는 랜덤키)
+> - 예를 들어 주민등록번호도 기본 키로 적절하지 않다.
+> - 권장 : Long형 + 대체키 + 카 생성전략 사용
+
+> 10억이 넘어도 동작해야 하니까 Long형, 시퀀스를 쓴다던가, uuid를 쓴다던가 대체키를 쓰시고, 카생성 전략들을 조합해서 사용하는 것을 권장<br>
+AUTO-INCREMENT나 SEQUENCE Object 둘중 하나를 사용하시고 아니면 때에 따라서 uuid, 랜덤 값을 조합한 회사내의 룰을 따르길 권장. <br> 
+절대 비즈니스 로직을 키로 끌고 오는것을 권장하지는 않는다고 합니다.
+
+
+##### IDENTITY 전략 애매한점 
+> strategy = GenerationType.IDENTITY를 사용할 경우 Key를 Null로 하여 DB에 인서트할 당시에 키가 생성하게됩니다. <br> 영속성 컨텍스트에서 관리를 하기 위해서는  PK값이 있어야 합니다. 하지만 이 전략은 DB에 들어가봐야 PK를 알 수 있습니다. 그래서 제약이 생기게 됩니다. 
+
+
+
+
 
 
 

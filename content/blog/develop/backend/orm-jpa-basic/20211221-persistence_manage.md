@@ -28,7 +28,7 @@ toc: true
 ### 엔티티 매니저 팩토리와 앤티티 매니저
 > 요청이 오면 앤티티 매니저 팩토리를 통해 엔티티 매니저를 생성하고, 앤티티 매니저는 커넥션풀을 이용해 DB에 접근 합니다.
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-001.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-001.png)
 
 
 ### 영속성 컨텍스트
@@ -44,11 +44,11 @@ toc: true
 
 #### J2SE 환경
 > 엔티티 매니저와 영속성 컨텍스트가 1:1
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-002.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-002.png)
 
 #### J2EE, 스프링 프레임워크 같은 컨테이너 환경
 > 엔티티 매니저와 영속성 컨텍스트가 N:1
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-003.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-003.png)
 
 
 ### 엔티티의 생명주기
@@ -66,12 +66,12 @@ toc: true
 > - 삭제 (removed)
 > <mark>삭제</mark>된 상태
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-004.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-004.png)
 
 #### 비영속 (new/transient)
 > 객체만 생성하고 세팅한 상태
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-005.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-005.png)
 
 ```
 // 객체를 생성한 상태(비영속)
@@ -83,7 +83,7 @@ member.setName("회원2")
 #### 영속 (managed)
 > 객체만 생성하고 세팅한 상태
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-006.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-006.png)
 
 ```
 // 객체를 생성한 상태(비영속)
@@ -120,7 +120,7 @@ tx.commit(); // 실제 쿼리가 실행되는 지점
 #### 엔티티 조회, 1차 캐시
 > 영속성 컨텍스트는 내부에 1차 캐시를 가지고 있습니다. @Id가 키가 되고 값은 member객체 자체인 Map이라 생각하면 됩니다.
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-007.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-007.png)
 
 ```
 // 엔티티를 생성한 상태(비영속)
@@ -148,7 +148,7 @@ Member findMemeber = em.find(Member.class, "3L");
 
 ```
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-008.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-008.png)
 
 > 조회를 실행시 우선적으로 1차 캐시에 값으로 객체가 있는지 확인 후 있으면 캐시에서 바로 가져오고, 없는 경우 DB에서 조회를 하여 1차 캐시에 저장하고 객체를 가져오게 됩니다.
 
@@ -158,12 +158,12 @@ Member findMemeber = em.find(Member.class, "3L");
 Member findMemeber = em.find(Member.class, "10L");
 ```
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-009.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-009.png)
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-010.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-010.png)
 > commit()이후에 Insert를 하지만, Select문이 나오지 않는다. 이미 1차 캐시에서 조회하여 커밋 이전에 출력한다.
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-011.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-011.png)
 > 같은 객체를 여러번 조회를 하면, 1번만 Select 문을 날리고 이후 1차 캐시에서 조회
 
 
@@ -177,7 +177,7 @@ Member findMemeber = em.find(Member.class, "10L");
 
 ```
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-012.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-012.png)
 
 > 같은 트랜잭션 안에서는 조회한 같은 객체는 동일한 객체로 인식 보장
 
@@ -210,11 +210,11 @@ Member findMemeber = em.find(Member.class, "10L");
             tx.commit(); // [트랜잭션] 카밋
 ```
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-013.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-013.png)
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-013-1.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-013-1.png)
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-014.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-014.png)
 
 > em.persist()로 memberA와 memberB를 저장할때, 영속 컨텍스트안의 쓰기지연 SQL 저장소에 memberA를 Insert SQL을 저장하고<br>
 > 그리고 이후에 memberB에 대한 Insert SQL을 쓰기지연 SQL 저장소에 저장합니다. 여기 까지 DB에 저장하지 않고 commit과 함께 DB에 저장합니다.
@@ -223,7 +223,7 @@ Member findMemeber = em.find(Member.class, "10L");
 #### transaction.commit();
 > 트랜잭션이 커밋될때 좀더 자세히 그림으로 설명하면 아래와 같습니다.
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-015.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-015.png)
 
 > 커밋을 하게되면 쓰기지연 저장소에 있는 SQL들을 flush하며, DB에 SQL문들을 DB에 커밋하게 됩니다.
 
@@ -270,7 +270,7 @@ public class Member {
 
 ```
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-016.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-016.png)
 
 > 굳이 하나씩 보내도 되는데 왜 커밋과 함께 DB에 Insert 하느냐 하면 성능을 위해 설정하여 튜닝할 수 있는 여지를 주기 위함이라 합니다. <br>
 
@@ -320,9 +320,9 @@ tx.commit(); // [트랜잭션] 커밋
 
 ```
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-017.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-017.png)
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-018.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-018.png)
 > DB에서 값을 Select 하고 값을 수정만 하고 저장을 따로 하지 않았지만, Update 쿼리까지 실행됩니다.
 
 #### 변경 감지(dirty checking)
@@ -330,7 +330,7 @@ tx.commit(); // [트랜잭션] 커밋
 > 커밋을 하게 되면 내부적으로 flush()를 실행하게 되고, 엔티티와 스냅샷을 비교하게됩니다. 스냅샷은 객체를 읽어올 당시의 값을 스냅샷으로 저장합니다. 트랜잭션에서 커밋하는 시점에 플러시가 호출되며 엔티티와 스냅샷을 비교하여, 변경사항을 쓰기 지연 SQL 저장소에 Update SQL을 저장합니다. 그리고 DB에 Update SQL을 반영하고 commit()을 수행합니다.
 
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-019.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-019.png)
 
 ### 엔티티 삭제
 
@@ -355,7 +355,7 @@ em.remove(memberA); // 엔티티 삭제
 > - 트랜잭션 커밋 - 플러시 자동 호출
 > - JPQL 쿼리 실행 - 플러시 자동 호출
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-020.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-020.png)
 > 다른 예제들과 다르게 라인 "===========" 보다 이전에 flush()를 실행항 당시 변경 사항의 SQL이 로그에 찍히게됨.
 
 ### JPQL 쿼리 실행시 플러시가 자동으로 호출되는 이유
@@ -392,7 +392,7 @@ em.setFlushMode(FlushModeType.COMMIT);
 > - 영속 상태의 엔티티가 영속성 컨텍스트에서 분리(detached)
 > - 영속성 컨텍스트가 제공하는 기능을 사용 못함
 
-![contact](/images/develop/backend/orm-jpa-basic/persistence_manage/img-021.png)
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-021.png)
 
 
 ### 준영속 상태로 만드는 방법

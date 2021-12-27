@@ -40,15 +40,15 @@ toc: true
 > - @Entity가 붙은 클래스는 JPA가 관리, 엔티티라 부른다.
 > - JPA를 사용해서 테이블과 매핑할 클래스는 <mart>@Entity</mark> 필수
 > - 주의
-	> - 기본 생성자 필수 (파라미터가 없는 public 또는 proteted 생성자)
-	> - final 클래스, enum, interface, inner 클래스 사용 X
-	> - 저장할 필드에 final 사용 X
+> 	- 기본 생성자 필수 (파라미터가 없는 public 또는 proteted 생성자)
+> 	- final 클래스, enum, interface, inner 클래스 사용 X
+> 	- 저장할 필드에 final 사용 X
 
 #### @Entity 속성 정리
 > - 속성 : name
-	> - JPA에서 사용할 엔티티 이름을 지정한다.
-	> - 기본값 : 클래스 이름을 그대로 사용 
-	> - 같은 클래스 이름이 없으면 가급적 기본값을 사용한다.
+> 	- JPA에서 사용할 엔티티 이름을 지정한다.
+> 	- 기본값 : 클래스 이름을 그대로 사용 
+> 	- 같은 클래스 이름이 없으면 가급적 기본값을 사용한다.
 	
 
 ```
@@ -156,6 +156,7 @@ public class Member {
 
 #### 데이터베이스 스키마 자동 생성 - 속성
 > - persistence.xml 옵션
+
 ```
 <property name="hibernate.hbm2ddl.auto" value="create" />
 ```
