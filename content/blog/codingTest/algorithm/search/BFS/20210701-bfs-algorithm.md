@@ -112,7 +112,7 @@ visited = [False] * 9
 bfs(graph, 1, visited)
 ```
 
-## 참고 
+#### 참고 
 
 > - <a href="https://infinitt.tistory.com/11">파이썬(Python) 기초 print ( )문의 옵션 (sep , end , format , Escape )</a>
 

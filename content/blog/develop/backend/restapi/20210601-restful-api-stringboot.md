@@ -332,7 +332,7 @@ public class UserProfileController {
 
 
 
-## 참고
+#### 참고
 > - <a href="https://bamdule.tistory.com/158">SpringBoot</a>
 > - <a href="https://spring.io/">spring.io</a>
 > - <a href="https://howtodoinjava.com/maven/maven-dependency-management/">Dependency</a>

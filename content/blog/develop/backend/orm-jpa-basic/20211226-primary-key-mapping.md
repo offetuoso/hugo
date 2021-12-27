@@ -258,6 +258,55 @@ Process finished with exit code 0
 ```
 
 
+##### IDENTITY 전략 애매한점 
+> strategy = GenerationType.IDENTITY를 사용할 경우 Key를 Null로 하여 DB에 인서트할 당시에 키가 생성하게됩니다. <br> 영속성 컨텍스트에서 관리를 하기 위해서는  PK값이 있어야 합니다. 하지만 이 전략은 DB에 들어가봐야 PK를 알 수 있습니다. 그래서 제약이 생기게 됩니다. 
+
+
+![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-007.png)
+
+> GeneratedValue 전략을 다시 GenerationType.IDENTITY로 바꿔서 테스트 해보겠습니다.
+
+> Memeber.java
+
+```
+@Entity
+public class Member {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+```
+
+> JpaMain.java
+
+````
+       System.out.println("----------- 0");
+
+            Member member1 = new Member();
+            member1.setUserName("유저A");
+            em.persist(member1);
+            System.out.println("member1.id : " +member1.getId());
+
+            System.out.println("----------- 1");
+
+            Member member2 = new Member();
+            member2.setUserName("유저A");
+            em.persist(member2);
+
+            System.out.println("member2.id : " +member2.getId());
+
+            System.out.println("----------- 2");
+            tx.commit();
+
+            System.out.println("----------- commit");
+````
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-013.png) 
+
+> persist() 시점에 Insert SQL 이 날라가게 됩니다. 그리고 바로 영속성 컨텍스트의 1차 캐시에 Id 값을 가져올 수 있는 것 을 확인 할 수 있습니다.
+
+
+
 
 ##### GenerationType.SEQUENCE - 특징
 > - 데이터베이스 시퀀스는 유일한 값을 순서대로 생성하는 특별한 데이터베이스 오브젝트( 예) 오라클 시퀀스)
@@ -398,6 +447,73 @@ allocationSize | 시퀀스 한 번 호출에 증가하는 수(성능 최적화�
 catalog, schema | 데이터베이스 catalog, schema 이름 |  
 
 
+##### SEQUENCE - 추가 설명
+> GeneratedValue의 전략을  GenerationType.SEQUENCE로 사용하게 되면 sequence를 생성하게 되는데 
+
+```
+Hibernate: 
+    
+    drop table Member if exists
+Hibernate: 
+    
+    drop sequence if exists MEMBER_SEQ
+Hibernate: create sequence MEMBER_SEQ start with 1 increment by 1 // 1부터 시작하여, 1씩 증가한다.
+Hibernate: 
+    
+```
+
+> JpaMain.java
+
+````
+   System.out.println("----------- 0");
+
+            Member member1 = new Member();
+            member1.setUserName("유저A");
+            em.persist(member1);
+            System.out.println("member1.id : " +member1.getId());
+
+            System.out.println("----------- 1");
+
+            Member member2 = new Member();
+            member2.setUserName("유저A");
+            em.persist(member2);
+
+            System.out.println("member2.id : " +member2.getId());
+
+            System.out.println("----------- 2");
+            tx.commit();
+
+            System.out.println("----------- commit");
+````
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-015.png)
+
+> SEQUECE 전략도 영속성 컨텍스트에 저장할 당시 PK 값이 필요하기 때문에, 
+
+```
+----------- 0
+Hibernate: 
+    call next value for MEMBER_SEQ
+member1.id : 1
+----------- 1
+```
+
+> ----------- 0 과 ----------- 1 사이에서 call next value for MEMBER_SEQ 시퀀스 nextVal으로 키값을 받아, 영속성 컨텍스트의 1차 캐시에 이미 id와 userName이 들어간 상태이고 2번째 유저 또한 ----------- 1 과 ----------- 2 영속성 컨텍스트에 저장됩니다. <br> 
+이후 commit()을 하게되면 Insert를 하게됩니다.
+
+> IDENTITY에서는 안되지만, SEQUENCE에서는 JDBC BATCH를 이용한 버퍼를 이용할 수 있습니다.
+
+> 이렇게 보다보니 성능에 한번에 인서트 하는게 아니라 seq 얻어올때, Insert 할때 자꾸 DB에 네트워킹을 통해 성능적으로 떨어지는 것 아닌가 싶기도합니다. <br>
+> 그래서 성능 최적화를 위하여 JPA에서 
+
+31:10
+
+
+
+
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-014.png)
+
 
 
 ##### Table 전략
@@ -472,13 +588,6 @@ AUTO-INCREMENT나 SEQUENCE Object 둘중 하나를 사용하시고 아니면 때
 절대 비즈니스 로직을 키로 끌고 오는것을 권장하지는 않는다고 합니다.
 
 
-##### IDENTITY 전략 애매한점 
-> strategy = GenerationType.IDENTITY를 사용할 경우 Key를 Null로 하여 DB에 인서트할 당시에 키가 생성하게됩니다. <br> 영속성 컨텍스트에서 관리를 하기 위해서는  PK값이 있어야 합니다. 하지만 이 전략은 DB에 들어가봐야 PK를 알 수 있습니다. 그래서 제약이 생기게 됩니다. 
 
 
-
-
-
-
-
-## 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
+#### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
