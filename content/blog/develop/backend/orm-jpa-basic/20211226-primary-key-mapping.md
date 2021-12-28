@@ -8,7 +8,7 @@ date: 2021-12-26
 slug: "primary-key-mapping"
 description: "기본키 매핑"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -503,17 +503,10 @@ member1.id : 1
 
 > IDENTITY에서는 안되지만, SEQUENCE에서는 JDBC BATCH를 이용한 버퍼를 이용할 수 있습니다.
 
-> 이렇게 보다보니 성능에 한번에 인서트 하는게 아니라 seq 얻어올때, Insert 할때 자꾸 DB에 네트워킹을 통해 성능적으로 떨어지는 것 아닌가 싶기도합니다. <br>
-> 그래서 성능 최적화를 위하여 JPA에서 
-
-31:10
-
-
-
-
-
 ![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-014.png)
 
+> 이렇게 보다보니 성능에 한번에 인서트 하는게 아니라 seq 얻어올때, Insert 할때 자꾸 DB에 네트워킹을 통해 성능적으로 떨어지는 것 아닌가 싶기도합니다. <br>
+> 그래서 성능 최적화를 위하여 JPA에 allocationSize로 성능을 최적화 하는 방법이 있습니다. 자세한 설명은 뒤에서 하겠습니다.
 
 
 ##### Table 전략
@@ -586,6 +579,126 @@ uniqueConstains(DDL)| 유니크 제약 조건을 지정할 수 있다. |
 > 10억이 넘어도 동작해야 하니까 Long형, 시퀀스를 쓴다던가, uuid를 쓴다던가 대체키를 쓰시고, 카생성 전략들을 조합해서 사용하는 것을 권장<br>
 AUTO-INCREMENT나 SEQUENCE Object 둘중 하나를 사용하시고 아니면 때에 따라서 uuid, 랜덤 값을 조합한 회사내의 룰을 따르길 권장. <br> 
 절대 비즈니스 로직을 키로 끌고 오는것을 권장하지는 않는다고 합니다.
+
+
+
+#### allocationSize를 이용한 성능향상
+> allocationSize를 1로 설정하여 1씩 증가하게 세팅을 해두었는데, 기본 값은 50 입니다. 기본 값이 50인 이유는 JPA는 새로운 키 50개를 한번에 만들어 놓고, 
+<br> DB에 50으로 세팅하고 메모리 상에서 1부터 50 까지 순차적으로 사용합니다. 이후 50개를 모두 사용하면, call next를 하여 51 부터  100까지 미리 만들어 사용합니다.<br>
+또 대단한 것이 어떤 DB를 사용해도 이슈 없이 동작한다고 합니다.
+
+```
+@Entity
+@SequenceGenerator(
+        name = "MEMBER_SEQ_GENERATOR"
+        , sequenceName = "MEMBER_SEQ" // 매핑할 데이터베이스 시퀀스 이름
+        , initialValue = 1, allocationSize = 50)
+public class Member {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+                    generator = "MEMBER_SEQ_GENERATOR")
+    private Long id;
+
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-015.png)
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-016.png)
+
+> 현재 값은 -1이고 증가는 50 인것을 볼 수 있습니다.
+
+> JpaMain.java는 객체 생성 및 persist() 모두 삭제
+
+```
+call next value for MEMBER_SEQ;
+```
+
+> 위 SQL을 통항 next value를 가져오면 1이 되길 원하는 것입니다. 
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-017.png)
+
+> JpaMain.java
+
+```
+  System.out.println("----------- 0");
+
+            Member member1 = new Member();
+            member1.setUserName("유저A");
+            em.persist(member1);
+            System.out.println("member1.id : " +member1.getId());
+
+            System.out.println("----------- 1");
+
+            Member member2 = new Member();
+            member2.setUserName("유저B");
+            //em.persist(member2);
+
+            System.out.println("member2.id : " +member2.getId());
+
+            System.out.println("----------- 2");
+
+            Member member3 = new Member();
+            member3.setUserName("유저C");
+            //em.persist(member3);
+
+            System.out.println("member2.id : " +member2.getId());
+
+            System.out.println("----------- 3");
+
+            tx.commit();
+
+            System.out.println("----------- commit");
+
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-018.png)
+
+> 처음 <code>call next value for MEMBER_SEQ;</code>를 호출하고 1이면 50개의 키를 메모리로 가져온 것이 아니기 때문에 1번더 호출합니다.
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-019.png)
+
+> 다시 JpaMain에 persist를 추가하여 테스트 해보면
+
+```
+			 System.out.println("----------- 0");
+
+            Member member1 = new Member();
+            member1.setUserName("유저A");
+
+            System.out.println("----------- 1");
+
+            Member member2 = new Member();
+            member2.setUserName("유저B");
+
+
+            System.out.println("----------- 2");
+
+            Member member3 = new Member();
+            member3.setUserName("유저C");
+
+
+
+            System.out.println("----------- 3");
+
+            em.persist(member1); // call next value for MEMBER_SEQ; DB SEQ = 1  , Key = 1
+            em.persist(member2); // call next value for MEMBER_SEQ; DB SEQ = 51 , Key = 2
+            em.persist(member3); //                         memory; DB SEQ = 51 , Key = 3
+
+
+            System.out.println("----------- 4");
+
+            tx.commit();
+
+            System.out.println("----------- commit");
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-020.png)
+
+> allocationSize를 크게 잡아 메모리에 두고 사용할 수 있지만, 애플리케이션이 내려가게 되면 사용하지 않았던 Id 값들의 구멍이 생겨 낭비가 될 수 있기 때문에 50 ~ 100 정도가 적당합니다.
+
+> Table 전략 또한 동일하며, 테이블의 데이터를 미리 설정한 값 만큼 미리 세팅하고 키를 메모리에서 생성하여 사용합니다. 물론 서버가 여러대인 경우에도 서버 각각 중복되지 않고 호출한 순서대로 1~50  <br>
+, 50 ~100 씩 할당받아 메모리에 키를 두고 사용합니다. 때문에 동시성 문제가 발생하지 않고 문제없이 동작합니다. 
 
 
 
