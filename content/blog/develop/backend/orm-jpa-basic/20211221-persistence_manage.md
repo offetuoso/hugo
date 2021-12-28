@@ -18,26 +18,32 @@ toc: true
 
 
 # JPA 영속성 관리 - 내부 동작 방식
+-------------
 
 ## 영속성 컨텍스트
+-------------
 
 ### JPA에서 가장 중요한 2가지 
+-------------
 > - 객체와 관계형 데이터베이트 매핑하기 (Object Relational Mapping)
 > - <mark>영속성 컨텍스트</mark>
 
 ### 엔티티 매니저 팩토리와 앤티티 매니저
+-------------
 > 요청이 오면 앤티티 매니저 팩토리를 통해 엔티티 매니저를 생성하고, 앤티티 매니저는 커넥션풀을 이용해 DB에 접근 합니다.
 
 ![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-001.png)
 
 
 ### 영속성 컨텍스트
+-------------
 > - JPA를 이해하는데 가장 중요한 용어
 > - "엔티티를 영구 저장하는 환경"이라는 뜻
 > - EntitiyManager.persist(entity); 
 // persist 메소드는 DB에 저장하는게 아니라 entity를 영속성 컨텍스트에 저장한다는 것
 
 ### 엔티티 매니저? 영속성 컨텍스트?
+-------------
 > - 영속성 컨텍스트는 논리적인 개념
 > - 눈에 보이지 않는다.
 > - 엔티티 매니저를 통해서 영속성 컨텍스트에 접근
@@ -52,6 +58,7 @@ toc: true
 
 
 ### 엔티티의 생명주기
+-------------
 > - 비영속 (new/transient)
 > 영속성 컨텍스트와 전혀 관계가 없는 <mark>새로운</mark> 상태
 
@@ -73,17 +80,24 @@ toc: true
 
 ![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-005.png)
 
+> JpaMain.java
+
 ```
+...
 // 객체를 생성한 상태(비영속)
 Member member = new Mamber();
 member.setId(2L);
 member.setName("회원2")
+...
 ```
 
 #### 영속 (managed)
 > 객체만 생성하고 세팅한 상태
 
 ![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-006.png)
+
+
+> JpaMain.java
 
 ```
 // 객체를 생성한 상태(비영속)
@@ -109,6 +123,7 @@ tx.commit(); // 실제 쿼리가 실행되는 지점
 ```
 
 ### 영속성 컨텍스트의 이점
+-------------
 > 영속성 컨텍스트는 객체와 DB 사이에 하나의 계층이 있는것 
 
 > - 1차 캐시
@@ -122,6 +137,8 @@ tx.commit(); // 실제 쿼리가 실행되는 지점
 
 ![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-007.png)
 
+> JpaMain.java
+
 ```
 // 엔티티를 생성한 상태(비영속)
 Member member = new Member();
@@ -134,6 +151,8 @@ em.persist(member);
 ```
 
 #### 1차 캐시에서 조회
+
+> JpaMain.java
 
 ```
 // 엔티티를 생성한 상태(비영속)
@@ -154,8 +173,13 @@ Member findMemeber = em.find(Member.class, "3L");
 
 
 #### DB에서 조회
+
+> JpaMain.java
+
 ```
+...
 Member findMemeber = em.find(Member.class, "10L");
+...
 ```
 
 ![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-009.png)
@@ -168,6 +192,9 @@ Member findMemeber = em.find(Member.class, "10L");
 
 
 ### 영속 엔티티의 동일성 보장
+-------------
+
+> JpaMain.java
 
 ```
   	Member findMember1 = em.find(Member.class, 10L);
@@ -182,6 +209,9 @@ Member findMemeber = em.find(Member.class, "10L");
 > 같은 트랜잭션 안에서는 조회한 같은 객체는 동일한 객체로 인식 보장
 
 ### 엔티티 등록 - 트랜잭션을 지원하는 쓰기 지연
+-------------
+
+> JpaMain.java
 
 ```
  EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
@@ -227,7 +257,8 @@ Member findMemeber = em.find(Member.class, "10L");
 
 > 커밋을 하게되면 쓰기지연 저장소에 있는 SQL들을 flush하며, DB에 SQL문들을 DB에 커밋하게 됩니다.
 
-##### Member.java
+
+> Member.java
 
 ```
 package hellojpa;
@@ -276,7 +307,7 @@ public class Member {
 
 > JPA의 옵션중
 
-#### persistence.xml - hibernate.jdbc.batch_size
+> persistence.xml - hibernate.jdbc.batch_size
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -300,7 +331,11 @@ public class Member {
 
 
 ### 엔티티 수정 - 변경 감지(dirty checking)
+-------------
+
 > JPA에서는 컬렉션에서 값을 수정하는 것처럼 따로 저장하지 않아도 변경 감지를 통해 commit시 Update 문을 자동으로 수행
+
+> JpaMain.java
 
 ```
 EntityMananger em = emf.createEntityManager();
@@ -333,6 +368,9 @@ tx.commit(); // [트랜잭션] 커밋
 ![contact](/images/develop/backend/orm-jpa-basic/persistence-manage/img-019.png)
 
 ### 엔티티 삭제
+-------------
+
+> JpaMain.java
 
 ```
 // 삭제할 대상 엔티티 조회
@@ -341,9 +379,11 @@ em.remove(memberA); // 엔티티 삭제
 ```
 
 ## 플러시
+-------------
 > 영속성 컨텍스트의 변경내용을 데이터베이스에 반영
 
 ### 플러시 발생
+-------------
 > 트랜잭션이 커밋되면 자동적으로 플로시가 발생되며, 1차 캐시의 변동없음(다른 flush의 비우는 기능과 다름.)
 
 > - 변경감지(dirty checking)
@@ -351,6 +391,7 @@ em.remove(memberA); // 엔티티 삭제
 > - 쓰기 지연 SQL 저장소의 쿼리를 데이터 베이스에 전송(등록, 수정, 삭제 쿼리)
 
 ### 영속성 컨텍스트를 플러시 하는 방법
+-------------
 > - em.flush() - 직접 호출 (잘 사용은 안되지만, 테스트 시 알아두면 유용)
 > - 트랜잭션 커밋 - 플러시 자동 호출
 > - JPQL 쿼리 실행 - 플러시 자동 호출
@@ -359,6 +400,9 @@ em.remove(memberA); // 엔티티 삭제
 > 다른 예제들과 다르게 라인 "===========" 보다 이전에 flush()를 실행항 당시 변경 사항의 SQL이 로그에 찍히게됨.
 
 ### JPQL 쿼리 실행시 플러시가 자동으로 호출되는 이유
+-------------
+
+> JpaMain.java
 
 ```
 em.persist(memberA);
@@ -373,19 +417,26 @@ List<Member> members = query.getResultList();
 
 
 ### 플러시 모드 옵션
+-------------
+
+> JpaMain.java
+
 ```
 em.setFlushMode(FlushModeType.COMMIT);
 ```
+
 > - FlushModeType.AUTO - 트랜잭션 커밋이나 쿼리(JPQL)를 실행할 때 플러시(기본값)
 > - FlushModeType.COMMIT - 커밋할 때만 플러시
 
 ### 플러시는 !
+-------------
 > - 영속성 컨텍스트를 비우지 않음
 > - 영속성 컨텍스트의 변경내용을 데이터베이스에 동기화
 > - 트랜잭션이라는 작업 단위가 중요 -> 커밋 직전에만 동기화하면 됨
 
 
 ## 준영속 상태
+-------------
 > - 영속  -> 준영속 
 > 1차 캐시에 있고 JPA가 관리하는 상태
 
@@ -396,6 +447,7 @@ em.setFlushMode(FlushModeType.COMMIT);
 
 
 ### 준영속 상태로 만드는 방법
+-------------
 
 > - em.detach(entity) - 특정 엔티티만 준영속 상태로 전환
 > - em.claer() - 영속성 컨텍스트를 완전히 초기화

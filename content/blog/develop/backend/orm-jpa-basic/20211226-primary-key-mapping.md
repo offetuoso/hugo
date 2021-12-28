@@ -18,7 +18,9 @@ toc: true
 
 
 # 기본키 매핑
+-------------
 ## 기본 키 매핑 어노테이션
+-------------
 > - @Id
 > - @GeneratedValue
 
@@ -28,6 +30,7 @@ private Long id;
 ```
 
 ## 기본 키 매핑 방법
+-------------
 > - 직접 할당 : @Id 만 사용
 > - 자동 생성(@GeneratedValue)
 >	- IDENTITY : 데이터베이스에 위임, MySLQ)
@@ -37,9 +40,9 @@ private Long id;
 > 	- @TableGenerator 필요
 > - AUTO: 방언에 따라 자동 지정, 기본값
 
-### 기본 키 매핑 방법 테스트
 
-#### Id 직접할당 - @Id 사용
+### Id 직접할당 - @Id 사용
+-------------
 
 > Member.java
 > 기본 키 매핑에 좀더 집중하기 위해 Memeber의 Id를 String 으로 변경하고, Id, name을 제외한 나머지를 일단 제거합니다.
@@ -104,7 +107,8 @@ public class Member {
 
 ![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-002.png)
 
-#### Id 자동할당 - @GeneratedValue
+### Id 자동할당 - @GeneratedValue
+-------------
 > GeneratedValue의 전략은 AUTO, IDENTITY, SEQUENCE, TABLE가 있으며, <br>
 AUTO는 방언에 따라 다르게 생성
 
@@ -117,7 +121,9 @@ AUTO는 방언에 따라 다르게 생성
     
 ```
 
-##### GenerationType.IDENTITY - 특징
+### GenerationType.IDENTITY
+-------------
+#### GenerationType.IDENTITY - 특징
 > - 기본 키 생성을 데이터베이스에 위임
 > - 주로 MySQL, PostgreSQL, SQL Server. DB2에서 사용<BR>
 	예) MySQL의 AUTO_INCREMENT
@@ -258,7 +264,7 @@ Process finished with exit code 0
 ```
 
 
-##### IDENTITY 전략 애매한점 
+#### IDENTITY 전략 애매한점 
 > strategy = GenerationType.IDENTITY를 사용할 경우 Key를 Null로 하여 DB에 인서트할 당시에 키가 생성하게됩니다. <br> 영속성 컨텍스트에서 관리를 하기 위해서는  PK값이 있어야 합니다. 하지만 이 전략은 DB에 들어가봐야 PK를 알 수 있습니다. 그래서 제약이 생기게 됩니다. 
 
 
@@ -308,7 +314,9 @@ public class Member {
 
 
 
-##### GenerationType.SEQUENCE - 특징
+### GenerationType.SEQUENCE
+-------------
+#### GenerationType.SEQUENCE - 특징
 > - 데이터베이스 시퀀스는 유일한 값을 순서대로 생성하는 특별한 데이터베이스 오브젝트( 예) 오라클 시퀀스)
 > - 오라클, PostgreSQL, DB2, H2 데이터베이스에서 사용
 
@@ -409,7 +417,7 @@ public class Member {
 ![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-007.png)
 >   call next value for hibernate_sequence 기본 시퀀스를 사용해서 새로운 키값을 생성하게 되는데, 테이블 마다 시퀀스를 따로 관리하고 싶다면 @SequnceGenerator를 사용하면 됩니다.
 
-##### Sequence 전략 - 매핑
+#### Sequence 전략 - 매핑
 
 > Member.java
 
@@ -435,7 +443,7 @@ public class Member {
 
 ![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-009.png)
 
-##### SEQUENCE - @SequenceGenerator
+#### SEQUENCE - @SequenceGenerator
 > - 주의 allocationSize 기본 값 = 50
 
 속성			|	설명		| 기본값
@@ -447,7 +455,7 @@ allocationSize | 시퀀스 한 번 호출에 증가하는 수(성능 최적화�
 catalog, schema | 데이터베이스 catalog, schema 이름 |  
 
 
-##### SEQUENCE - 추가 설명
+#### SEQUENCE - 추가 설명
 > GeneratedValue의 전략을  GenerationType.SEQUENCE로 사용하게 되면 sequence를 생성하게 되는데 
 
 ```
@@ -509,12 +517,14 @@ member1.id : 1
 > 그래서 성능 최적화를 위하여 JPA에 allocationSize로 성능을 최적화 하는 방법이 있습니다. 자세한 설명은 뒤에서 하겠습니다.
 
 
-##### Table 전략
+### GenerationType.TABLE
+-------------
+#### GenerationType.TABLE - 특징
 > - 키 생성 전용 테이블을 하나 만들어서 데이터베이스 시퀀스를 흉내내는 전략 <br>
 > 장점 : 모든 데이터베이스에 적용 가능 <br>
 > 단점 : 성능
 
-##### Table 전략 - 매핑
+#### Table 전략 - 매핑
 
 > Member.java
 
@@ -552,7 +562,7 @@ ctrate table MY_SEQUENCE (
 ![contact](/images/develop/backend/orm-jpa-basic/primary-key-mapping/img-012.png)
 
 
-##### @TableGenerator - 속성
+#### @TableGenerator - 속성
 
 속성 				   | 설명				     |	기본값
 --------------------|---------------------|-----------
@@ -570,7 +580,8 @@ uniqueConstains(DDL)| 유니크 제약 조건을 지정할 수 있다. |
 > 운영에서는 table 전략을 사용하기는 부담스럽고 각 테이블의 sequence를 사용한 sequence 전략을 적극 채용하여 사용한다고 합니다.
 
 
-#### 권장하는 식별자 생성 전략
+### 권장하는 식별자 생성 전략
+-------------
 > - <mark>기본 키 제약 조건</mark> : null 아님, 유일, <mark>변하면 안된다.</mark>
 > - 미래까지 이 조건을 만족하는 자연키를 찾기 어렵다. 대리키(대체키)를 사용하자. ( 비즈니스와 상관없는 랜덤키)
 > - 예를 들어 주민등록번호도 기본 키로 적절하지 않다.
@@ -582,7 +593,8 @@ AUTO-INCREMENT나 SEQUENCE Object 둘중 하나를 사용하시고 아니면 때
 
 
 
-#### allocationSize를 이용한 성능향상
+### allocationSize를 이용한 성능향상
+-------------
 > allocationSize를 1로 설정하여 1씩 증가하게 세팅을 해두었는데, 기본 값은 50 입니다. 기본 값이 50인 이유는 JPA는 새로운 키 50개를 한번에 만들어 놓고, 
 <br> DB에 50으로 세팅하고 메모리 상에서 1부터 50 까지 순차적으로 사용합니다. 이후 50개를 모두 사용하면, call next를 하여 51 부터  100까지 미리 만들어 사용합니다.<br>
 또 대단한 것이 어떤 DB를 사용해도 이슈 없이 동작한다고 합니다.
