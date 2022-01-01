@@ -493,7 +493,372 @@ public class OcpMain {
 
 > Animal을 추상화하여 각각 동물들으로 상속받아서 speak()를 구현한다면, 수정없이 Hey()를 이용해 추가된 동물들 까지 부를 수 있습니다. 
 
->>>>> 코드없는 프로그래밍 리스코프 치환법칙 
+#### SOLID의 Liskov Substution
+> 오브젝트 T는 그의 서브타입 s1, s2, s3 로 바꾸어도 우리가 생각했던대로 동작해야 한다. 라는 말입니다.
+
+![contact](/images/develop/framework/spring/img-002.png)
+
+> 예를 들어 강아지 오브젝트는, 강아지의 서브 타입인 리트리버, 푸들로 대체 하여도 우리가 원하는대로 동작하여야 한다는 것입니다.
+
+![contact](/images/develop/framework/spring/img-003.png)
+
+> 이를 코드로 나타내 볼 수 있습니다. 
+
+> 강아지 클래스는 speak()를 가지고 있고 리트리버 클래스가 강아지 클래스를 상속하였습니다. 강아지 오브젝트를 리트리버 클래스로 생성하여, speak()를 사용하여도 생각한 것과 같이 speak()를 수행합니다. 
+
+```
+package solid.liskovSubstitutionPrinciple;
+
+public class Test {
+    public static void main(String[] args) throws Exception {
+        Dog dog = new Dog();
+        dog.speak();
+
+        Dog dog2 = new Retriever();
+        dog2.speak();
+
+        Dog fish = new Flatfish();
+        fish.speak();
+    }
+}
+
+class Dog{
+    public void speak() throws Exception {
+        System.out.println("멍멍");
+    }
+}
+
+class Retriever extends Dog{
+    @Override
+    public void speak() {
+        System.out.println("리트리버 : 멍멍");
+    }
+}
+
+
+```
+
+> 하지만, 말을 하지 못하는 광어를 추가해 달라는 요청이 있어 소스를 추가하게 되었습니다. 
+
+```
+class Flatfish extends Dog{
+    @Override
+    public void speak() throws Exception {
+        throw new Exception("fish Can not speak");
+    }
+}
+```
+
+> 강아지를 상속받아 만들어졌지만, 물고기는 말을 할 수 없기 때문에 speak()시 예외를 발생하게 개발하였습니다. <br>
+ 
+![contact](/images/develop/framework/spring/img-004.png)
+
+![contact](/images/develop/framework/spring/img-005.png)
+
+> 이를 통해 강아지는 광어로 치환하여 사용할 수 없고 이는 Liskov Substitution Principle 을 위해한 클래스 구조 설계입니다. <br>
+> 이것을 해결하기 위해서는 처음부터 전체적인 클래스 구조를 강아지와 물고기를 생각하고 설계를 하거나, speak() 같은 문제가 생기지 않도록 다른 방법을 사용해야 합니다. 물론 코드는 복잡해 질것입니다. 
+
+
+#### SOLID의 Interface Segregation 
+> 인터페이스 분리원칙. 인터페이스 분리원칙이란 클라이언트는 사용하지 않을 메소드들에 의존하게 만들어서는 안된다. <br> 
+큰 인터페이스들은 더 작은 단위의 인터페이스로 분리시키는 것이 좋다.
+
+> 인터페이스란 자바에서 클래스들이 구현해야 하는 동작을 지정하는 용도로 사용되는 추상 자료형이다. <br>
+class 대신 interface 키워드를 사용하여 선언 할 수 있으며, 메소드와 상수 선언만을 포함할 수 있다. <br> 
+(자바 8이후 부터 interface에서 default method 정의가 가능해졌다)
+
+> 예를 들어 자동차를 인터페이스 Car로 만들고, 앞으로 가는 drive(), turnLeft(), turnRight() 3개의 메소드를 정의하였습니다. <br>
+> Morning 과 Ray는 Car로 구현하였습니다. 
+
+```
+interface Car {
+    public void drive();
+    public void turnLeft();
+    public void turnRight();
+}
+
+class Morning implements Car{
+    @Override
+    public void drive() {}
+    @Override
+    public void turnLeft() {}
+    @Override
+    public void turnRight() {}
+}
+
+class Ray implements Car{
+    @Override
+    public void drive() {}
+    @Override
+    public void turnLeft() {}
+    @Override
+    public void turnRight() {}
+}
+```
+
+> 만약 보트의 기능까지 있는 수륙양용 자동차를 인터페이스로 만들어서, 자동차와 보트를 구현해 보겠습니다.
+
+
+```
+interface AmphibiousCar {
+    public void drive();
+    public void turnLeft();
+    public void turnRight();
+
+    public void steer();
+    public void steerLeft();
+    public void steeright();
+}
+
+class Morning implements AmphibiousCar{
+    @Override
+    public void drive() {}
+    @Override
+    public void turnLeft() {}
+    @Override
+    public void turnRight() {}
+
+    @Override
+    public void steer() {} // 사용안함
+    @Override
+    public void steerLeft() {} // 사용안함
+    @Override
+    public void steeright() {} // 사용안함
+}
+
+class Boat implements AmphibiousCar{
+    @Override
+    public void drive() {} // 사용안함
+    @Override
+    public void turnLeft() {} // 사용안함
+    @Override
+    public void turnRight() {} // 사용안함
+
+    @Override
+    public void steer() {}
+    @Override
+    public void steerLeft() {}
+    @Override
+    public void steeright() {}
+}
+```
+
+> 만약 수륙양용 자동차로 모닝과 보트를 구현한다면, 모닝은 항해에 필요한 메소드들을 사용 하지 않을 것이고, <br>
+보트에서는 운전에 필요한 메소드들을 사용하지 않을 것입니다. 
+
+> 만약 수륙양용 자동차의 구현이 필요하다면, Car와 Ship 인터페이스를 모두 상속 받는 AmphibiousCar를 인터페이스로 생성하고 구현하면 될 것입니다.
+
+```
+interface Car {
+    public void drive();
+    public void turnLeft();
+    public void turnRight();
+}
+
+interface Ship {
+    public void steer();
+    public void steerLeft();
+    public void steerRight();
+}
+
+class Morning implements Car{
+    @Override
+    public void drive() {}
+    @Override
+    public void turnLeft() {}
+    @Override
+    public void turnRight() {}
+}
+
+class Boat implements Ship{
+
+    @Override
+    public void steer() {}
+    @Override
+    public void steerLeft() {}
+    @Override
+    public void steerRight() {}
+}
+
+
+class Ray implements Car{
+    @Override
+    public void drive() {}
+    @Override
+    public void turnLeft() {}
+    @Override
+    public void turnRight() {}
+}
+
+class AmphibiousCar implements Car, Ship{
+    @Override
+    public void drive() {}
+    @Override
+    public void turnLeft() {}
+    @Override
+    public void turnRight() {}
+    @Override
+    public void steer() {}
+    @Override
+    public void steerLeft() {}
+    @Override
+    public void steerRight() {}
+}
+```
+
+#### Dependency Inversion
+> 우리가 전통적인 방식으로 클래스를 구성한다 하면 예를들어, 동물원에 고양이와 강아지를 넣습니다.
+
+![contact](/images/develop/framework/spring/img-006.png)
+
+> 이것을 코드로 구현해 보면 
+
+```
+
+class Dog{
+    public void speak() {
+        System.out.println("멍멍");
+    }
+}
+
+class Cat{
+    public void speak() {
+        System.out.println("야옹");
+    }
+}
+
+class Zoo{
+   Cat cat = new Cat();
+   Dog dog = new Dog();
+}
+```
+
+> 코드로 보면 동물원은 강아지와 고양이의 Depency가 존재 하고 있습니다. 상위 모듈이 하위 모듈들을 가지고 있는 것이 직관적이고 
+자연스러운 코드로 보입니다. 
+
+> 이 동물원에 몇마리의 새로운 동물들이 추가 됩니다.
+
+```
+class Dog{
+    public void speak() {
+        System.out.println("멍멍");
+    }
+}
+
+class Cat{
+    public void speak() {
+        System.out.println("야옹");
+    }
+}
+
+class Sheep{
+    public void speak() {
+        System.out.println("메에");
+    }
+}
+
+class Cow{
+    public void speak() {
+        System.out.println("음모");
+    }
+}
+
+class Zoo{
+   Cat cat = new Cat();
+   Dog dog = new Dog();
+   Sheep sheep = new Sheep();
+   Cow cow = new Cow();
+}
+```
+
+![contact](/images/develop/framework/spring/img-007.png)
+
+> 이렇게 상위 모듈인 동물원에 서브모듈의 Depency가 계속 추가 되면 나중에 코드의 수정과 관리가 어렵게 됩니다. <br>
+ 이를 해결하기 위해서 Depency Inversion을 사용합니다.
+ 
+> Depenct Inversion을 그림으로 나타내면
+
+![contact](/images/develop/framework/spring/img-008.png)
+
+> 동물원은 추상 클래스인 animal을 가지게 하고 각각의 서브모듈에 Dependent하게 만들어 줍니다. 이를 코드로 보면,
+
+````
+
+package solid.depencyInversion;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Test {
+    public static void main(String[] args) {
+        Zoo zoo = new Zoo();
+        zoo.addAnimal(new Cat());
+        zoo.addAnimal(new Dog());
+        zoo.addAnimal(new Sheep());
+        zoo.addAnimal(new Cow());
+
+        zoo.spaekAll();
+    }
+}
+
+class Dog extends Animal{
+    @Override
+    public void speak() {
+        System.out.println("멍멍");
+    }
+}
+
+class Cat extends Animal{
+    @Override
+    public void speak() {
+        System.out.println("야옹");
+    }
+}
+
+class Sheep extends Animal{
+    @Override
+    public void speak() {
+        System.out.println("메에");
+    }
+}
+
+class Cow extends Animal{
+    @Override
+    public void speak() {
+        System.out.println("음모");
+    }
+}
+
+abstract class Animal{
+    public void speak(){}
+}
+
+class Zoo{
+  List<Animal> animals = new ArrayList<>();
+
+
+  public void addAnimal(Animal animal){
+      animals.add(animal);
+  }
+
+  public void spaekAll(){
+      for(Animal animal : animals){
+          animal.speak();
+      }
+  }
+}
+````
+
+> 말하는 기능을 가지고 있는 Animal을 생성하고, 하위 모듈들은 고양이, 강아지, 양, 소들은 Animal을 상속받습니다. <br>
+그리고 동물원은 Animal을 추가하고, 추가된 동물들의 모든 울음소리를 출력하는 기능을 만들어 두었습니다. <br>
+클라이언트에서는 동물원을 생성하고 addAnimal()를 통해 강아지, 고양이 등 동물들을 추가하고, spaekAll()를 통해 동물들의 울음소리를 출력합니다.
+
+> 상위 모듈이 낮은 레벨의 Depency를 가지는 것이 아니라, 추상화된 모듈을 가지고 상위 모듈도 하위 모듈도 추상화 클래스에 의존하게 만드는 겁니다. 
+
+![contact](/images/develop/framework/spring/img-009.png)
+
+> 이러한 변경을 하는 사이에 낮은 레벨의 모듈의 화살표가 반대로 뒤집히는 것을 볼 수 있기 때문에 Depency Inversion 이라고 합니다.
+
   
 ## 스프링의 특징
 
