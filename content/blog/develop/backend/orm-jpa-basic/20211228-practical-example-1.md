@@ -1,5 +1,5 @@
 ---
-title: "[자바 ORM 표준 JPA] 실전 예제 1 - 요구사항 분석과 기본 매핑"
+title: "JPA 실전 예제 1 - 요구사항 분석과 기본 매핑"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

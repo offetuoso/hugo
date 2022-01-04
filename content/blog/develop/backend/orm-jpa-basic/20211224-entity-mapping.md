@@ -1,5 +1,5 @@
 ---
-title: "[자바 ORM 표준 JPA] 객체와 매핑"
+title: "JPA 객체와 매핑"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

@@ -1,5 +1,5 @@
 ---
-title: "[자바 ORM 표준 JPA] 실전 예제 2 - 연관관계 매핑 시작"
+title: "JPA 실전 예제 2 - 연관관계 매핑 시작"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"
@@ -8,7 +8,7 @@ date: 2022-01-03
 slug: "practical-example-2"
 description: "연관관계 매핑 시작"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -472,6 +472,21 @@ public class Item {
     }
     ...
 ```
+
+![contact](/images/develop/backend/orm-jpa-basic/practical-example-2/img-003.png)
+
+> Order.java
+
+```
+	...
+    public void addMember(Member member) {
+        this.member = member;
+        member.getOrders().add(this);
+    }
+    ...
+```
+
+> 할 수 있다면 최대한 단방향으로 개발하여도 상관은 없으나 이후 복잡한 JPQL등 사용할때 그때 가서 고려해도 상관 없다. 그렇기 때문에 단방향 설계를 잘하는 것이 중요하다.
 
 
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
