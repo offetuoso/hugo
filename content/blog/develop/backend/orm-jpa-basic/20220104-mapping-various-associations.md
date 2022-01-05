@@ -468,6 +468,8 @@ public class Member {
 
 ![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-004.png)
 
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-005.png)
+
 > Team 저장할때, TEAM_ID와 NANE은 저장하면 되지만, 외래 키는 TEAM이 아닌 MEMBER에 있기 때문에, 저장할 방법이 없기 때문에 MEMEBER 테이블을 업데이트 하는 수 밖에 없습니다. 업데이트 문을 한번더 실행하기에 성능상에 이슈는 아니여도 조금의 불이익은 있습니다. 
 
 > 실무에서 이 모델을 사용하게되면 실제 Member 테이블에 저장만 했을 뿐인데 내가 수정하지 않은 테이블에 Update Sql이 찍히게 되고 혼돈에 빠지게 됩니다.
@@ -479,7 +481,340 @@ public class Member {
 > - 테이블 일대다 관계는 항상 다(N) 쪽에 외래 키가 있음
 > - 객체와 테이블의 차이 때문에 반대편 테이블의 외래 키를 관리하는 특이한 구조
 > - @JoinColumn을 꼭 하용해야 함. 그렇지 않으면 조인 테이블 방식을 사용함(중간에 테이블을 하나 추가함)
+> - 일대다 단방향 매핑의 단점
+>	- 엔티티가 관리하는 외래 키가 다른 테이블에 있음
+>	- 연관관계 관리를 위해 추가로 Update sql 실행
+> - 일대다 단방향 매핑보다는 <mark>다대일 양방향 매핑을 사용</mark>하자
 
-11:07
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-006.png)
+
+
+### 일대다 양방향
+-------------
+> - 이런 매핑은 공식적으로 없다.
+> - @JoinColumn(<mark>insertable=false</mark>, <mark>updateable=false</mark>)
+> - <mark>읽기 전용 필드</mark>를 사용해서 양방향 처럼 사용하는 방법
+> - <mark>다대일 양방향을 사용하자</mark>
+
+> Team.java
+
+````
+package relativemapping;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+
+@Entity
+public class Team {
+    public Team(){
+    }
+
+    public Team(Long id, String username){
+        this.id = id;
+        this.name = name;
+    }
+
+    @Id @GeneratedValue
+    @Column(name = "TEAM_ID")
+    private Long id;
+    @Column(name = "NAME")
+    private String name;
+
+    @OneToMany
+    @JoinColumn(name = "TEAM_ID")	// 연관관계의 주인
+    private List<Member> members = new ArrayList<>();
+
+    public List<Member> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<Member> members) {
+        this.members = members;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+   
+}
+
+````
+
+> Member.java
+
+```
+@Entity
+public class Member {
+    public Member(){
+    }
+
+    public Member(Long id, String username){
+        this.id = id;
+        this.username = username;
+    }
+
+    @Id @GeneratedValue
+    @Column(name = "MEMBER_ID")
+    private Long id;
+
+    @Column(name = "USERNAME")
+    private String username;
+
+    @ManyToOne
+    @JoinColumn(name= "TEAM_ID", insertable = false, updatable = false) // 연관관계의 주인과 같지만, 인서트, 업데이트 사용안함으로 읽기전용으로 사용
+    private Team team;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+}
+
+```
+
+## 일대일 [1:1]
+-------------
+
+### 일대일 관계
+-------------
+> - <mark>일대일</mark> 관계는 그 반대도 <mark>일대일</mark>
+> - 주 테이블이나 대상 테이블 중에 외래 키 선택 가능
+>	- 주 테이블에 외래 키
+>	- 대상 테이블에 외래 키
+> - 외래 키에 데이터베이스 유니크 제약조건 추가
+
+
+
+### 일대일 : 주 테이블에 외래 키 단방향
+-------------
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-007.png)
+
+>회원은 사물함 하나를 가질 수 있고 그리고 사물함도 하나의 맴버를 가질 수 있습니다. 이런 룰을 가지고 있을 때,  Member 테이블을 주 테이블로 생각하고 연관관계의 주인을 Member로 지정.
+
+#### 일대일 : 주 테이블에 외래 키 단방향 정리
+> - 다대일(@ManyToOne) 단방향 매핑과 유사
+
+> Member.java
+
+```
+package relativemapping;
+
+import javax.persistence.*;
+import java.util.concurrent.locks.Lock;
+
+
+@Entity
+public class Member {
+    public Member(){
+    }
+
+    public Member(Long id, String username){
+        this.id = id;
+        this.username = username;
+    }
+
+    @Id @GeneratedValue
+    @Column(name = "MEMBER_ID")
+    private Long id;
+
+    @Column(name = "USERNAME")
+    private String username;
+
+    @ManyToOne
+    @JoinColumn(name= "TEAM_ID", insertable = false, updatable = false)
+    private Team team;
+
+    @OneToOne
+    @JoinColumn(name = "LOCKER_ID")
+    private Locker locker;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+}
+
+```
+
+> Locker.java
+
+````
+package relativemapping;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
+public class Locker {
+    @Id @GeneratedValue
+    @Column(name = "LOCKER_ID")
+    private Long id;
+    private String name;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+
+````
+
+> JpaMain.java 은 지우고 애플리케이션을 실행한다.
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-008.png)
+
+### 일대일 : 주 테이블에 외래 키 단방향
+-------------
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-009.png)
+
+
+> Member.java
+
+```
+package relativemapping;
+
+import javax.persistence.*;
+import java.util.concurrent.locks.Lock;
+
+
+@Entity
+public class Member {
+    public Member(){
+    }
+
+    public Member(Long id, String username){
+        this.id = id;
+        this.username = username;
+    }
+
+    @Id @GeneratedValue
+    @Column(name = "MEMBER_ID")
+    private Long id;
+
+    @Column(name = "USERNAME")
+    private String username;
+
+    @ManyToOne
+    @JoinColumn(name= "TEAM_ID", insertable = false, updatable = false)
+    private Team team;
+
+    @OneToOne
+    @JoinColumn(name = "LOCKER_ID")
+    private Locker locker;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+}
+
+```
+
+> Locker.java
+
+````
+package relativemapping;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
+public class Locker {
+    @Id @GeneratedValue
+    @Column(name = "LOCKER_ID")
+    private Long id;
+    private String name;
+
+    @OneToOne(mappedBy="locker")
+    private Member member;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+
+````
+
+#### 일대일 : 주 테이블에 외래 키 양방향 정리
+> - 다대일 양방향 매핑 처럼 외래 키가 있는 곳이 연관관계의 주인
+> - 반대편은 mappedBy 적용
+
 
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
