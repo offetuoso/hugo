@@ -817,4 +817,87 @@ public class Locker {
 > - 반대편은 mappedBy 적용
 
 
+### 일대일 : 대상 테이블에 외래 키 단방향
+------------------------
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-010.png)
+
+> Member 객체를 연관관계의 주인으로 두고 Locker객체를 가지고 LOCKER 테이블에 MEMBER_ID를 관리 하는 방법은 없고 지원도 안해줍니다.
+
+#### 일대일 : 대상 테이블에 외래 키 단방향 정리
+> - 단방향 관계는 JPA에서 지원안함
+> - 양방향 관계는 지원
+
+### 일대일 : 대상 테이블에 외래 키 양방향
+------------------------
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-011.png)
+
+> 주 테이블을 Member로 생각하지만, 외래 키는 대상 테이블에 있는경우. 외래 키가 있는 대상 테이블을 주 테이블로 매핑
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-009.png)
+
+> 이것을 반대로 뒤집은 것과 같음. 1:1 관계를 정리하면 내것은 내가 관리<br>
+
+#### 일대일 : 외래키는 어떤 객체가 가져야 할까
+> 매우 민감한 주제이며 DBA와 싸울수도있음. 일대일 관계는 MEMBER에 외래 키가 있든 LOCKER에 있든 
+어떠한 방법을 써도 연관관계가 유효 합니다. <br> 
+
+> DBA이라면, DB 설계를 쉽게 바꿀 수 없기 때문에 미래를 대비해서 Locker에 외래 키를 두어 나중에 유니크 제약조건만 제거하면, 한명의 회원이 여러 개의 Locker를 가질 수 있도록 설계를 생각할 것입니다.
+
+> 만약 반대로 MEMBER에 외래 키가 있는 경우 한명의 MEMBER가 여러 Locker를 가질 수 있도록 설계를 변경 한다면 LOCKER에 컬럼을 추가하고 코드 수정이 필요합니다 또한 MEMBER의 외래 키는 의미가 없으니 지워지게 됩니다. 
+
+> 또 비즈니스 로직 상에 Locker에 여러명의 Member가 있을 수 있다면, Member에 외래키가 있는 상태가 맞게 됩니다.
+
+> 여기 까지가 DBA가 비즈니스 로직에 변경 또는 미래의 변화에 대비하기 위해 이렇게 생각할 수 있다면
+<br> ORM을 사용하는 개발자 입장에서는 Member에 Locker가 있는것이 성능에서나 여러가지 측면에서 장점이 있습니다. 어떠한 장점이 있냐면, 
+
+> Member가 Locker를 가지고 있지 않으면 Null 아니면 Locker가 있는것이고 <br> 
+Member를 더 많이 조회하기 때문에 Locker가 Member를 가지는 것보다 좋습니다.
+
+> Member를 조회할때 Locker에 의해 분기 되는 로직이 있을때, 대부분 Member를 조회하여야 되기 때문에 이미 Locker를 가지고 있기 때문에 DB쿼리 하나로 Member를 가져왔을때 이미 Locker까지 조회가 됩니다.
+
+> 이런 모든 것을 고려하여 설계를 해야합니다. 
+
+#### 일대일 정리 
+> - 주 테이블에 외래 키
+>	- 주 객체가 대상 객체의 참조를 가지는 것처럼 주 테이블에 외래 키를 두고 대상 테이블을 찾음
+>	- 객체지향 개발자 선호
+>	- JPA 매칭 편리
+> 	- 장점 : 주 테이블만 조회해도 대상 테이블에 데이터가 있는지 확인 가능
+> 	- 단점 : 값이 없으면 외래 키에 null 허용
+
+> - 대상 테이블에 외래 키
+>	- 대상 테이블에 외래 키가 존재
+>	- 전통적인 DBA 선호
+>	- 장점 : 주 테이블과 대상 테아블을 일대일에서 다대다 관계로 변경할 때 테이블 구조 유지
+> 	- 단점 : 프록시 기능의 한계로 지연 로딩으로 설정해도 항상 즉시 로딩됨 (추후 설명)
+
+> ORM 개발자 입장에서는 주 테이블에 외래 키가 있는 것이 바람직하지만, DBA와 협의가 잘되어야 한다.
+
+## 다대다 [N:M]
+--------------------------------
+> 실무에서는 쓰면 안된다고 보면 됩니다. JPA가 매핑을 지원하기 때문에 정리
+
+### 다대다
+---------------------------------
+> - 괸계형 데이터베이스는 정규화된 테이블 2개로 다대다 관계룰 표현할 수 없음
+> - 연결 테이블을 추가해서 일대다, 다대일 관계로 풀어내야함
+
+> 다대다 테이블 관계
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-012.png)
+
+
+> 객체는 컬렉션을 사용해서 객체 2개로 다대다 관계 가능
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-013.png)
+
+1:57 다대다 
+
+
+
+
+
+
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
