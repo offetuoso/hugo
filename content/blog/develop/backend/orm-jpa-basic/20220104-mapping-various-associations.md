@@ -883,20 +883,124 @@ Member를 더 많이 조회하기 때문에 Locker가 Member를 가지는 것보
 ---------------------------------
 > - 괸계형 데이터베이스는 정규화된 테이블 2개로 다대다 관계룰 표현할 수 없음
 > - 연결 테이블을 추가해서 일대다, 다대일 관계로 풀어내야함
+> - @ManyToMany 사용
+> - @JoinTable로 연결 테이블 지정
+> 다대다 매핑 : 단방향, 양방향 가능
 
 > 다대다 테이블 관계
 
 ![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-012.png)
+
+> 객체인 Member는 ProductList를 가질 수 있고 Product는 MemberList를 가질 수 있음 그렇기 때문에 딜레마가 생김.
 
 
 > 객체는 컬렉션을 사용해서 객체 2개로 다대다 관계 가능
 
 ![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-013.png)
 
-1:57 다대다 
+> 중간에 조인 테이블을 사용하여 사용
 
 
+> Product.java
 
+```
+package relativemapping;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
+public class Product {
+    @Id @GeneratedValue
+    private Long id;
+
+    private  String name;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+
+```
+
+> Member.java
+
+````
+package relativemapping;
+
+import javax.persistence.*;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+
+
+@Entity
+public class Member {
+    public Member(){
+    }
+
+    public Member(Long id, String username){
+        this.id = id;
+        this.username = username;
+    }
+
+    @Id @GeneratedValue
+    @Column(name = "MEMBER_ID")
+    private Long id;
+
+    @Column(name = "USERNAME")
+    private String username;
+
+    @ManyToOne
+    @JoinColumn(name= "TEAM_ID", insertable = false, updatable = false)
+    private Team team;
+
+    @OneToOne
+    @JoinColumn(name = "LOCKER_ID")
+    private Locker locker;
+
+    @ManyToMany
+    @JoinTable(name="MEMBER_PRODUCT")
+    private List<Product> products;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+}
+
+````
+
+> JpaMain - 내용지우고 애플리케이션 재시작
+
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-014.png)
+
+> PRODUCT 테이블과 MEMBER_PRODUCT 테이블이 생성되는걸 확인 할 수 있습니다.
 
 
 
