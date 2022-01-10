@@ -8,7 +8,7 @@ date: 2022-01-03
 slug: "mapping-various-associations"
 description: "다양한 연관관계 매핑"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -1002,6 +1002,234 @@ public class Member {
 
 > PRODUCT 테이블과 MEMBER_PRODUCT 테이블이 생성되는걸 확인 할 수 있습니다.
 
+> 단방향을 양방향으로 바꾸려면, Product에 members를 추가하면 됩니다.
+
+> Product.java
+
+```
+package relativemapping;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import java.util.List;
+
+@Entity
+public class Product {
+    @Id @GeneratedValue
+    private Long id;
+
+    @ManyToMany(mappedBy = "products")
+    private List<Member> members;
+
+
+    private  String name;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+
+```
+
+#### 다대다 매핑의 한계 
+> - 편리해 보이지만 실무에서 사용X
+> - 연결 테이블이 단순히 연결만 하고 끝나지 않음
+> - 주문시간, 수량 같은 데이터가 들어 올 수 있음
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-015.png)
+
+> 중간 테이블 사용시 조인 쿼리도 예상치 못하게 잘못된 쿼리도 나갈 수 있음 
+
+#### 다대다 한계 극복 
+> - 연결 테이블용 엔티티 추가(연결 테이블을 엔티티로 승격)
+> 비즈니스로직상 복잡하기 때문에 연결용 테이블을 쓰기는 불편함과 어려움이 있어 엔티티로 만들어 사용하는 것이 그나마 좋은 방법입니다.
+
+> - ManyToMany -> @OneToMany, @ManyToOne 
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-016.png)
+
+> 중간에 엔티티를 하나더 생성. 예를 들면 MemberProduct.java를 만들어 보겠습니다.
+
+> MemberProduct.java
+
+```
+package relativemapping;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "ORDERS")
+public class MemberProduct {
+    @Id @GeneratedValue
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
+
+    @ManyToOne
+    @JoinColumn(name = "PRODUCT_ID")
+    private Product product;
+
+    @Column(name = "ORDERAMOUNT")
+    private int orderAmount;
+
+    @Column(name = "ORDERCOUNT")
+    private int orderCount;
+
+    public Member getMember() {
+        return member;
+    }
+
+    @Column(name = "ORDERDATE")
+    private LocalDate orderDate;
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+}
+
+```
+
+> @ManyToOne으로 Member와 Product를 생성합니다.
+
+> Member.java
+
+```
+package relativemapping;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+
+
+@Entity
+public class Member {
+    public Member(){
+    }
+
+    public Member(Long id, String username){
+        this.id = id;
+        this.username = username;
+    }
+
+    @Id @GeneratedValue
+    @Column(name = "MEMBER_ID")
+    private Long id;
+
+    @Column(name = "USERNAME")
+    private String username;
+
+    @ManyToOne
+    @JoinColumn(name= "TEAM_ID", insertable = false, updatable = false)
+    private Team team;
+
+    @OneToOne
+    @JoinColumn(name = "LOCKER_ID")
+    private Locker locker;
+
+    @OneToMany(mappedBy = "member")
+    private List<MemberProduct> memberProducts = new ArrayList<>();
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+}
+
+```
+
+> Member에서는 @OneToMany로 mappedBy = "member" 옵션을 지정한 List<MemberProduct> memberProducts 를 추가 합니다.
+
+> Product.java
+
+```
+package relativemapping;
+
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+public class Product {
+    @Id @GeneratedValue
+    private Long id;
+
+    @OneToMany(mappedBy = "product")
+    private List<MemberProduct> memberProducts;
+
+
+    private  String name;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+
+```
+
+> Product에도 @OneToMany로 mappedBy = "member" 옵션을 지정한 List<MemberProduct> memberProducts 를 추가 합니다.
+
+> JpaMember.java - 애플리케이션을 재시작 해봅니다.
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-017.png)
+
+![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-018.png)
 
 
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
