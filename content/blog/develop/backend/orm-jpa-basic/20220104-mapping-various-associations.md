@@ -714,7 +714,7 @@ public class Locker {
 
 ![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-008.png)
 
-### 일대일 : 주 테이블에 외래 키 단방향
+### 일대일 : 주 테이블에 외래 키 양방향
 -------------
 
 ![contact](/images/develop/backend/orm-jpa-basic/mapping-various-associations/img-009.png)
