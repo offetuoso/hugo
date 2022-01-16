@@ -8,7 +8,7 @@ date: 2022-01-13
 slug: "inheritance-mapping"
 description: "상속관계 매핑"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -25,7 +25,7 @@ toc: true
 > - 상속관계 매핑
 > - @MappedSuperclass
 
-### 상속관계 매핑
+## 상속관계 매핑
 -------------
 > - 객체는 상속관계가 있지만, 관계형 데이터베이스에는 상속 관계 없음
 > - 슈퍼타입 서브타입 관계라는 모델링 기법이 객체 상속과 유사
@@ -777,7 +777,8 @@ Hibernate:
 
 > console
 
-```
+````
+
 Hibernate: 
     select
         item0_.id as id1_2_0_,
@@ -832,7 +833,7 @@ Hibernate:
 where
     item0_.id=?
 
-``` 
+````
 
 > Item에서 조회할 경우 union all 을 통해 자식 테이블들을 모두 합쳐서 조회하게 됩니다. 
 > 조회시 어떤 테이블에 값이 있을 지 모르기 때문에 전체 테이블을 조회합니다.
@@ -878,14 +879,12 @@ where
 > 하지만 조인전략과 단일테이블 전략에서는 ITEM만 사용하기 때문에 구현 클래스마다 전략은 매우 큰 단점을 가지고 있는것을 알 수 있습니다.
 
 
-#### 정리 
+#### 상속관계 매핑 정리 
 > 기본적으로 조인전략을 가져가고 설계나 구조 상황에 따라 조인전략과 단일 테이블 전략에서 고민 <br> 
 > 비즈니스 적으로 중요하지 않고 데이터가 그리 많지 않다면 단일테이블 전략을 선택해 시간과 일정을 절약  <br>
 > 비즈니스 적으로 중요하고 정교한 테이블 구조가 필요하다면 조인전략으로 선택
 
 > <mark>테이블마다 전략은 고려대상 아님</mark>
-
-
 
 
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
