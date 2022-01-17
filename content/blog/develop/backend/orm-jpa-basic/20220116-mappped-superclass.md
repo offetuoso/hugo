@@ -1,5 +1,5 @@
 ---
-title: "JPA 상속관계 매핑"
+title: "JPA @MappedSuperclass"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"
