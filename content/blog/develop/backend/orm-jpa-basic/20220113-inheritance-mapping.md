@@ -5,7 +5,7 @@ font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-01-13
-slug: "inheritance-mapping"
+slug: "proxy-and-relation"
 description: "상속관계 매핑"	
 keywords: ["ORM"]
 draft: false

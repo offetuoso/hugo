@@ -8,7 +8,7 @@ date: 2022-01-17
 slug: "practical-example-4"
 description: "상속관계 매핑"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -878,8 +878,119 @@ public class OrderItem extends BaseEntity{
 
 > Album.java, Book.java, Movie.java는 Item을 상속받기 때문에 BaseEntity를 상속 받을 필요가 없습니다.
 
+> JpaMain.java 애플리케이션 재시작
 
+> console - 모든 테이블에 추가한 BaseEntity의 속성들 확인
 
+````
+create table Category (
+       CATEGORY_ID bigint not null,
+        MOD_ID varchar(255),
+        MOD_DT timestamp,
+        REG_ID varchar(255),
+        REG_DT timestamp,
+        name varchar(255),
+        parent_id bigint,
+        primary key (CATEGORY_ID)
+    )
+Hibernate: 
+    
+    create table CATEGORY_ITEM (
+       CATEGORY_ID bigint not null,
+        ITEM_ID bigint not null
+    )
+Hibernate: 
+    
+    create table Delivery (
+       DELIVERY_ID bigint not null,
+        MOD_ID varchar(255),
+        MOD_DT timestamp,
+        REG_ID varchar(255),
+        REG_DT timestamp,
+        city varchar(255),
+        status varchar(255),
+        street varchar(255),
+        zipcode varchar(255),
+        primary key (DELIVERY_ID)
+    )
+Hibernate: 
+    
+    create table Item (
+       DTYPE varchar(31) not null,
+        ITEM_ID bigint not null,
+        MOD_ID varchar(255),
+        MOD_DT timestamp,
+        REG_ID varchar(255),
+        REG_DT timestamp,
+        name varchar(255),
+        price integer not null,
+        stockQuantity integer not null,
+        author varchar(255),
+        isbn varchar(255),
+        artist varchar(255),
+        etc varchar(255),
+        actor varchar(255),
+        director varchar(255),
+        primary key (ITEM_ID)
+    )
+Hibernate: 
+    
+    create table Member (
+       MEMBER_ID bigint not null,
+        MOD_ID varchar(255),
+        MOD_DT timestamp,
+        REG_ID varchar(255),
+        REG_DT timestamp,
+        cicy varchar(255),
+        name varchar(255),
+        street varchar(255),
+        zipcode varchar(255),
+        primary key (MEMBER_ID)
+    )
+Hibernate: 
+    
+    create table OrderItem (
+       OFDER_ITEM_ID bigint not null,
+        MOD_ID varchar(255),
+        MOD_DT timestamp,
+        REG_ID varchar(255),
+        REG_DT timestamp,
+        count integer not null,
+        orderPrice integer not null,
+        item_ITEM_ID bigint,
+        order_ORDER_ID bigint,
+        primary key (OFDER_ITEM_ID)
+    )
+Hibernate: 
+    
+    create table ORDERS (
+       ORDER_ID bigint not null,
+        MOD_ID varchar(255),
+        MOD_DT timestamp,
+        REG_ID varchar(255),
+        REG_DT timestamp,
+        orderDate timestamp,
+        status varchar(255),
+        DELIVERY_ID bigint,
+        member_MEMBER_ID bigint,
+        primary key (ORDER_ID)
+    )
+    
+Hibernate: 
+    call next value for hibernate_sequence
+Hibernate: 
+    /* insert jpabasic.jpashop.domain.Book
+        */ insert 
+        into
+            Item
+            (MOD_ID, MOD_DT, REG_ID, REG_DT, name, price, stockQuantity, author, isbn, DTYPE, ITEM_ID) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)
+````
+
+![contact](/images/develop/backend/orm-jpa-basic/practical-example-4/img-007.png)
+
+> Book을 넣고 나머지 Null이 되어있는 데이터들은 추후 스프링데이터와 JPA를 이용해 Persist 전에 추가하는 추가하는 방법이 있다고 합니다.
 
 
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
