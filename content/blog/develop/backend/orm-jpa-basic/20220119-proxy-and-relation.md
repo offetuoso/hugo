@@ -388,4 +388,6 @@ Process finished with exit code 0
 > findMember.class = class relativemapping.Member$HibernateProxy$kQ2LbNHi Member.java가 아니라 HibernateProxy 인것으로 확인됨
 
 
+
+
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
