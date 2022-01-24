@@ -604,9 +604,89 @@ Process finished with exit code 0
 
 
 > - 영속성 컨텍스트에 찾는 엔티티가 이미 있으면 em.getReference()를 호출해도 실제 엔티티 반환
-> - 영속성 컨텍스트의 도움을 받을 수 없는 준영속 상태일 때, 프록시를 초기화 문제 발생 <br>
+> - 영속성 컨텍스트의 도움을 받을 수 없는 준영속 상태일 때, 프록시를 초기화 하면 문제 발생 <br>
 (하이버네이트는 org.hivernate.LazyInitializationException 예외룰 터트림)
 
-20:28
+
+> JpaMain.java - em.find(), em.find() 타입비교
+
+```
+			Team team = new Team();
+            team.setName("TeamA");
+            team.setCreateBy("kim");
+            team.setCreateDate(LocalDateTime.now());
+            em.persist(team);
+
+            Member member1 = new Member();
+            member1.setUsername("MemberA");
+            member1.setCreateBy("kim");
+            member1.setCreateDate(LocalDateTime.now());
+            member1.setTeam(team);
+            em.persist(member1);
+            Member member2 = new Member();
+            member2.setUsername("MemberA");
+
+            member2.setCreateBy("kim");
+            member2.setCreateDate(LocalDateTime.now());
+            member2.setTeam(team);
+            em.persist(member2);
+
+
+            em.flush();
+            em.clear();
+
+            Member m1 = em.find(Member.class, member1.getId());
+            Member m2 = em.find(Member.class, member2.getId());
+
+			
+            System.out.println("m1 == m2 " + (m1.getClass() == m2.getClass())); // m1 == m2true
+```
+
+
+> JpaMain.java - em.find(), em.getReference() 타입비교
+
+```
+		    Member m1 = em.find(Member.class, member1.getId());
+            Member m2 = em.getReference(Member.class, member2.getId());
+
+            System.out.println("m1 == m2 " + (m1.getClass() == m2.getClass()));
+// m1 == m2 false
+```
+
+> 비교한 em.find로 가져온 엔티티 객체와 getReference를 통해 만든 프록시 객체는 == 비교를 하면 false로 나옵니다. <br>
+> 지금이야 같은 JpaMain에서 보면 쉽겠지만 아래와 같은 메소드를 사용한다면 함수 내부에서 어떤 객체가 넘어오는지 알기 힘듭니다.
+
+> JpaMain.java - 메소드를 생성하고 내부에서 객체 == 비교
+
+```
+	...
+	
+	logic(m1,m2);
+    ...
+   
+    private static void logic(Member m1, Member m2) {
+        System.out.println("m1 == m2 " + (m1.getClass() == m2.getClass())); 
+    }
+	
+```
+
+> JpaMain.java - 메소드를 생성하고 내부에서 객체 instanceof로 체크
+
+```
+    ...
+	
+    logic(m1,m2);
+    ...
+    
+   
+   private static void logic(Member m1, Member m2) {
+        System.out.println("m1 instanceof Member " + (m1 instanceof Member));
+        System.out.println("m2 instanceof Member " + (m2 instanceof Member));
+    }
+
+```
+
+
+24:20
 
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
