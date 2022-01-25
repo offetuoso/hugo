@@ -513,6 +513,8 @@ Process finished with exit code 0
 > - 프록시 객체는 처음 사용할 때 한 번만 초기화
 > - 프록시 객체를 초기화 할 때, <mark>프록시 객체가 실제 엔티티로 바뀌는 것은 아님</mark>, 초기화되면 프록시 객체를 통해서 실제 엔티티에 접근 가능
 
+##### 프록시 객체가 실제 엔티티로 바뀌는 것은 아님
+
 > JpaMain.java - findMember.getUsername() 전후로 findMember.getClass() 객체 타입 확인
 
 ```
@@ -593,8 +595,6 @@ Hibernate:
         member0_.MEMBER_ID=?
 findMember.userName = MemberA
 findMember.class after = class relativemapping.Member$HibernateProxy$uziW0Tt8
-1월 23, 2022 8:49:22 오후 org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl$PoolState stop
-INFO: HHH10001008: Cleaning up connection pool [jdbc:h2:tcp://localhost/~/test]
 
 Process finished with exit code 0
 
@@ -607,6 +607,8 @@ Process finished with exit code 0
 > - 영속성 컨텍스트의 도움을 받을 수 없는 준영속 상태일 때, 프록시를 초기화 하면 문제 발생 <br>
 (하이버네이트는 org.hivernate.LazyInitializationException 예외룰 터트림)
 
+
+##### 엔티티 객체 == 비교
 
 > JpaMain.java - em.find(), em.find() 타입비교
 
@@ -643,6 +645,8 @@ Process finished with exit code 0
 ```
 
 
+##### 엔티티 객체, 프록시 객체 == 비교
+
 > JpaMain.java - em.find(), em.getReference() 타입비교
 
 ```
@@ -670,6 +674,8 @@ Process finished with exit code 0
 	
 ```
 
+##### 프록시 객체 instanceof 체크
+
 > JpaMain.java - 메소드를 생성하고 내부에서 객체 instanceof로 체크
 
 ```
@@ -686,7 +692,156 @@ Process finished with exit code 0
 
 ```
 
+##### 영속성 컨텍스트(1차 캐시)에 찾는 엔티티가 있으면 em.getReference()를 호출해도 실제 엔티티 반환
 
-24:20
+> JpaMain.java - 영속성 컨텍스트에 엔티티 추가 후 em.getReference()
 
+```
+          Team team = new Team();
+            team.setName("TeamA");
+            team.setCreateBy("kim");
+            team.setCreateDate(LocalDateTime.now());
+            em.persist(team);
+
+            Member member1 = new Member();
+            member1.setUsername("MemberA");
+            member1.setCreateBy("kim");
+            member1.setCreateDate(LocalDateTime.now());
+            member1.setTeam(team);
+            em.persist(member1);
+            Member member2 = new Member();
+            member2.setUsername("MemberA");
+
+            member2.setCreateBy("kim");
+            member2.setCreateDate(LocalDateTime.now());
+            member2.setTeam(team);
+            em.persist(member2);
+
+
+            em.flush();
+            em.clear();
+
+            Member r1 = em.getReference(Member.class, member1.getId());
+            System.out.println("r1 = " + r1.getClass());
+
+            Member r2 = em.getReference(Member.class,member1.getId());
+
+            System.out.println("r2 = " + r2.getClass());
+            
+            System.out.println("r1 == r2 " + (r1 == r2));
+
+            tx.commit();
+
+```
+
+> console
+
+```
+  select
+        member0_.MEMBER_ID as member_i1_3_0_,
+        member0_.MOD_ID as mod_id2_3_0_,
+        member0_.MOD_DT as mod_dt3_3_0_,
+        member0_.REG_ID as reg_id4_3_0_,
+        member0_.REG_DT as reg_dt5_3_0_,
+        member0_.TEAM_ID as team_id7_3_0_,
+        member0_.USERNAME as username6_3_0_,
+        team1_.TEAM_ID as team_id1_7_1_,
+        team1_.MOD_ID as mod_id2_7_1_,
+        team1_.MOD_DT as mod_dt3_7_1_,
+        team1_.REG_ID as reg_id4_7_1_,
+        team1_.REG_DT as reg_dt5_7_1_,
+        team1_.NAME as name6_7_1_ 
+    from
+        Member member0_ 
+    left outer join
+        Team team1_ 
+            on member0_.TEAM_ID=team1_.TEAM_ID 
+    where
+        member0_.MEMBER_ID=?
+        
+m1 = class relativemapping.Member
+
+r1 = class relativemapping.Member
+
+m1 == r1 true
+
+```
+
+> m1과 r1 모두 Member 엔티티 객체 클래스로 나오는 것을 확인할 수 있습니다. 두가지 이유가 있는데 하나는 <br>
+영속성 컨텍스트에 이미 있는데 프록시로 가져 와봐야 이점이 없는데 프록시로 가져올 필요가 없습니다. 원본인 엔티티 객체를 반환하는게 더 성능 최적화에 도움이 됩니다.
+
+> 또한 JPA에서는 영속성 컨텍스트 안에서 같은 Member를 엔티티에서 조회하거나, 레퍼런스로 조회해 와도 컬렉션에서 == 비교한 것처럼 같은 값으로 인식해 줍니다.
+
+> JPA는 한 트랜젝션 안에서 같은 객체에 대한 보장을 해줍니다.
+
+
+> r1 과 r2  둘다 레퍼런스면 두개의 프록시 객체는 동일하고, == 비교시 true 를 반환 합니다.
+
+```
+            Member r1 = em.getReference(Member.class, member1.getId());
+            System.out.println("r1 = " + r1.getClass());
+
+            Member r2 = em.getReference(Member.class,member1.getId());
+
+            System.out.println("r2 = " + r2.getClass());
+            
+            System.out.println("r1 == r2 " + (r1 == r2));
+
+```
+
+> console
+
+```
+	r1 = class relativemapping.Member$HibernateProxy$3dvhAszH
+	r2 = class relativemapping.Member$HibernateProxy$3dvhAszH
+	r1 == r2 true
+```
+
+> JpaMain.java - 레퍼런스로 조회 후 일반 엔티티 조회 시 
+
+```
+			Member r1 = em.getReference(Member.class, member1.getId());
+            System.out.println("r1 = " + r1.getClass());
+
+            Member m1 = em.find(Member.class,member1.getId());
+
+            System.out.println("m1 = " + m1.getClass());
+
+            System.out.println("r1 == m1 " + (r1 == m1));
+```
+
+> console
+
+````
+r1 = class relativemapping.Member$HibernateProxy$vH2td1yz
+Hibernate: 
+    select
+        member0_.MEMBER_ID as member_i1_3_0_,
+        member0_.MOD_ID as mod_id2_3_0_,
+        member0_.MOD_DT as mod_dt3_3_0_,
+        member0_.REG_ID as reg_id4_3_0_,
+        member0_.REG_DT as reg_dt5_3_0_,
+        member0_.TEAM_ID as team_id7_3_0_,
+        member0_.USERNAME as username6_3_0_,
+        team1_.TEAM_ID as team_id1_7_1_,
+        team1_.MOD_ID as mod_id2_7_1_,
+        team1_.MOD_DT as mod_dt3_7_1_,
+        team1_.REG_ID as reg_id4_7_1_,
+        team1_.REG_DT as reg_dt5_7_1_,
+        team1_.NAME as name6_7_1_ 
+    from
+        Member member0_ 
+    left outer join
+        Team team1_ 
+            on member0_.TEAM_ID=team1_.TEAM_ID 
+    where
+        member0_.MEMBER_ID=?
+        
+m1 = class relativemapping.Member$HibernateProxy$vH2td1yz
+
+r1 == m1 true
+
+````
+
+32:57
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
