@@ -8,7 +8,7 @@ date: 2022-01-19
 slug: "proxy-and-relation"
 description: "프록시와 연관간계"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -603,7 +603,7 @@ Process finished with exit code 0
 > - 프록시 객체는 원본 엔티티를 상속받음, 따라서 타입 체크시 주의해야함 (==비교 실패, 대신 instance of 사용)
 
 
-> - 영속성 컨텍스트에 찾는 엔티티가 이미 있으면 em.getReference()를 호출해도 실제 엔티티 반환
+> - 영속성 컨텍스트에 찾는 엔티티가 이미 있으면 em.getReference()를 호출해도 실제 엔티티 반환 (반대로 em.getReference()로 조회 후 엔티티를 조회하면 프록시 객체로 반환)
 > - 영속성 컨텍스트의 도움을 받을 수 없는 준영속 상태일 때, 프록시를 초기화 하면 문제 발생 <br>
 (하이버네이트는 org.hivernate.LazyInitializationException 예외룰 터트림)
 
@@ -843,5 +843,362 @@ r1 == m1 true
 
 ````
 
-32:57
+> em.getReference() 이후 em.find()또한 proxy로 조회된것을 확인할 수 있습니다. 이는 같은 컨텍스트 안에서 같은 객체로 반환해 주는 JPA의 특징입니다.
+
+
+
+##### 영속성 컨텍스트의 도움을 받을 수 없는 준영속 상태일 때, 프록시를 초기화하면 문제 발생
+
+> JpaaAin.java - 영속성 컨텍스트에서 제거된 경우  <br>
+> getReference() 후 getUsername()을 통해 초기화
+
+```
+     	  Team team = new Team();
+            team.setName("TeamA");
+            team.setCreateBy("kim");
+            team.setCreateDate(LocalDateTime.now());
+            em.persist(team);
+
+            Member member1 = new Member();
+            member1.setUsername("MemberA");
+            member1.setCreateBy("kim");
+            member1.setCreateDate(LocalDateTime.now());
+            member1.setTeam(team);
+            em.persist(member1);
+            Member member2 = new Member();
+            member2.setUsername("MemberA");
+
+            member2.setCreateBy("kim");
+            member2.setCreateDate(LocalDateTime.now());
+            member2.setTeam(team);
+            em.persist(member2);
+
+
+            em.flush();
+            em.clear();
+
+            Member r1 = em.getReference(Member.class, member1.getId());
+            System.out.println("r1 = " + r1.getClass());
+
+
+            em.detach(r1); // 영속성 컨텍스트에서 r1을 제거
+            //  em.clear();
+
+            r1.getUsername(); //컨텍스트에서 제거된 경우
+
+            tx.commit();
+```
+
+> console
+
+```
+Hibernate: 
+    /* insert relativemapping.Team
+        */ insert 
+        into
+            Team
+            (MOD_ID, MOD_DT, REG_ID, REG_DT, NAME, TEAM_ID) 
+        values
+            (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    /* insert relativemapping.Member
+        */ insert 
+        into
+            Member
+            (MOD_ID, MOD_DT, REG_ID, REG_DT, USERNAME, MEMBER_ID) 
+        values
+            (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    /* insert relativemapping.Member
+        */ insert 
+        into
+            Member
+            (MOD_ID, MOD_DT, REG_ID, REG_DT, USERNAME, MEMBER_ID) 
+        values
+            (?, ?, ?, ?, ?, ?)
+r1 = class relativemapping.Member$HibernateProxy$Sq3ipbiV
+
+org.hibernate.LazyInitializationException: could not initialize proxy [relativemapping.Member#2] - no Session //영속성 컨텍스트 없다는 이야기
+	at org.hibernate.proxy.AbstractLazyInitializer.initialize(AbstractLazyInitializer.java:170)
+	at org.hibernate.proxy.AbstractLazyInitializer.getImplementation(AbstractLazyInitializer.java:310)
+	at org.hibernate.proxy.pojo.bytebuddy.ByteBuddyInterceptor.intercept(ByteBuddyInterceptor.java:45)
+	at org.hibernate.proxy.ProxyConfiguration$InterceptorDispatcher.intercept(ProxyConfiguration.java:95)
+	at relativemapping.Member$HibernateProxy$Sq3ipbiV.getUsername(Unknown Source)
+	at relativemapping.JpaMain.main(JpaMain.java:52)
+```
+
+> JpaaAin.java - 영속성 컨텍스트가 종료된경우
+> getReference() 후 getUsername()을 통해 초기화
+
+```
+     	  Team team = new Team();
+            team.setName("TeamA");
+            team.setCreateBy("kim");
+            team.setCreateDate(LocalDateTime.now());
+            em.persist(team);
+
+            Member member1 = new Member();
+            member1.setUsername("MemberA");
+            member1.setCreateBy("kim");
+            member1.setCreateDate(LocalDateTime.now());
+            member1.setTeam(team);
+            em.persist(member1);
+            Member member2 = new Member();
+            member2.setUsername("MemberA");
+
+            member2.setCreateBy("kim");
+            member2.setCreateDate(LocalDateTime.now());
+            member2.setTeam(team);
+            em.persist(member2);
+
+
+            em.flush();
+            em.clear();
+
+            Member r1 = em.getReference(Member.class, member1.getId());
+            System.out.println("r1 = " + r1.getClass());
+
+
+            em.close(); // 컨텍스트 종료
+
+            r1.getUsername(); //컨텍스트 종료된 이후 프록시 객체 초기화
+
+            tx.commit();
+```
+
+> console
+
+```
+Hibernate: 
+    /* insert relativemapping.Team
+        */ insert 
+        into
+            Team
+            (MOD_ID, MOD_DT, REG_ID, REG_DT, NAME, TEAM_ID) 
+        values
+            (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    /* insert relativemapping.Member
+        */ insert 
+        into
+            Member
+            (MOD_ID, MOD_DT, REG_ID, REG_DT, USERNAME, MEMBER_ID) 
+        values
+            (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    /* insert relativemapping.Member
+        */ insert 
+        into
+            Member
+            (MOD_ID, MOD_DT, REG_ID, REG_DT, USERNAME, MEMBER_ID) 
+        values
+            (?, ?, ?, ?, ?, ?)
+r1 = class relativemapping.Member$HibernateProxy$t0KzgTxZ
+Hibernate: 
+    select
+        member0_.MEMBER_ID as member_i1_3_0_,
+        member0_.MOD_ID as mod_id2_3_0_,
+        member0_.MOD_DT as mod_dt3_3_0_,
+        member0_.REG_ID as reg_id4_3_0_,
+        member0_.REG_DT as reg_dt5_3_0_,
+        member0_.TEAM_ID as team_id7_3_0_,
+        member0_.USERNAME as username6_3_0_,
+        team1_.TEAM_ID as team_id1_7_1_,
+        team1_.MOD_ID as mod_id2_7_1_,
+        team1_.MOD_DT as mod_dt3_7_1_,
+        team1_.REG_ID as reg_id4_7_1_,
+        team1_.REG_DT as reg_dt5_7_1_,
+        team1_.NAME as name6_7_1_ 
+    from
+        Member member0_ 
+    left outer join
+        Team team1_ 
+            on member0_.TEAM_ID=team1_.TEAM_ID 
+    where
+        member0_.MEMBER_ID=?
+1월 26, 2022 10:57:16 오후 org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl$PoolState stop
+INFO: HHH10001008: Cleaning up connection pool [jdbc:h2:tcp://localhost/~/test]
+
+Process finished with exit code 0
+
+```
+
+> 강의에 의하면 LazyInitializationException( "could not initialize proxy  - the owning Session was closed" ) exception이 나와야 하지만,  <br>
+
+> 5.4.0.Final 버전까지는 예외가 발생하는데 5.4.1.Final 버전부터 예외가 발생하지 않습니다. <br>
+
+>  트랜잭션을 종료하지 않은 상태에서 세션(엔티티메니져)을 닫았기 때문에 아직 트랜잭션이 살아있습니다. 
+
+
+
+#### 프록시 확인
+
+> - 프록시 인스턴스 초기화 여부 확인
+>	PersistenceUnitUtil.isLoaded(Object entity)
+
+> - 프록시 클래스 확인 방법
+>	entity.getClass().getName() 출력 (...javasist...or HibernateProxy..)
+
+> - 프록시 강제 초기화
+>	org.hibernate.initialize(entity);
+
+> 참고 :JPA 표준은 강제 초기화 없음
+>	강제 호출 : member.getName()
+
+
+##### 프록시 인스턴스 초기화 여부 확인
+
+> JpaMain.java - emf.getPersistenceUnitUtil().isLoaded() 사용
+
+````
+
+	  	  Team team = new Team();
+            team.setName("TeamA");
+            team.setCreateBy("kim");
+            team.setCreateDate(LocalDateTime.now());
+            em.persist(team);
+
+            Member member1 = new Member();
+            member1.setUsername("MemberA");
+            member1.setCreateBy("kim");
+            member1.setCreateDate(LocalDateTime.now());
+            member1.setTeam(team);
+            em.persist(member1);
+            Member member2 = new Member();
+            member2.setUsername("MemberA");
+
+            member2.setCreateBy("kim");
+            member2.setCreateDate(LocalDateTime.now());
+            member2.setTeam(team);
+            em.persist(member2);
+
+
+            em.flush();
+            em.clear();
+
+            Member r1 = em.getReference(Member.class, member1.getId());
+            System.out.println("r1 = " + r1.getClass());
+
+            //엔티티 매니저 팩토리에서 PersistenceUnitUtil를 받아와 사용
+            System.out.println("isLoaded = "+ emf.getPersistenceUnitUtil().isLoaded(r1) );
+
+            r1.getUsername();
+
+            System.out.println("isLoaded = "+ emf.getPersistenceUnitUtil().isLoaded(r1) );
+
+
+            tx.commit();
+            
+````
+
+> console
+
+```
+
+Hibernate: 
+    /* insert relativemapping.Member
+        */ insert 
+        into
+            Member
+            (MOD_ID, MOD_DT, REG_ID, REG_DT, USERNAME, MEMBER_ID) 
+        values
+            (?, ?, ?, ?, ?, ?)
+            
+r1 = class relativemapping.Member$HibernateProxy$qay0PhKw //프록시 생성
+
+isLoaded = false // 프록시 초기화전 false
+
+Hibernate: 
+    select
+        member0_.MEMBER_ID as member_i1_3_0_,
+        member0_.MOD_ID as mod_id2_3_0_,
+        member0_.MOD_DT as mod_dt3_3_0_,
+        member0_.REG_ID as reg_id4_3_0_,
+        member0_.REG_DT as reg_dt5_3_0_,
+        member0_.TEAM_ID as team_id7_3_0_,
+        member0_.USERNAME as username6_3_0_,
+        team1_.TEAM_ID as team_id1_7_1_,
+        team1_.MOD_ID as mod_id2_7_1_,
+        team1_.MOD_DT as mod_dt3_7_1_,
+        team1_.REG_ID as reg_id4_7_1_,
+        team1_.REG_DT as reg_dt5_7_1_,
+        team1_.NAME as name6_7_1_ 
+    from
+        Member member0_ 
+    left outer join
+        Team team1_ 
+            on member0_.TEAM_ID=team1_.TEAM_ID 
+    where
+        member0_.MEMBER_ID=?
+        
+isLoaded = true // 프록시 초기화전 true
+
+```
+
+##### 프록시 확인 방법
+
+> JpaMain.java
+
+```
+
+		System.out.println("r1 = " + r1.getClass());
+
+```
+
+console
+
+````
+
+r1 = class relativemapping.Member$HibernateProxy$qay0PhKw
+
+````
+
+
+##### 프록시 강제 초기화
+
+> JpaMain.java
+
+```
+
+		   r1.getUsername(); // 프록시 강제 초기화 (하이버네이트, 표준 JPA)
+		   
+		   //Hibernate.initialize(r1); //하이버네이트 only
+
+            System.out.println("isLoaded = "+ emf.getPersistenceUnitUtil().isLoaded(r1) );
+
+```
+
+console
+
+````
+
+Hibernate: 
+    select
+        member0_.MEMBER_ID as member_i1_3_0_,
+        member0_.MOD_ID as mod_id2_3_0_,
+        member0_.MOD_DT as mod_dt3_3_0_,
+        member0_.REG_ID as reg_id4_3_0_,
+        member0_.REG_DT as reg_dt5_3_0_,
+        member0_.TEAM_ID as team_id7_3_0_,
+        member0_.USERNAME as username6_3_0_,
+        team1_.TEAM_ID as team_id1_7_1_,
+        team1_.MOD_ID as mod_id2_7_1_,
+        team1_.MOD_DT as mod_dt3_7_1_,
+        team1_.REG_ID as reg_id4_7_1_,
+        team1_.REG_DT as reg_dt5_7_1_,
+        team1_.NAME as name6_7_1_ 
+    from
+        Member member0_ 
+    left outer join
+        Team team1_ 
+            on member0_.TEAM_ID=team1_.TEAM_ID 
+    where
+        member0_.MEMBER_ID=?
+        
+isLoaded = true
+
+````
+
+
+
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
