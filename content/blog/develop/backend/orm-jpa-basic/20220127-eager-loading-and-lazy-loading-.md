@@ -51,7 +51,7 @@ println(member.getName()); 연관관계가 등록되어 있어도 지금처럼 m
 	}
 ```
 
-> JpaMain.java
+> Member.java
 
 ```
 @Entity
@@ -73,7 +73,7 @@ public class Member extends BaseEntity{
     private String username;
 
     @ManyToOne(fetch = FetchType.LAZY) //Team 객체를 프록시 객체로 조회
-    @JoinColumn(name= "TEAM_ID", insertable = false, updatable = false)
+    @JoinColumn
     private Team team;
 
 	...
@@ -204,6 +204,110 @@ m1 = class relativemapping.Member
 ```
 
 > Member 엔티티 조회시 Member만 조회 된 것을 확인 
+
+> JpaMain.java - m1.getTeam().getClass()로 team을 조회 후 Lazy로 가져온 객체 클래스 테스트
+
+```
+            Team team = new Team();
+            team.setName("TeamA");
+            team.setCreateBy("kim");
+            team.setCreateDate(LocalDateTime.now());
+            em.persist(team);
+
+            Member member1 = new Member();
+            member1.setUsername("MemberA");
+            member1.setCreateBy("kim");
+            member1.setCreateDate(LocalDateTime.now());
+            member1.setTeam(team);
+            em.persist(member1);
+
+
+            em.flush();
+            em.clear();
+
+            Member m1 = em.find(Member.class, member1.getId());
+
+            System.out.println("m1 = " + m1.getClass());
+
+            System.out.println("m1.getTeam().getClass() = " + m1.getTeam().getClass());
+```
+
+> console
+
+````
+Hibernate: 
+    /* insert relativemapping.Team
+        */ insert 
+        into
+            Team
+            (MOD_ID, MOD_DT, REG_ID, REG_DT, NAME, TEAM_ID) 
+        values
+            (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    /* insert relativemapping.Member
+        */ insert 
+        into
+            Member
+            (MOD_ID, MOD_DT, REG_ID, REG_DT, team_TEAM_ID, USERNAME, MEMBER_ID) 
+        values
+            (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        member0_.MEMBER_ID as member_i1_3_0_,
+        member0_.MOD_ID as mod_id2_3_0_,
+        member0_.MOD_DT as mod_dt3_3_0_,
+        member0_.REG_ID as reg_id4_3_0_,
+        member0_.REG_DT as reg_dt5_3_0_,
+        member0_.team_TEAM_ID as team_tea7_3_0_,
+        member0_.USERNAME as username6_3_0_ 
+    from
+        Member member0_ 
+    where
+        member0_.MEMBER_ID=?
+m1 = class relativemapping.Member
+Hibernate: 
+    select
+        team0_.TEAM_ID as team_id1_7_0_,
+        team0_.MOD_ID as mod_id2_7_0_,
+        team0_.MOD_DT as mod_dt3_7_0_,
+        team0_.REG_ID as reg_id4_7_0_,
+        team0_.REG_DT as reg_dt5_7_0_,
+        team0_.NAME as name6_7_0_ 
+    from
+        Team team0_ 
+    where
+        team0_.TEAM_ID=?
+
+
+m1.getTeam().getClass() = class relativemapping.Team$HibernateProxy$2xzHCXZv
+
+Process finished with exit code 0
+
+````
+
+
+#### 지연 로딩
+
+![contact](/images/develop/backend/orm-jpa-basic/eager-loading-and-lazy-loading/img-002.png)
+
+
+
+#### 지연 로딩 LAZY를 사용해서 프록시로 조회
+
+![contact](/images/develop/backend/orm-jpa-basic/eager-loading-and-lazy-loading/img-003.png)
+
+
+#### Member와 Team을 자주 함께 사용한다면 ? 
+
+![contact](/images/develop/backend/orm-jpa-basic/eager-loading-and-lazy-loading/img-004.png)
+
+> Member와 Team을 자주 함께 사용하는 경우 Lazy 로딩을 하게되면 Member한번 Team 한번 쿼리를 각각 계속 호출하기 때문에 비효율적일 수 있습니다. <br>
+상황에 맞게 적절히 적용하는게 중요합니다.
+
+
+
+
+
 
 
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>

@@ -92,7 +92,7 @@ public class Member extends BaseEntity{
     private String username;
 
     @ManyToOne
-    @JoinColumn(name= "TEAM_ID", insertable = false, updatable = false)
+    @JoinColumn
     private Team team;
 
 
