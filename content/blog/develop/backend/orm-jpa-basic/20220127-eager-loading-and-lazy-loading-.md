@@ -8,7 +8,7 @@ date: 2022-01-27
 slug: "eager-loading-and-lazy-loading"
 description: "즉시 로딩과 지연로딩"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -711,8 +711,21 @@ Hibernate:
 
 ![contact](/images/develop/backend/orm-jpa-basic/eager-loading-and-lazy-loading/img-009.png) 
 
+> em.find(Member.class, member1.getId()); 를 통해 조회시 team과는 Join한 한방 쿼리로 조회됩니다.
 
+> orders는 지연 로딩을 이용해서 프록시로 들어오게 됩니다.
 
+> orders를 사용하여 프록시를 초기화 하게되면
+
+![contact](/images/develop/backend/orm-jpa-basic/eager-loading-and-lazy-loading/img-010.png) 
+
+### 지연 로딩 - 실무
+-----------------------------------------
+
+> - <mark>모든 연관관계에 지연 로딩을 사용해라!</mark>
+> - <mark>실무에서 즉시 로딩을 사용하지 마라</mark>
+> - JPQL fetch 조인이나, 엔티티 그래프 기능을 사용해라!
+> - 즉시 로딩은 상상하지도 못한 쿼리가 나간다.
 
 
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
