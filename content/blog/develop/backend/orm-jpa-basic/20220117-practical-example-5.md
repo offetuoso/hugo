@@ -8,7 +8,7 @@ date: 2022-02-06
 slug: "practical-example-5"
 description: "연관관계 관리"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -173,7 +173,7 @@ public class Category extends BaseEntity{
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) // **
     @JoinColumn(name = "parent_id")
     private Category parent; // 상위 카테고리
 
@@ -219,7 +219,7 @@ public class Delivery extends BaseEntity{
     private DeliveryStatus status;
 
 
-    @OneToOne(mappedBy = "delivery" , fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "delivery" , fetch = FetchType.LAZY) // **
     private Order order;
 
 
@@ -490,13 +490,13 @@ public class Order extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) // **
     private Member member;
 
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems = new ArrayList<>(); //관례상 초기 값을 두어 NullPointer Exception을 방지
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY) // **
     @JoinColumn(name = "DELIVERY_ID")
     private Delivery delivery;
 
@@ -574,10 +574,10 @@ public class OrderItem extends BaseEntity{
 
     private int count;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) // **
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) // **
     private Item item;
 
     public Long getId() {
@@ -677,11 +677,101 @@ public class JpaMain {
 
 ## 영속성 전이 설정
 --------------------------
-> - <mark>Order -> Delivery</mark>를 영속성 전이 ALL 설정
->	주문(Order)을 생성할 당시 배송정보(Delivery)를 같이 생성한다는 뜻
+> 주문(Order)을 생성할 당시 배송정보(Delivery), 그리고 주문상품(OrderItem)을 같이 생성한다는 뜻
 
+> - <mark>Order -> Delivery</mark>를 영속성 전이 ALL 설정
 > - <mark>Order -> OrderItem을 영속성 전이 ALL 설정
 
+```
+package jpabasic.jpashop.domain;
+
+import javax.persistence.*;
+import jpabasic.jpashop.domain.Member;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Entity
+@Table(name = "ORDERS") // DB에 따라 ORDER가 예약어일 경우가 있어 ORDERS
+public class Order extends BaseEntity{
+
+    public Order(){}
+
+    @Id
+    @GeneratedValue
+    @Column(name="ORDER_ID")
+    private Long id;
+
+    private LocalDateTime orderDate;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member member;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL) // **
+    private List<OrderItem> orderItems = new ArrayList<>(); //관례상 초기 값을 두어 NullPointer Exception을 방지
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) // **
+    @JoinColumn(name = "DELIVERY_ID")
+    private Delivery delivery;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDateTime orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    public void addOrderItem(OrderItem orderItem) {
+        this.orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    } 
+
+    public void addMember(Member member) {
+        this.member = member;
+        member.getOrders().add(this);
+    }
+}
+
+```
+
+> 설계시 Delivery의 라이프 사이클을 따로 관리 해야하는 것도 고민을 해볼 필요가 있습니다. 복잡성이나, 비즈니스 상황에 따라 Cascade를 적용할지 뺄지 정해야 합니다.
 
 
 ![contact](/images/develop/backend/orm-jpa-basic/practical-example-5/img-001.png)
