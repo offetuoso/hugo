@@ -418,6 +418,30 @@ Hibernate:
 > - <mark>참조하는 곳이 하나일 때 사용해야함!</mark>
 > - <mark>특정 엔티티가 독점 소유할 때 사용</mark>
 
+
+### 영속성 전이: CascadeType
+-------------------------------------
+> - ALL
+> - PERSIST
+> - MERGE
+> - REMOVE
+> - REFRESH
+> - DETACH
+
+
+#### CascadeType 종류
+
+CascadeType | 설명
+-----------|--------
+CascadeType.ALL | 부모 엔터티에서 자식 엔터티로 모든 작업을 전파
+CascadeType.PERSIST | 자식 엔티티까지 영속성 전달, 부모 엔티티를 저장하면 자식 엔티티도 저장
+CascadeType.MERGE | 자식 엔티티까지 병합 작업을 지속, 부모 엔티티와 자식 엔티티를 조회 후 업데으트
+CascadeType.REMOVE | 자식 엔티티까지 제거 작업을 지속, 연결된 자식 엔티티까지 엔티티 제거
+CascadeType.REFRESH | 데이터베이스로부터 인스턴스 값을 다시 읽어 오기(새로고침), 연결된 하위 엔티티까지 인스턴스 값 다시 읽어옴
+CascadeType.DETACH | 영속성 컨텍스트에서 엔티티 제거, 연결된 하위 엔티티까지 영속성 제거
+
+
+
 ## 고아 객체
 ------------------------------------
 
@@ -744,4 +768,7 @@ Hibernate:
 > - 도메인 주도 설계(DDD)의 Aggregate Root개념을 구현할 때 유용
 
 
-#### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
+#### 참고
+> - <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
+
+> - <a href="https://www.baeldung.com/jpa-cascade-types">https://www.baeldung.com/jpa-cascade-types</a>
