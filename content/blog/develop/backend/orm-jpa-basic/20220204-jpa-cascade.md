@@ -1,14 +1,14 @@
 ---
-title: "JPA 영속성 전이 CASCADE"
+title: "JPA 영속성 전이(CASCADE)와 고아 객체"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-02-04
 slug: "jpa-cascade"
-description: "JPA 영속성 전이 CASCADE"	
+description: "JPA 영속성 전이(CASCADE)와 고아 객체"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -16,15 +16,27 @@ math: false
 toc: true
 ---
 
-
-# 영속성 전이 CASCADE
+# 영속성 전이(CASCADE)와 고아 객체
 -------------
+
+
+## 목록 
+---------------
+> - 영속성 전이 
+> - 고아 객체
+
+
+### 영속성 전이
+
 > 앞에서 나온 즉시 로딩, 지연 로딩, 연관관계 세팅 이 세가지와 완전 별개의 개념
 
 > - 특정 엔티티를 영속 상태로 만들 때 연관된 엔티티도 함께 영속 상태로 만들고 싶을때
 > - 예 : 부모 엔티티를 저장할 때 자식 엔티티도 함께 저장.
 
-## 영속성 전이: 저장
+![contact](/images/develop/backend/orm-jpa-basic/jpa-cascade/img-003.png)
+
+
+### 영속성 전이: 저장
 -------------
 
 ```
@@ -314,9 +326,422 @@ Hibernate:
 
 > 부모의 엔티티만 저장한 것을 확인할 수 있습니다.
 
-6:49
+> Parent.java - @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL) 
+
+```
+package relativemapping;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+public class Parent {
+
+    public Parent() {
+    }
 
 
+    @Id
+    @GeneratedValue
+    @Column(name = "parent_id")
+    private Long id;
+
+    private String name;
+	
+    //@OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)  // **
+    private List<Child> childList = new ArrayList<>();
+
+    public void addChild(Child child){
+        childList.add(child);
+        child.setParent(this);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+```
+
+> JpaMain.java - 애플리케이션 재시작
+
+> console
+
+```
+Hibernate: 
+    /* insert relativemapping.Parent
+        */ insert 
+        into
+            Parent
+            (name, parent_id) 
+        values
+            (?, ?)
+            
+Hibernate: 
+    /* insert relativemapping.Child
+        */ insert 
+        into
+            Child
+            (name, parent_id, id) 
+        values
+            (?, ?, ?)
+            
+Hibernate: 
+    /* insert relativemapping.Child
+        */ insert 
+        into
+            Child
+            (name, parent_id, id) 
+        values
+            (?, ?, ?)
+
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/jpa-cascade/img-002.png)
+
+
+> Parent를 포함한 Child 객체 2개 모두 저장된것을 확인할 수 있습니다. <br>
+
+### 영속성 전이: CASCADE - 주의!
+------------------------------------
+> - 영속성 전이는 연관관계를 매핑하는 것과 아무 관련이 없음
+> - 엔티티를 영속화할 때 연관된 엔티티도 함께 영속화하는 편리함을 제공할 뿐
+> - <mark>참조하는 곳이 하나일 때 사용해야함!</mark>
+> - <mark>특정 엔티티가 독점 소유할 때 사용</mark>
+
+## 고아 객체
+------------------------------------
+
+### 고아 객체 제거
+------------------------------------
+> 부모 엔티티와 연관관계가 끊어진 자식 엔티티를 자동으로 삭제
+
+> - <mark>orphanRemoval = true</mark>
+> - Parent parent1 = em.find(Parent.class, id); <br>
+parent1.getChildList().remove(0); // 자식 엔티티를 컬렉션에서 제거
+
+> - DELETE FROM CHILD WHERE ID = ?
+
+> Parent.java -     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+
+```
+package relativemapping;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+public class Parent {
+
+    public Parent() {
+    }
+
+
+    @Id
+    @GeneratedValue
+    @Column(name = "parent_id")
+    private Long id;
+
+    private String name;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Child> childList = new ArrayList<>();
+
+    public void addChild(Child child){
+        childList.add(child);
+        child.setParent(this);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Child> getChildList() {
+        return childList;
+    }
+
+    public void setChildList(List<Child> childList) {
+        this.childList = childList;
+    }
+}
+```
+
+> JpaMain.java
+
+
+```
+            Child child1 = new Child();
+            Child child2 = new Child();
+
+            Parent parent = new Parent();
+
+            parent.addChild(child1);
+            parent.addChild(child2);
+
+            em.persist(parent);
+
+            em.flush();
+            em.clear();
+
+            Parent findParent = em.find(Parent.class, parent.getId());
+            findParent.getChildList().remove(0);
+
+            tx.commit();
+```
+
+> console 
+
+```
+Hibernate: 
+    /* insert relativemapping.Parent
+        */ insert 
+        into
+            Parent
+            (name, parent_id) 
+        values
+            (?, ?)
+            
+Hibernate: 
+    /* insert relativemapping.Child
+        */ insert 
+        into
+            Child
+            (name, parent_id, id) 
+        values
+            (?, ?, ?)
+            
+Hibernate: 
+    /* insert relativemapping.Child
+        */ insert 
+        into
+            Child
+            (name, parent_id, id) 
+        values
+            (?, ?, ?)
+            
+Hibernate: 
+    select
+        parent0_.parent_id as parent_i1_7_0_,
+        parent0_.name as name2_7_0_ 
+    from
+        Parent parent0_ 
+    where
+        parent0_.parent_id=?
+        
+Hibernate: 
+    select
+        childlist0_.parent_id as parent_i3_2_0_,
+        childlist0_.id as id1_2_0_,
+        childlist0_.id as id1_2_1_,
+        childlist0_.name as name2_2_1_,
+        childlist0_.parent_id as parent_i3_2_1_ 
+    from
+        Child childlist0_ 
+    where
+        childlist0_.parent_id=?
+        
+Hibernate: 
+    /* delete relativemapping.Child */ delete 
+        from
+            Child 
+        where
+            id=?
+```
+
+> orphanRemoval = true를 해두면, 영속성 컨텍스트의 객체 컬렉션에서 제거된 객체는 자동적으로 Delete 문으로 제거되는 것을 볼 수 있습니다.
+
+
+### 고아 객체 - 주의
+------------------------------------
+> - 참조가 제거된 엔티티는 다른 곳에서 참조하지 않는 고아 객체로 보고 삭제하는 기능
+> - <mark>참조하는 곳이 하나일 때 사용해야함!</mark>
+> - <mark>특정 엔티티가 독점 소유할 때 사용</mark>
+> - @OneToOne, @OneToMany만 사용가능
+
+> - 참고 : 개념적으로 부모를 제거하면 자식은 고아가 된다. 따라서 고아 객체 제거 기능을 활성화 하면, 부모를 제가할 때 자식도 함께 제거된다. 이것은 CasecadeType.REMOVE처럼 동작한다.
+
+> Parent.java - cascade = CascadeType.ALL 제거 <br>@OneToMany(mappedBy = "parent",  orphanRemoval = true)
+    
+```
+package relativemapping;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+public class Parent {
+
+    public Parent() {
+    }
+
+
+    @Id
+    @GeneratedValue
+    @Column(name = "parent_id")
+    private Long id;
+
+    private String name;
+
+    @OneToMany(mappedBy = "parent",  orphanRemoval = true)
+    private List<Child> childList = new ArrayList<>();
+
+    public void addChild(Child child){
+        childList.add(child);
+        child.setParent(this);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Child> getChildList() {
+        return childList;
+    }
+
+    public void setChildList(List<Child> childList) {
+        this.childList = childList;
+    }
+}
+```
+
+> JpaMain.java <br>
+casecadeType가 지워졌기 때문에 child1,2 em.persist()로 저장, em.remove(findParent); 를 통하여 부모 삭제
+
+```
+
+            Child child1 = new Child();
+            Child child2 = new Child();
+
+            Parent parent = new Parent();
+
+            parent.addChild(child1);
+            parent.addChild(child2);
+
+            em.persist(parent);
+            em.persist(child1); // **
+            em.persist(child2); // **
+
+            em.flush();
+            em.clear();
+
+            Parent findParent = em.find(Parent.class, parent.getId());
+
+            em.remove(findParent); // ** 
+            
+            tx.commit();
+```
+
+> console
+
+```
+Hibernate: 
+    /* insert relativemapping.Parent
+        */ insert 
+        into
+            Parent
+            (name, parent_id) 
+        values
+            (?, ?)
+Hibernate: 
+    /* insert relativemapping.Child
+        */ insert 
+        into
+            Child
+            (name, parent_id, id) 
+        values
+            (?, ?, ?)
+Hibernate: 
+    /* insert relativemapping.Child
+        */ insert 
+        into
+            Child
+            (name, parent_id, id) 
+        values
+            (?, ?, ?)
+Hibernate: 
+    select
+        parent0_.parent_id as parent_i1_7_0_,
+        parent0_.name as name2_7_0_ 
+    from
+        Parent parent0_ 
+    where
+        parent0_.parent_id=?
+Hibernate: 
+    select
+        childlist0_.parent_id as parent_i3_2_0_,
+        childlist0_.id as id1_2_0_,
+        childlist0_.id as id1_2_1_,
+        childlist0_.name as name2_2_1_,
+        childlist0_.parent_id as parent_i3_2_1_ 
+    from
+        Child childlist0_ 
+    where
+        childlist0_.parent_id=?
+Hibernate: 
+    /* delete relativemapping.Child */ delete 
+        from
+            Child 
+        where
+            id=?
+Hibernate: 
+    /* delete relativemapping.Child */ delete 
+        from
+            Child 
+        where
+            id=?
+Hibernate: 
+    /* delete relativemapping.Parent */ delete 
+        from
+            Parent 
+        where
+            parent_id=?
+```
+
+> 부모를 지웠기 때문에 부모를 잃은 고아 객체들도 자동으로 삭제가 된 것을 확인할 수 있습니다.
+
+### 영속성 전이 + 고아 객체, 생명주기
+---------------------------------
+
+> - <mark>CascadeType.ALL + orphanRemoval=true</mark>
+> - 스스로 생명주기를 관리하는 엔티티는 em.persist()로 영속화, em.remove()로 제거
+> - 두 옵션을 모두 활성화 하면 부모 엔티티를 통해서 자식의 생명주기를 관리할 수 있음
+>	- 부모가 생성주기를 관리하기 때문에 DAO나 Repository를 생성안해도됨
+> - 도메인 주도 설계(DDD)의 Aggregate Root개념을 구현할 때 유용
 
 
 #### 참고- <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
