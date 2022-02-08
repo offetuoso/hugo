@@ -8,7 +8,7 @@ date: 2022-02-07
 slug: "jpa-value-type"
 description: "JPA 값 타입"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
