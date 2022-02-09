@@ -5,7 +5,7 @@ font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-02-07
-slug: "jpa-value-type"
+slug: "value-type"
 description: "JPA 값 타입"	
 keywords: ["ORM"]
 draft: false
