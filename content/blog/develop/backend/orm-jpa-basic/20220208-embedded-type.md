@@ -275,5 +275,145 @@ public class Member {
 
 > Create SQL은 이전과 똑같습니다. 테이블 구조는 변함 없지만, Member 엔티티는 좀더 객체지향 적으로 사용할 수 있습니다.
 
+> 예를 들면 현재시간이 workPeriod에 시작과 끝에 포함된다면, isIncumbent()를 통해 재직중인지 확인하는 메소드를 만들어 사용할 수 도 있습니다.
+
+```
+package relativemapping;
+
+import javax.persistence.Embeddable;
+import java.time.LocalDateTime;
+
+@Embeddable
+public class Period {
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+
+    public Period() {
+    }
+
+    public Period(LocalDateTime startDate, LocalDateTime endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public Boolean isIncumbent(){
+
+        LocalDateTime today = LocalDateTime.now();
+        /*
+            System.out.println(this.startDate);
+            System.out.println(today);
+            System.out.println(this.startDate.isEqual(today)); // 주어진 시간과 같은지
+            System.out.println(this.startDate.isBefore(today)); // 주어진 시간보다 이전인지
+            System.out.println(this.startDate.isAfter(today)); // 주어진 시간보다 이후인지
+
+            System.out.println(this.endDate);
+            System.out.println(today);
+            System.out.println(this.endDate.isEqual(today)); // 주어진 시간과 같은지
+            System.out.println(this.endDate.isBefore(today)); // 주어진 시간보다 이전인지
+            System.out.println(this.endDate.isAfter(today)); // 주어진 시간보다 이후인지
+        */
+
+        if( ! this.startDate.isAfter(today) && this.endDate.isAfter(today)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+}
+
+```
+
+> JpaMain - Member 추가
+
+```
+package relativemapping;
+
+import org.hibernate.Hibernate;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
+
+public class JpaMain {
+    //psvm 단축키로 생성 가능
+    public static void main(String[] args) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("relativemapping");
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        tx.begin(); // [트랜잭션] 시작
+
+        try{
+
+            Member member1 = new Member();
+
+            member1.setName("member1");
+
+            member1.setHomeAddress(new Address("서울","영등포","00000"));
+            member1.setWorkPeriod(new Period(LocalDateTime.of(2021,01,01,1,12,0),LocalDateTime.of(2023,01,01,1,12,0)));
+
+            em.persist(member1);
+
+            System.out.println("isIncumbent "+member1.getWorkPeriod().isIncumbent());
+            tx.commit();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            tx.rollback();
+        }finally {
+            em.close();
+        }
+        emf.close();
+    }
+}
+
+```
+
+> console
+
+```
+isIncumbent true
+
+Hibernate: 
+    /* insert relativemapping.Member
+        */ insert 
+        into
+            Member
+            (city, street, zipcode, name, endDate, startDate, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?)
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/embedded-type/img-005.png)
+
+### 임베티드 타입의 장점
+> - 임베디드 타입은 엔티티의 값일 뿐이다.
+> - <mark>임베디드 타입을 사용하기 전과 후에 매핑하는 테이블은 같다.</mark>
+> - 객체와 테이블은 아주 세밀하게(find-grained) 매핑하는 것이 가능
+> - 잘 설계한 ORM 애플리케이션은 매핑한 테이블의 수보다 클래스의 수가 더 많음
+> - 용어도 공통화 되고, 코드도 공통화 된다.
+> - 도메인의 언어로 맞출수 있는 언어들도 많이 나올 수 있음.
+
+14:31
+
+
+
 #### 참고
 > - <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
