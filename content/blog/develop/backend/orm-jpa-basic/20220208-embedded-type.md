@@ -8,7 +8,7 @@ date: 2022-02-08
 slug: "embedded-type"
 description: "JPA 임베디드 타입"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -404,6 +404,7 @@ Hibernate:
 ![contact](/images/develop/backend/orm-jpa-basic/embedded-type/img-005.png)
 
 ### 임베티드 타입의 장점
+------------------------------------
 > - 임베디드 타입은 엔티티의 값일 뿐이다.
 > - <mark>임베디드 타입을 사용하기 전과 후에 매핑하는 테이블은 같다.</mark>
 > - 객체와 테이블은 아주 세밀하게(find-grained) 매핑하는 것이 가능
@@ -411,8 +412,172 @@ Hibernate:
 > - 용어도 공통화 되고, 코드도 공통화 된다.
 > - 도메인의 언어로 맞출수 있는 언어들도 많이 나올 수 있음.
 
-14:31
+### 임베디드 타입과 연관관계
+------------------------------------
 
+![contact](/images/develop/backend/orm-jpa-basic/embedded-type/img-006.png)
+
+> JPA 표준 스펙에 있는 내용으로, Member엔티티가 Adress와 PhoneNumber라는 임베디드  값 타입을 가지고 있습니다.
+
+> Address는 Zipcode를 가질 수 있는데, 임베디드 타입은 임베디드 타입을 가질수 있습니다.
+
+> 그리고 재미있는 사실이 PhoneNumber라는 임베디드 타입이 PhoneEntity를 가질 수 있습니다. PhoneNumber 입장에서 PhoneEntity의 외래키를 가지고 있으면 되므로 어렵운 개념은 아닙니다.
+
+### @AttributeOverride: 속성 재정의
+------------------------------------
+> - 한 엔티티에서 같은 값 타입을 사용하면?
+> - 컬럼명이 중복됨
+> - @AttributeOverrides, @AttributeOverride를 사용해서 컬럼명 속성을 재정의
+
+
+> Member.java - Address workAddress 추가 
+
+```
+package relativemapping;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+
+@Entity
+public class Member {
+
+    public Member(){
+    }
+
+    @Id @GeneratedValue
+    private Long id;
+
+    private String name;
+
+    // 기간
+    //private LocalDateTime startDate;
+    //private LocalDateTime endDate;
+    @Embedded
+    private Period workPeriod;
+
+    // 주소
+    //private String city;
+    //private String street;
+    //private String zipcode;
+    @Embedded
+    private Address homeAddress;
+
+    @Embedded
+    private Address workAddress; // ** 추가
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Period getWorkPeriod() {
+        return workPeriod;
+    }
+
+    public void setWorkPeriod(Period workPeriod) {
+        this.workPeriod = workPeriod;
+    }
+
+    public Address getHomeAddress() {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(Address homeAddress) {
+        this.homeAddress = homeAddress;
+    }
+}
+
+```
+
+> JpaMain.java - 애플리케이션 재시작
+
+> console
+
+```
+Exception in thread "main" javax.persistence.PersistenceException: [PersistenceUnit: relativemapping] Unable to build Hibernate SessionFactory
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.persistenceException(EntityManagerFactoryBuilderImpl.java:1336)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1262)
+	at org.hibernate.jpa.HibernatePersistenceProvider.createEntityManagerFactory(HibernatePersistenceProvider.java:56)
+	at javax.persistence.Persistence.createEntityManagerFactory(Persistence.java:79)
+	at javax.persistence.Persistence.createEntityManagerFactory(Persistence.java:54)
+	at relativemapping.JpaMain.main(JpaMain.java:12)
+Caused by: org.hibernate.MappingException: Repeated column in mapping for entity: relativemapping.Member column: city (should be mapped with insert="false" update="false")
+	at org.hibernate.mapping.PersistentClass.checkColumnDuplication(PersistentClass.java:862)
+	at org.hibernate.mapping.PersistentClass.checkPropertyColumnDuplication(PersistentClass.java:880)
+	at org.hibernate.mapping.PersistentClass.checkPropertyColumnDuplication(PersistentClass.java:876)
+	at org.hibernate.mapping.PersistentClass.checkColumnDuplication(PersistentClass.java:902)
+	at org.hibernate.mapping.PersistentClass.validate(PersistentClass.java:634)
+	at org.hibernate.mapping.RootClass.validate(RootClass.java:267)
+	at org.hibernate.boot.internal.MetadataImpl.validate(MetadataImpl.java:354)
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:465)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1259)
+	... 4 more
+
+```
+
+> 오류없이 속성을 재정의 하여 사용하고 싶을때, @AttributeOverrides 와 @AttributeOverride를 사용합니다.
+
+```
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "city", column = @Column(name = "work_city")),
+            @AttributeOverride(name = "street", column = @Column(name = "work_street")),
+            @AttributeOverride(name = "zipcode", column = @Column(name = "work_zipcode"))
+    })
+    private Address workAddress;
+```
+
+```
+ @AttributeOverrides({
+ 	@AttributeOverride(
+ 		name = "city"
+ 		, column = @Column(
+ 					name = "work_city"
+ 			       )
+ 	
+ 	)
+ })
+```
+
+> JpaMain.java - 애플리케이션 재시작
+
+> console
+
+```
+Hibernate: 
+    
+    create table Member (
+       id bigint not null,
+        city varchar(255),
+        street varchar(255),
+        zipcode varchar(255),
+        name varchar(255),
+        work_city varchar(255),
+        work_street varchar(255),
+        work_zipcode varchar(255),
+        endDate timestamp,
+        startDate timestamp,
+        TEAM_ID bigint,
+        primary key (id)
+    )
+
+```
+
+### 임베디드 타입과 null
+---------------------------
+> 임베디드 타입의 값이 null 이면 매핑한 컬럼 값은 모두 null
 
 
 #### 참고
