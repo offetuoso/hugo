@@ -399,19 +399,359 @@ Hibernate:
 > Member만 조회된 것을 확인 할 수 있습니다. <br> Member에 포함된 city, street, zipcode 는 함께 불러옵니다.
 
 
-
-
-
 #### 값 타입 컬렉션에서도 지연 로딩 전략 사용
 
+> JpaMain.java
+
+```
+Member member = new Member();
+            member.setName("member1");
+            member.setHomeAddress(new Address("home1", "street1", "10000"));
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("피자");
+            member.getFavoriteFoods().add("햄버거");
+
+            member.getAddressHistory().add(new Address("old1", "street1", "10000"));
+            member.getAddressHistory().add(new Address("old2", "street1", "10000"));
+
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            System.out.println("===================================");
+
+            Member findMember = em.find(Member.class, member.getId());
+
+            findMember.getFavoriteFoods();
+
+            List<Address> addressHistory = findMember.getAddressHistory();
+
+            for (Address address : addressHistory){
+                System.out.println("address_city = "+address.getCity());
+            }
+
+            Set<String> favoritFoods = findMember.getFavoriteFoods();
+
+            for (String favoritFood : favoritFoods){
+                System.out.println("favoritFood = "+favoritFood);
+            }
+
+
+            tx.commit();
+```
+
+> console
+
+```
+Hibernate: 
+    select
+        member0_.id as id1_6_0_,
+        member0_.city as city2_6_0_,
+        member0_.street as street3_6_0_,
+        member0_.zipcode as zipcode4_6_0_,
+        member0_.USERNAME as username5_6_0_ 
+    from
+        Member member0_ 
+    where
+        member0_.id=?
+Hibernate: 
+    select
+        addresshis0_.MEMBER_ID as member_i1_0_0_,
+        addresshis0_.city as city2_0_0_,
+        addresshis0_.street as street3_0_0_,
+        addresshis0_.zipcode as zipcode4_0_0_ 
+    from
+        ADDRESS addresshis0_ 
+    where
+        addresshis0_.MEMBER_ID=?
+address_city = old1
+address_city = old2
+Hibernate: 
+    select
+        favoritefo0_.MEMBER_ID as member_i1_4_0_,
+        favoritefo0_.FOOD_NAME as food_nam2_4_0_ 
+    from
+        FAVORITE_FOOD favoritefo0_ 
+    where
+        favoritefo0_.MEMBER_ID=?
+favoritFood = 치킨
+favoritFood = 햄버거
+favoritFood = 피자
+
+```
+
 #### 값 타입 수정
+
+> JpaMain.java - homeAddress 수정
+
+```
+
+ Member member = new Member();
+            member.setName("member1");
+            member.setHomeAddress(new Address("home1", "street1", "10000"));
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("피자");
+            member.getFavoriteFoods().add("햄버거");
+
+            member.getAddressHistory().add(new Address("old1", "street1", "10000"));
+            member.getAddressHistory().add(new Address("old2", "street1", "10000"));
+
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            System.out.println("===================================");
+
+            Member findMember = em.find(Member.class, member.getId());
+
+            // home1 -> new1
+            //findMember.getHomeAddress().setCity("new1"); // 값 타입의 set은 사이드이펙트가 발생할 문제가 있어 set X
+            Address oldAddress = findMember.getHomeAddress();
+            findMember.setHomeAddress(new Address("new1", oldAddress.getStreet(), oldAddress.getZipcode()));
+            
+```
+
+> 이전 시간에서 Address의 set을 private로 변경하여 외부에서 사용 못하게 처리하였습니다. set을 통해 수정하면, 참조하고 있는 모든 곳에서 Update문이 발생할 수 있기 때문입니다.
+
+> 그렇기 때문에 new 를 통해 새로운 객체를 생성해 갈아껴 주는 작업을 합니다.
+
+> console
+
+```
+Hibernate: 
+    /* update
+        relativemapping.Member */ update
+            Member 
+        set
+            city=?,
+            street=?,
+            zipcode=?,
+            USERNAME=? 
+        where
+            id=?
+```
+
+> 다음은 Set을 사용하는 값 타입 컬렉션 favoriteFoods의 "치킨"의 값을 "한식"으로 변경해 보겠습니다. 
+
+> JpaMain.java - favoriteFoods의 Elements 수정
+
+```
+
+            Member member = new Member();
+            member.setName("member1");
+            member.setHomeAddress(new Address("home1", "street1", "10000"));
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("피자");
+            member.getFavoriteFoods().add("햄버거");
+
+            member.getAddressHistory().add(new Address("old1", "street1", "10000"));
+            member.getAddressHistory().add(new Address("old2", "street1", "10000"));
+
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            System.out.println("===================================");
+
+            Member findMember = em.find(Member.class, member.getId());
+
+            // home1 -> new1
+            //findMember.getHomeAddress().setCity("new1"); // 값 타입의 set은 사이드이펙트가 발생할 문제가 있어 set X
+            Address oldAddress = findMember.getHomeAddress();
+            findMember.setHomeAddress(new Address("new1", oldAddress.getStreet(), oldAddress.getZipcode()));
+            
+            
+            // 치킨 -> 한식
+            findMember.getFavoriteFoods().remove("치킨");
+            findMember.getFavoriteFoods().add("한식");
+```
+
+> console
+
+```
+Hibernate: 
+    /* delete collection row relativemapping.Member.favoriteFoods */ delete 
+        from
+            FAVORITE_FOOD 
+        where
+            MEMBER_ID=? 
+            and FOOD_NAME=?
+Hibernate: 
+    /* insert collection
+        row relativemapping.Member.favoriteFoods */ insert 
+        into
+            FAVORITE_FOOD
+            (MEMBER_ID, FOOD_NAME) 
+        values
+            (?, ?)
+
+```
+
+> 값 타입 컬렉션의 값만 수정하여도 어떤 것이 변경되었는지 JPA가 분석하여 수정해 줍니다.
+
+> 마치 영속성 전이가 이루어지는 것처럼 동작합니다.
+
+> JpaMain.java
+
+```
+Member member = new Member();
+            member.setName("member1");
+            member.setHomeAddress(new Address("home1", "street1", "10000"));
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("피자");
+            member.getFavoriteFoods().add("햄버거");
+
+            member.getAddressHistory().add(new Address("old1", "street1", "10000"));
+            member.getAddressHistory().add(new Address("old2", "street1", "10000"));
+
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            System.out.println("===================================");
+
+            Member findMember = em.find(Member.class, member.getId());
+
+            // home1 -> new1
+            //findMember.getHomeAddress().setCity("new1"); // 값 타입의 set은 사이드이펙트가 발생할 문제가 있어 set X
+            /*Address oldAddress = findMember.getHomeAddress();
+            findMember.setHomeAddress(new Address("new1", oldAddress.getStreet(), oldAddress.getZipcode()));*/
+            
+            
+            // 치킨 -> 한식
+            /*findMember.getFavoriteFoods().remove("치킨");
+            findMember.getFavoriteFoods().add("한식");*/
+
+
+            findMember.getAddressHistory().remove(new Address("old1", "street1", "10000"));
+            findMember.getAddressHistory().add(new Address("new2", "street1", "10000"));
+            /*
+                remove 내부에서 equals()를 통하여 값이 완전 똑같은 객체를 지우게 되는데, equals와 hashcode를
+                == 비교에서, 값 전체를 비교해 같은 값을 가지는 지로 변경하지 않으면 값이 삭제 되지 않고
+                계속 추가가 되는 버그를 발생시킬 수 있습니다.
+            */
+```
+
+> remove 내부에서 equals()를 통하여 값이 완전 똑같은 객체를 지우게 되는데, equals와 hashcode를 == 비교에서, 값 전체를 비교해 같은 값을 가지는 지로 변경하지 않으면 값이 삭제 되지 않고 계속 추가가 되는 버그를 발생시킬 수 있습니다.
+
+> console
+
+```
+Hibernate: 
+    /* delete collection relativemapping.Member.addressHistory */ delete 
+        from
+            ADDRESS 
+        where
+            MEMBER_ID=?
+Hibernate: 
+    /* insert collection
+        row relativemapping.Member.addressHistory */ insert 
+        into
+            ADDRESS
+            (MEMBER_ID, city, street, zipcode) 
+        values
+            (?, ?, ?, ?)
+Hibernate: 
+    /* insert collection
+        row relativemapping.Member.addressHistory */ insert 
+        into
+            ADDRESS
+            (MEMBER_ID, city, street, zipcode) 
+        values
+            (?, ?, ?, ?)
+```
+
+> 실행 후 결과를 보면 수정하려는 값만, 지우고 새로 추가한 값만 인서트 하는 것을 예상했겠지만 다르게 수행하는 것을 확인 할 수 있습니다. 
+
+```
+        from
+            ADDRESS 
+        where
+            MEMBER_ID=?
+```
+> Member의 id에 해당하는 모든 주소를 지우고 
+
+```
+insert 
+        into
+            ADDRESS
+            (MEMBER_ID, city, street, zipcode) 
+        values
+            (?, ?, ?, ?)
+```
+
+> 삭제된 new Address("old1", "street1", "10000") 의 해당하는 값 이외의 Address를 다시 인서트 하고
+
+```
+insert 
+        into
+            ADDRESS
+            (MEMBER_ID, city, street, zipcode) 
+        values
+            (?, ?, ?, ?)
+```
+
+> 추가된 new Address("new2", "street1", "10000") 의 Address가 다시 인스트 됩니다.
+
+
+![contact](/images/develop/backend/orm-jpa-basic/value-type-collection/img-003.png)
+
+> 수정 후 결과를 보면, 잘 수정되어있는 결과를 볼 수 있습니다.
 
 #### 참고 
 > 값 타입 컬렉션은 영속성 전이(Cascade)+ 고아 객체 제거 기능을 필수로 가진다고 볼 수 있다.
 
+### 값 타입 컬렉션의 제약사항
+-------------------------------------------
+> - 값 타입은 엔티티와 다르게 식별자 개념이 없다.
+> - 값은 변경하면 추적이 어렵다.
+> - 값 타입 컬렉션에 변경 사항이 발생하면, 주인 엔티티와 연관된 모든 데이터를 삭제하고, 값 타입 컬렉션에 있는 현재 값을 모두 다시 저장한다.
+> - 값 타입 컬렉션을 매핑하는 테이블은 모든 컬럼을 묶어서 기본키를 구성해야함 (null 입력 x, 중복저장x)
 
+> Jpa가 생성한 ADDRESS 를 보면 기본 키를 사용할 컬럼이 존재 하지 않기 때문에 모든 키를 복합키로 사용해야 하는데, 그렇게 되면 null 입력이 되지 않기 때문에 문제가 발생.
 
+> console - ADDRESS DDL
 
+````
+Hibernate: 
+    
+    create table ADDRESS (
+       MEMBER_ID bigint not null,
+        city varchar(255),
+        street varchar(255),
+        zipcode varchar(255)
+    )
+````
+
+#### List + @OrderColumn
+> @OrderColumn을 추가하면 테이블에 Order 번호가  컬럼이 생성되며 JPA 값 타입 컬렉션에서도 순서가 있는 컬렉션으로 FK + OrderColumn 으로 키를 매핑하게 됩니다. 
+
+```
+@OrderColumn(name = "address_history_order")
+    @ElementCollection
+    @CollectionTable(name = "ADDRESS" , joinColumns =
+            @JoinColumn(name = "MEMBER_ID")
+    )
+    private List<Address> addressHistory = new ArrayList<>();
+```
+
+> 위에서 말했던 특정할 만한 컬럼이 없어, 외래키와 모든 컬럼을 PK로 잡던 문제점을 해결할 수 있지만.
+
+> 실제로 @OrderColumn은 실무에서 사용하기에는 단점이 너무 많습니다. 원하는 대로 동작하지 않는게 많고 순서대로 0, 1,2,3 인데 중간에 2 하나를 빼먹은 경우 2가 null 로 들어오는 등 문제가 있어 사용하지 않는것이 바람직합니다.
+
+> 이렇게 값 타입 컬렉션을 복잡하게 사용할 경우 다른 방식으로 풀어서 개발해야 합니다.
+
+### 값 타입 컬렉션의 대안사항
+
+33:05
 
 #### 참고
 > - <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
