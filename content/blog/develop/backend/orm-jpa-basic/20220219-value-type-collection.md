@@ -8,7 +8,7 @@ date: 2022-02-19
 slug: "value-type-collection"
 description: "JPA 값 타입 비교"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -750,8 +750,341 @@ Hibernate:
 > 이렇게 값 타입 컬렉션을 복잡하게 사용할 경우 다른 방식으로 풀어서 개발해야 합니다.
 
 ### 값 타입 컬렉션의 대안사항
+------------------------------------
+> - 실무에서는 상황에 따라 <mark>값 타입 컬렉션 대신에 일대다 관계를 고려</mark>
+> - 일대다 관계를 위한 엔티티를 만들고, 여기에서 값 타입을 사용
+> - 영속성 전이(Cascade) + 고아 객체 제거를 사용해서 값 타입 컬렉션 처럼 사용
+> - AddressEntity로 만들어 내부에 값 타입을 임베디드 하여 엔티티로 승급시킴
 
-33:05
+> AddressEntity.java
+
+```
+package relativemapping;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.security.PrivateKey;
+
+@Entity
+@Table(name = "ADDRESS")
+public class AddressEntity {
+
+    public AddressEntity() {
+    }
+    public AddressEntity(String city, String street, String zipcode) {
+        this.address = new Address(city,street,zipcode);
+    }
+
+    @Id @GeneratedValue
+    private Long id;
+
+    private Address address;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+}
+
+```
+
+> Member.java
+
+```
+package relativemapping;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+
+@Entity
+public class Member {
+
+    public Member(){
+    }
+
+    @Id @GeneratedValue
+    private Long id;
+
+    @Column(name = "USERNAME")
+    private String name;
+
+    @Embedded
+    private Address homeAddress;
+
+    @ElementCollection
+    @CollectionTable(name = "FAVORITE_FOOD", joinColumns =
+            @JoinColumn(name = "MEMBER_ID") // JoinColumn을 세팅하면 해당 키를 외래키로 사용합니다.
+    )
+
+    @Column(name = "FOOD_NAME ")
+    private Set<String> favoriteFoods = new HashSet<>();
+
+    public Long getId() {
+        return id;
+    }
+
+    /*
+    @OrderColumn(name = "address_history_order")
+    @ElementCollection
+    @CollectionTable(name = "ADDRESS" , joinColumns =
+            @JoinColumn(name = "MEMBER_ID")
+    )
+    private List<Address> addressHistory = new ArrayList<>();
+    */
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "MEMBER_ID")
+    private List<AddressEntity> addressHistory = new ArrayList<>();
+
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    public Address getHomeAddress() {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(Address homeAddress) {
+        this.homeAddress = homeAddress;
+    }
+
+    public Set<String> getFavoriteFoods() {
+        return favoriteFoods;
+    }
+
+    public void setFavoriteFoods(Set<String> favoriteFoods) {
+        this.favoriteFoods = favoriteFoods;
+    }
+}
+
+```
+
+> JpaMain.java
+
+```
+package relativemapping;
+
+import org.hibernate.Hibernate;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+
+public class JpaMain {
+    //psvm 단축키로 생성 가능
+    public static void main(String[] args) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("relativemapping");
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        tx.begin(); // [트랜잭션] 시작
+
+        try{
+
+
+            Member member = new Member();
+            member.setName("member1");
+            member.setHomeAddress(new Address("home1", "street1", "10000"));
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("피자");
+            member.getFavoriteFoods().add("햄버거");
+
+           /* member.getAddressHistory().add(new Address("old1", "street1", "10000"));
+            member.getAddressHistory().add(new Address("old2", "street1", "10000"));*/
+
+// *** Entity로 변경
+            member.getAddressHistory().add(new AddressEntity("old1", "street1", "10000"));
+            member.getAddressHistory().add(new AddressEntity("old2", "street1", "10000"));
+
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            System.out.println("===================================");
+
+            Member findMember = em.find(Member.class, member.getId());
+
+            // home1 -> new1
+            //findMember.getHomeAddress().setCity("new1"); // 값 타입의 set은 사이드이펙트가 발생할 문제가 있어 set X
+            /*Address oldAddress = findMember.getHomeAddress();
+            findMember.setHomeAddress(new Address("new1", oldAddress.getStreet(), oldAddress.getZipcode()));*/
+            
+            
+            // 치킨 -> 한식
+            /*findMember.getFavoriteFoods().remove("치킨");
+            findMember.getFavoriteFoods().add("한식");*/
+
+
+            /*findMember.getAddressHistory().remove(new Address("old1", "street1", "10000"));
+            findMember.getAddressHistory().add(new Address("new2", "street1", "10000"));*/
+
+            /*
+                remove 내부에서 equals()를 통하여 값이 완전 똑같은 객체를 지우게 되는데, equals와 hashcode를
+                == 비교에서, 값 전체를 비교해 같은 값을 가지는 지로 변경하지 않으면 값이 삭제 되지 않고
+                계속 추가가 되는 버그를 발생시킬 수 있습니다.
+            */
+
+            tx.commit();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            tx.rollback();
+        }finally {
+            em.close();
+        }
+        emf.close();
+    }
+}
+
+```
+
+> console
+
+```
+    /* insert relativemapping.Member
+        */ insert 
+        into
+            Member
+            (city, street, zipcode, USERNAME, id) 
+        values
+            (?, ?, ?, ?, ?)
+Hibernate: 
+    /* insert relativemapping.AddressEntity
+        */ insert 
+        into
+            ADDRESS
+            (city, street, zipcode, id) 
+        values
+            (?, ?, ?, ?)
+Hibernate: 
+    /* insert relativemapping.AddressEntity
+        */ insert 
+        into
+            ADDRESS
+            (city, street, zipcode, id) 
+        values
+            (?, ?, ?, ?)
+Hibernate: 
+    /* create one-to-many row relativemapping.Member.addressHistory */ update
+        ADDRESS 
+    set
+        MEMBER_ID=? 
+    where
+        id=?
+Hibernate: 
+    /* create one-to-many row relativemapping.Member.addressHistory */ update
+        ADDRESS 
+    set
+        MEMBER_ID=? 
+    where
+        id=?
+Hibernate: 
+    /* insert collection
+        row relativemapping.Member.favoriteFoods */ insert 
+        into
+            FAVORITE_FOOD
+            (MEMBER_ID, FOOD_NAME) 
+        values
+            (?, ?)
+Hibernate: 
+    /* insert collection
+        row relativemapping.Member.favoriteFoods */ insert 
+        into
+            FAVORITE_FOOD
+            (MEMBER_ID, FOOD_NAME) 
+        values
+            (?, ?)
+Hibernate: 
+    /* insert collection
+        row relativemapping.Member.favoriteFoods */ insert 
+        into
+            FAVORITE_FOOD
+            (MEMBER_ID, FOOD_NAME) 
+        values
+            (?, ?)
+===================================
+Hibernate: 
+    select
+        member0_.id as id1_6_0_,
+        member0_.city as city2_6_0_,
+        member0_.street as street3_6_0_,
+        member0_.zipcode as zipcode4_6_0_,
+        member0_.USERNAME as username5_6_0_ 
+    from
+        Member member0_ 
+    where
+        member0_.id=?
+
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/value-type-collection/img-004.png)
+
+> ADDRESS 테이블에 Update로 MEMBER_ID를 업데이트 하게 되는것은 1:N 관계에서 양방향 관계가 아닐 시 외래키가 다른 테이블에 있기 때문에 업데이트함.
+
+> 연관관계 강의 1:N를 보면 알 수 있습니다.
+
+<a href="https://offetuoso.github.io/blog/develop/backend/orm-jpa-basic/mapping-various-associations/#%EC%9D%BC%EB%8C%80%EB%8B%A4-%EB%8B%A8%EB%B0%A9%ED%96%A5">JPA 다양한 연관관계 매핑</a>
+
+> 독자적인 PK를 가지는 순간 값 타입이 아니라 엔티티가 됩니다. 
+
+> <mark>엔티티로 변경 하였기 때문에 수정을 하여도 문제가 없습니다 !!</mark>
+
+> 값 타입을 엔티티로 래핑 하여, 엔티티로 사용하는 것을 값 타입을 승급한다 라고 합니다.
+
+> 실무에서 이런 방식을 사용하여, 값 타입을 많이 사용한다고 합니다.
+
+#### 값 타입 컬렉션을 언제 쓰는가 ? 
+> 진짜 간단한 콤보박스의 옵션 값 정도의 기능 개발할때 사용. 
+
+> 값을 추적할 일이 없고 변경되어도 문제가 없을때 사용.
+
+### 정리 
+> - 엔티티의 타입의 특징
+>	- 식별자O
+>	- 생명 주기 관리
+>	- 공유
+
+> - 값 타입의 특징
+>	- 식별자X
+>	- 생명 주기를 엔티티에 의존
+>	- 공유 하지 않는 것이 안전(복사해서 사용)
+>	- 불변 객체로 만드는 것이 안전
+
+> 값 타입은 정말 값 타입이라 판단될 때만 사용
+> 엔티티와 값 타입을 혼동해서 엔티티를 값 타입으로 만들면 안됨
+> 식별자가 필요하고, 지속해서 값을 추적, 변경해야 한다면 그것은 값 타입이 아닌 엔티티
+
 
 #### 참고
 > - <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
