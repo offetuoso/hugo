@@ -108,13 +108,110 @@ h4, h5, h6 {
       text-decoration: none;
       position: absolute;
       left: -1rem;
-      color: #a0c8ff;
+      color: black !important;
       font-size: 1.0rem;
       font-weight: bold;
     }
 
     .anchor:hover {
-      color: #a0c8ff;
+      color:  #a0c8ff !important;
+    }
+  }
+  
+  h5 {
+    position: relative;
+    padding-top: 10px;
+
+   .anchor {
+      top: 9px;
+      text-decoration: none;
+      position: absolute;
+      left: -1rem;
+      color: black;
+      font-size: 1.0rem;
+      font-weight: bold;
+    }
+
+    .anchor:hover {
+      color: black;
+    }
+  }
+  
+  h6 {
+    position: relative;
+    padding-top: 10px;
+
+    .anchor {
+      top: 9px;
+      text-decoration: none;
+      position: absolute;
+      left: -1rem;
+      color: black;
+      font-size: 1.0rem;
+      font-weight: bold;
+    }
+
+    .anchor:hover {
+      color: black;
+    }
+  }
+  
+  h7 {
+    position: relative;
+    padding-top: 10px;
+
+    .anchor {
+      top: 9px;
+      text-decoration: none;
+      position: absolute;
+      left: -1rem;
+      color: black;
+      font-size: 1.0rem;
+      font-weight: bold;
+    }
+
+    .anchor:hover {
+      color: black;
+    }
+  }
+  
+    
+  h8 {
+    position: relative;
+    padding-top: 10px;
+
+    .anchor {
+      top: 9px;
+      text-decoration: none;
+      position: absolute;
+      left: -1rem;
+      color: black;
+      font-size: 1.0rem;
+      font-weight: bold;
+    }
+
+    .anchor:hover {
+      color: black;
+    }
+  }
+  
+    
+  h9 {
+    position: relative;
+    padding-top: 10px;
+
+    .anchor {
+      top: 9px;
+      text-decoration: none;
+      position: absolute;
+      left: -1rem;
+      color: black;
+      font-size: 1.0rem;
+      font-weight: bold;
+    }
+
+    .anchor:hover {
+      color: black;
     }
   }
   
@@ -186,6 +283,70 @@ h4, h5, h6 {
     color:  #a0c8ff;
   }
 }
+
+.post > .post__content {
+	img {
+    	max-width: 100%;
+	}
+	
+	details {
+	    margin: 1rem 0.5rem 1rem 0.5rem;
+	}
+	
+	details > summary {
+	    /* background: #a0c8ff; */
+	    /* color: white; */
+	    color: #a0c8ff;
+	    font-weight: bold;
+	    padding: 1rem 5px 1rem 5px;
+	    outline: 0;
+	    border-radius: 5px;
+	    cursor: pointer;
+	    transition: background 0.5s;
+	}
+	
+
+	details > summary::-webkit-details-marker {
+	    background: url(/svg/circumflex.svg) no-repeat center;
+	    background-size: contain;
+	    color: transparent;
+	    transform: rotate3d(0, 0, 1, 90deg);
+	    transition: transform 0.25s;
+	}
+	
+	details[open] > summary::-webkit-details-marker {
+	    transform: rotate3d(0, 0, 1, 180deg);
+	}
+	
+	details[open] > summary {
+	   /* background: #a0c8ff;
+	    color: white;*/
+	}
+	
+	details[open] > summary ~ * {
+	    animation: reveal 0.5s;
+	}
+	
+	details[open] > div {
+	     /*background: #a0c8ff;
+	    color: white;*/
+	    margin: -0.5rem 1rem 1rem 1rem;
+	}
+	
+	
+	@keyframes reveal {
+	    from {
+	        opacity: 0;
+	        transform: translate3d(0, -10px, 0);
+	    }
+	
+	    to {
+	        opacity: 1;
+	        transform: translate3d(0, 0, 0);
+	    }
+	}
+}
+	
 
 .tags__list {
   padding-right: 1.5rem;
