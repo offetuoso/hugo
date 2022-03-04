@@ -1,12 +1,12 @@
 ---
-title: "JPA 객체지향 쿼리 언어(JPQL)"
+title: "JPA 객체지향 쿼리 언어 소개"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-03-01
-slug: "jpql"
-description: "객체지향 쿼리 언어(JPQL)"	
+slug: "object-oriented-query-language"
+description: "객체지향 쿼리 언어 소개"	
 keywords: ["ORM"]
 draft: false
 categories: ["Java"]
@@ -967,7 +967,7 @@ Hibernate:
             member0_.USERNAME like '%m%'
 ```
 
-![contact](/images/develop/backend/orm-jpa-basic/jpql/img-001.png)
+![contact](/images/develop/backend/orm-jpa-basic/object-oriented-query-language/img-001.png)
 
 > 문법이 sql과 거의 비슷, * 대신 객체의 Alias인 m 으로 전체 조회를 할 수 있습니다. <br>
 > 또 m.name, m.id ... 등 각각 접근하여 사용할 수 있습니다.
@@ -1075,7 +1075,7 @@ Hibernate:
             member0_.USERNAME=?
 ```
 
-![contact](/images/develop/backend/orm-jpa-basic/jpql/img-002.png)
+![contact](/images/develop/backend/orm-jpa-basic/object-oriented-query-language/img-002.png)
 
 > 자바 소스로 쿼리를 작성하기 때문에 오타로 인한 오류는 IDE에서 알려주거나 오류로 알 수 있는 장점이 있고 또한 동적쿼리를 작성할때 편리함을 얻을 수 있습니다. 
 
