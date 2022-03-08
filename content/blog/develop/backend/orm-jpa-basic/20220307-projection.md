@@ -5,7 +5,7 @@ font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-03-07
-slug: "jpql"
+slug: "projection"
 description: "Projection(SELECT)"	
 keywords: ["ORM"]
 draft: true
@@ -407,7 +407,7 @@ toc: true
 
 ```
 ...
-	       Team team = new Team();
+	                 Team team = new Team();
             team.setName("team1");
             em.persist(team);
 
@@ -427,9 +427,186 @@ toc: true
             Member findMember = result.get(0);
             findMember.setAge(28);
 
-            tx.commit();
 ...
 ```
+
+> 강의를 따라 실습하던 도중 예기치 않은 오류를 만나게 되었습니다. 
+
+````
+org.hibernate.TransientPropertyValueException: object references an unsaved transient instance - save the transient instance before flushing
+````
+
+<details title="펼치기/숨기기">
+ 	<summary> 더보기 </summary>
+ 	
+
+<a href="/blog/develop/troubleshooting/jpa/object-references-an-unsaved-transient-instance-save-the-transient-instance-before-flushing/">object references an unsaved transient instance - save the transient instance before flushing 에러
+</a>
+
+> 간략하게 말씀드리면 flush 할때, Member와 N:1 연관관계에 있는 Team 의 FK를 먼저 영속화 하지 않고 Member를 영속화 하는 것이 문제라고 오류를 발생시킵니다. 
+
+> 이에 대한 해결은 
+
+> 1. CascadeType 지정
+> 2. FK를 가지는 엔티티를 먼저 영속화 후 엔티티 영속화
+
+> 하지만, 저장 시 강사님의 결과와 달라 문의를 남겨 두었습니다. 
+
+<a href="https://www.inflearn.com/questions/469025">인프런 QnA : org.hibernate.TransientPropertyValueException 질문드립니다.</a>
+ 
+> 답변이 달리는 대로 정리하여 수정하겠습니다. 
+
+</details>
+
+> 테스트 결과 놀라운 사실을 알게 되었습니다. 영속화 이후 flush와 clear 이후  조회해온 값을 수정한다면 과연 
+
+> console
+
+```
+Hibernate: 
+    /* insert jpql.domain.Team
+        */ insert 
+        into
+            Team
+            (name, id) 
+        values
+            (?, ?)
+Hibernate: 
+    /* insert jpql.domain.Member
+        */ insert 
+        into
+            Member
+            (age, TEAM_ID, username, id) 
+        values
+            (?, ?, ?, ?)
+Hibernate: 
+    /* SELECT
+        m 
+    FROM
+        Member m */ select
+            member0_.id as id1_0_,
+            member0_.age as age2_0_,
+            member0_.TEAM_ID as team_id4_0_,
+            member0_.username as username3_0_ 
+        from
+            Member member0_
+Hibernate: 
+    select
+        team0_.id as id1_3_0_,
+        team0_.name as name2_3_0_ 
+    from
+        Team team0_ 
+    where
+        team0_.id=?
+Hibernate: 
+    /* update
+        jpql.domain.Member */ update
+            Member 
+        set
+            age=?,
+            TEAM_ID=?,
+            username=? 
+        where
+            id=?
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/projection/img-001.png)
+
+> 최초 나이를 35로 생성했다가, 28로 수정한 것을 확인 할 수 있습니다. 
+
+> 또한 조회한 Member에서 Team 객체를 얻어와 Team을 수정한 다면 과연 어떻게 될까 테스트 해 보았습니다. 
+
+> JpqlMain.java
+
+```
+          Team team = new Team();
+            team.setName("team1");
+            em.persist(team);
+
+            Member member1 = new Member();
+            member1.setUsername("member1");
+            member1.setAge(35);
+            member1.setTeam(team);
+
+            em.persist(member1);
+
+            em.flush();
+            em.clear();
+
+            List<Member> result = em.createQuery("SELECT m FROM Member m", Member.class)
+                    .getResultList();
+
+            Member findMember = result.get(0);
+            findMember.setAge(28);
+
+            Team findTeam = findMember.getTeam();
+            findTeam.setName("team2");
+
+            tx.commit();
+```
+
+> console
+
+```
+Hibernate: 
+    /* insert jpql.domain.Team
+        */ insert 
+        into
+            Team
+            (name, id) 
+        values
+            (?, ?)
+Hibernate: 
+    /* insert jpql.domain.Member
+        */ insert 
+        into
+            Member
+            (age, TEAM_ID, username, id) 
+        values
+            (?, ?, ?, ?)
+Hibernate: 
+    /* SELECT
+        m 
+    FROM
+        Member m */ select
+            member0_.id as id1_0_,
+            member0_.age as age2_0_,
+            member0_.TEAM_ID as team_id4_0_,
+            member0_.username as username3_0_ 
+        from
+            Member member0_
+Hibernate: 
+    select
+        team0_.id as id1_3_0_,
+        team0_.name as name2_3_0_ 
+    from
+        Team team0_ 
+    where
+        team0_.id=?
+Hibernate: 
+    /* update
+        jpql.domain.Member */ update
+            Member 
+        set
+            age=?,
+            TEAM_ID=?,
+            username=? 
+        where
+            id=?
+Hibernate: 
+    /* update
+        jpql.domain.Team */ update
+            Team 
+        set
+            name=? 
+        where
+            id=?
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/projection/img-002.png)
+
+> 놀랍게도 조회한 Member 뿐만 아니라 Team까지 영속성 컨텍스트에서 관리가 되어, 수정을 하여도 업데이트 문이 발생되었고 원하는 결과 수정한 Team의 이름이 team2로 수정된 것을 확인 할 수 있었습니다.
+
 
 
 #### 참고
