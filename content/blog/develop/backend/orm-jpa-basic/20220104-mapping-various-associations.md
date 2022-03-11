@@ -394,8 +394,7 @@ public class Team {
     public String toString() {
         return "Team{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
-                ", members=" + members +
+                ", name='" + name + 
                 '}';
     }
 }

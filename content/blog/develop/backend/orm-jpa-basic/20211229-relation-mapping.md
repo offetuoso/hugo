@@ -1168,8 +1168,8 @@ Member를 수정한다면, 기존의 member를 제거하고 수정한 member로 
     public String toString() {
         return "Member{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
-                ", team=" + team +	// team.toString() 과 같음
+                ", username='" + username 
+                ", team=" + team +	// team.toString() 과 같음 양방향 매핑시에 무한 루프
                 '}';
     }
 
