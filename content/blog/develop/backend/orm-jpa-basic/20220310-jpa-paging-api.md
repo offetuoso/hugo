@@ -561,5 +561,7 @@ member = Member{id=92, username='member90', age=90}
 > 스프링 데이터 JPA에서도 페이징 기능이 매우 편리하게 되어있는데, 
 결과적으로 JPA에서 제공하는 표준 스펙 기능입니다. 
 
+
+
 #### 참고
 > - <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
