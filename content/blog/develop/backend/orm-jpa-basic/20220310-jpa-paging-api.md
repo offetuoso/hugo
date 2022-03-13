@@ -8,7 +8,7 @@ date: 2022-03-10
 slug: "paging-api"
 description: "JPA Paging API"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -343,10 +343,10 @@ toc: true
 </details> 
  	
 
-> src/main/java/jpql/JplMain.java
+> src/main/java/jpql/JpqlMain.java
 
 <details title="펼치기/숨기기">
- 	<summary> Product.java </summary>
+ 	<summary> JpqlMain.java </summary>
 
 	package jpql;
 	

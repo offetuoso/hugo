@@ -47,7 +47,8 @@ toc: true
 	
 	    @ManyToOne
 	    @JoinColumn(name = "TEAM_ID")
-	    private Team team = new Team();
+	    //private Team team = new Team();
+	    private Team team;
 	
 	    public Long getId() {
 	        return id;
@@ -330,10 +331,10 @@ toc: true
 </details> 
  	
 
-> src/main/java/jpql/JplMain.java
+> src/main/java/jpql/JpqlMain.java
 
 <details title="펼치기/숨기기">
- 	<summary> Product.java </summary>
+ 	<summary> JpqlMain.java </summary>
 
 	package jpql;
 	
@@ -451,7 +452,30 @@ org.hibernate.TransientPropertyValueException: object references an unsaved tran
 > 1. CascadeType 지정
 > 2. FK를 가지는 엔티티를 먼저 영속화 후 엔티티 영속화
 
-> 하지만, 저장 시 강사님의 결과와 달라 문의를 남겨 두었습니다. 
+> ~하지만, 저장 시 강사님의 결과와 달라 문의를 남겨 두었습니다. ~
+
+> 3. 연관관계 매핑시 제가 잘못한 것이 있어 수정을 합니다. 
+
+> Member.java
+
+```
+    @ManyToOne
+    @JoinColumn(name = "TEAM_ID")
+    private Team team = new Team();
+```
+
+> 수업을 충분히 정리하며 들으셨던 분들은 한눈에 눈치채셨겠지만, N:1 관계에서 1의 입장에서 예를 들어 Team.java에서는 private List<Member> members = new ArrayList<>(); 이렇게 배열을 미리 생성해두지만, Member.java 입장에서는 선언만 해두면 되는것을 = new Team()으로 생성을 해두었던것이 잘못이였습니다. 
+
+> Team team = new Team(); 으로 생성을 해두면 생성시 Team의 PK인 TEAM_ID를 JPA에서 Member를 영속화할때 필요로 하기 때문에 오류를 발생하게 됩니다.
+
+```
+    @ManyToOne
+    @JoinColumn(name = "TEAM_ID")
+    private Team team;
+```
+
+
+
 
 <a href="https://www.inflearn.com/questions/469025">인프런 QnA : org.hibernate.TransientPropertyValueException 질문드립니다.</a>
  

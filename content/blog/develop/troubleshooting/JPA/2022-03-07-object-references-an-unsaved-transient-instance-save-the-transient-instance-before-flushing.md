@@ -26,7 +26,27 @@ org.hibernate.TransientPropertyValueException: object references an unsaved tran
 
 ## 원인 
 
-> @ManyToOne 또는 @OneToMany 매핑을 사용 할때 부모 엔티티에 포함된 FK가 아직 영속되지 않아 생긴 영속성 전이(CASCADE)에 대한 오류 발생
+> 1. @ManyToOne 또는 @OneToMany 매핑을 사용 할때 부모 엔티티에 포함된 FK가 아직 영속되지 않아 생긴 영속성 전이(CASCADE)에 대한 오류 발생
+
+> 2. N:1 관계시 양방향 설정시, 연결된 엔티티 객체를 생성 시 FK가 필수로 필요
+
+```
+@ManyToOne
+    @JoinColumn(name = "TEAM_ID")
+    private Team team = new Team(); // << 
+```
+
+> Member를 생성할 때, Team이 필수 값이 아니라면, new Team() 으로 미리 생성해 둘 필요가 없다.
+
+> 만일 필수인 경우 validation 겸 null 시 Exception을 제어하기 위해 추가해도 괜찮다.
+
+```
+@ManyToOne
+    @JoinColumn(name = "TEAM_ID")
+    private Team team;
+```
+
+
 
 #### 문제가된 소스 설명
 
