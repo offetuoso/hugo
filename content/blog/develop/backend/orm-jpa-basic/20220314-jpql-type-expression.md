@@ -8,7 +8,7 @@ date: 2022-03-14
 slug: "jpql-type-expression"
 description: "JPQL 타입 표현(Type Expression)"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -377,36 +377,10 @@ toc: true
 	}
 </details> 
 
-> Member.java - MemberType 추가
 
-```
-...
-     @Enumerated(EnumType.STRING) // 기본이 숫자 EnumType.ORDINAL 이기 때문에 String으로 필수로 세팅
-    private MemberType type;
-
-    public MemberType getType() {
-        return type;
-    }
-
-    public void setType(MemberType type) {
-        this.type = type;
-    }
-...
-```
-
-
-> MemberType.java
-
-```
-package jpql.domain;
-
-public enum MemberType {
-    ADMIN, USER
-}
-
-```
-
-> JpqlMain.java - 문자, 숫자, boolean 테스트
+### 문자, 숫자, Boolean 실습
+----------------------------------------------
+> JpqlMain.java - 문자, 숫자, Boolean
 
 ```
  Team team = new Team();
@@ -470,7 +444,40 @@ objects = 10   		// 숫자 - 10L
 
 ```
 
+### Enum 실습
+----------------------------------------------
+
 > JpqlMain.java - Enum Jpql에서 사용
+
+
+> Member.java - MemberType 추가
+
+```
+...
+     @Enumerated(EnumType.STRING) // 기본이 숫자 EnumType.ORDINAL 이기 때문에 String으로 필수로 세팅
+    private MemberType type;
+
+    public MemberType getType() {
+        return type;
+    }
+
+    public void setType(MemberType type) {
+        this.type = type;
+    }
+...
+```
+
+
+> MemberType.java
+
+```
+package jpql.domain;
+
+public enum MemberType {
+    ADMIN, USER
+}
+
+```
 
 ```
 Team team = new Team();
@@ -556,6 +563,68 @@ String teamName = "team1";
                     .getResultList();
 ```
 
+###  Entity 타입 실습
+----------------------------------------------
+
+> 예제를 진행하기 위해 실전 예제를 사용했던 프로젝트를 불러와 사용하겠습니다.
+
+<a href="https://offetuoso.github.io/blog/develop/backend/orm-jpa-basic/practical-example-6/">실전 예제 6 - 값 타입 매핑</a>
+ 	
+> Item 같은 경우에 상속관계로 Album, Book, Movie 가 있는데, Book 관련 된것만 조회하고 싶을때 
+
+> JpaMain.java
+
+```
+            Book book = new Book();
+            book.setName("JPA");
+            book.setAuthor("김영한");
+            em.persist(book);
+
+            List<Item> result = em.createQuery("SELECT i FROM Item i WHERE TYPE(i) = Book ", Item.class).getResultList(); // *** TYPE(i) = Book
+
+            tx.commit();
+```
+
+> console
+
+```
+Hibernate: 
+    /* SELECT
+        i 
+    FROM
+        Item i 
+    WHERE
+        TYPE(i) = Book  */ select
+            item0_.ITEM_ID as item_id2_3_,
+            item0_.MOD_ID as mod_id3_3_,
+            item0_.MOD_DT as mod_dt4_3_,
+            item0_.REG_ID as reg_id5_3_,
+            item0_.REG_DT as reg_dt6_3_,
+            item0_.name as name7_3_,
+            item0_.price as price8_3_,
+            item0_.stockQuantity as stockqua9_3_,
+            item0_.author as author10_3_,
+            item0_.isbn as isbn11_3_,
+            item0_.artist as artist12_3_,
+            item0_.etc as etc13_3_,
+            item0_.actor as actor14_3_,
+            item0_.director as directo15_3_,
+            item0_.DTYPE as dtype1_3_ 
+        from
+            Item item0_ 
+        where
+            item0_.DTYPE='B' // *** TYPE(i) = Book
+
+```
+
+
+## JPQL 기타 표현
+----------------------------------------------
+> - SQL과 문법이 같음 
+> - EXISTS, IN
+> - AND, OR, NOT
+> - =, >, >=, <, <=, <>
+> - BETWEEN, LIKE, IS NULL 
 
 #### 참고
 > - <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
