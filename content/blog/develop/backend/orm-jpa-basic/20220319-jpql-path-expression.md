@@ -8,7 +8,7 @@ date: 2022-03-19
 slug: "jpql-path-expression"
 description: "JPQL 경로 표현식(PATH EXPRESSION)"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -193,20 +193,150 @@ select
 
 
 
-
-
-
-
-#### 콜렉션 값 연관 필드 경로 표현식(collection_valued_path_expression) 
+#### 컬렉션 값 연관 경로 표현식(collection_valued_path_expression) 
 > 묵시적 내부 조인(INNER JOIN) 발생, 이후 탐색 불가 
->	- FROM 절에서 명시적 조인을 통해 별칭을 얻으면 별칭을 통해 탐색 가능<br> 
+>	- FROM 절에서 <mark>명시적 조인</mark>을 통해 별칭을 얻으면 별칭을 통해 탐색 가능<br> 
 <Strong>식별_변수.{단일 값 연관 필드.}.콜렉션 값 연관 필드(collection_valued_association_field)</Strong><br>
 엔티티에 다른 엔티티가 1:N의 연관 관계가 설정된 (컬렉션)필드<br>
 예) m(Member).orders(List<Orders>), t(Team).members(List<Member>)
 
+![contact](/images/develop/backend/orm-jpa-basic/path-expression/img-003.png)
+
+> Team 엔티티에서 t.members는 1:N으로 member를 담은 컬렉션입니다. memebers에서 .을 이용해 탐색을 시도해 보았지만 불가능하며 "제안이 없습니다. 라고" 탐색을 못한다는 것을 IDE에서 알려줍니다.
+
+> JpqlMain.java
+
+```
+            Team team = new Team();
+            team.setName("team1");
+            em.persist(team);
+
+            Member member1 = new Member();
+            member1.setUsername("Member1");
+            member1.setAge(30);
+            member1.changeTeam(team);
+            member1.setType(MemberType.USER);
+
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("Member2");
+            member2.setAge(32);
+            member2.changeTeam(team);
+            member2.setType(MemberType.ADMIN);
+
+            em.persist(member2);
+
+
+            em.flush();
+            em.clear();
+
+
+            String sQuery = "SELECT t.members FROM Team t";
+
+            List resultList = em.createQuery(sQuery, Collection.class) //** List가 아니라 Collection 받을 수 있다.
+                    .getResultList();
+
+
+            for(Object s : resultList){
+                System.out.println("result = "+s);
+            }
+
+            tx.commit();
+```
+
+> console
+
+```
+Hibernate: 
+    /* SELECT
+        t.members 
+    FROM
+        Team t */ select
+            members1_.id as id1_0_,
+            members1_.age as age2_0_,
+            members1_.TEAM_ID as team_id5_0_,
+            members1_.type as type3_0_,
+            members1_.username as username4_0_ 
+        from
+            Team team0_ 
+        inner join
+            Member members1_ 
+                on team0_.id=members1_.TEAM_ID
+
+result = Member{id=2, username='Member1', age=30}
+result = Member{id=3, username='Member2', age=32}
+
+```
+
+> 처음에 JPA를 사용하면서 맨탈을 탈탈 털어버릴 수 있는 몇가지중에 
+
+```
+
+SELECT t.name FROM Team t // <- 탐색가능 
+
+SELECT t.members. FROM Team t //members. <- 탐색 불가 
+
+```
+
+> members는 위에 예제에서 봤듯이 타입이 Collection입니다. 컬렉션에서 필드를 찍을 수 있는것도 아니고 컬렉션 자체이기 때문에 더 이상 탐색할 수 없습니다. 사용할 수 있는기능은 t.members.size 정도 입니다.
 
 
 
+##### 명시적 조인을 이용한 탐색 
+> 컬렉션 값 연관 경로 표현식을 이용하면 묵시적 조인이 발생하며 탐색이 불가능하지만, 명시적 조인을 통해서 탐색을 할 수 있다고 하였습니다. <br>
+이번에는 명시적 조인을 통한 예제를 테스트해 보겠습니다.
+
+> JqplMain.java
+
+```
+Team team = new Team();
+            team.setName("team1");
+            em.persist(team);
+
+            Member member1 = new Member();
+            member1.setUsername("Member1");
+            member1.setAge(30);
+            member1.changeTeam(team);
+            member1.setType(MemberType.USER);
+
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("Member2");
+            member2.setAge(32);
+            member2.changeTeam(team);
+            member2.setType(MemberType.ADMIN);
+
+            em.persist(member2);
+
+
+            em.flush();
+            em.clear();
+
+
+            String sQuery = "SELECT m.username FROM Team t join t.members m"; // FROM 절에서 명시적 조인
+
+            List resultList = em.createQuery(sQuery, Collection.class)
+                    .getResultList();
+
+
+            for(Object s : resultList){
+                System.out.println("result = "+s);
+            }
+
+            tx.commit();
+```
+
+![contact](/images/develop/backend/orm-jpa-basic/path-expression/img-004.png)
+
+> FROM 절에서 명시적 조인을 사용하면 t.members의 식별 변수(Alias) m에 .을 사용해 Member의 필드를 조회할 수 있습니다.
+
+## 결론
+> - <mark>가급적 묵시적 조인 대신에 명시적 조인 사용</mark>
+> - 조인은 SQL 튜닝에 중요 포인트
+> - 묵시적 조인은 조인이 일어나는 상황을 한눈에 파악하기 어려움
+> - JPQL과 SQL이 같게 개발을 하여야 이후에 운영에서 유지보수가(쿼리 튜닝이) 어려워지는 문제를 막을 수 있다.
 
 
 ### 이전 소스
@@ -565,8 +695,6 @@ select
 	
 	}
 </details> 
-
-
 
 
 
