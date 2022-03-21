@@ -68,6 +68,12 @@ ignoreErrors = ["error-remote-getjson"]
   name = "2"
   title = "blog"
   url = "/blog"
+
+##[[menu.main]]
+##  identifier = "posts"
+##  name = "3"
+##  title = "posts"
+##  url = "/posts"
   
  [[menu.main]]
   identifier = "search"
