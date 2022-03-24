@@ -41,6 +41,7 @@ SELECT m FROM Member m JOIN FETCH m.team
 ```
 <br>
 
+
 > LEFT OUTER JOIN에 FETCH 만 붙였을 뿐
 
 > [SQL]
