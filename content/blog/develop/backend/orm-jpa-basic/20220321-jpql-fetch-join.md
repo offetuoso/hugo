@@ -875,7 +875,6 @@ Team = 팀C, members[]
 </details> 
 
 
-
 #### 참고
 > - <a href="https://www.inflearn.com/course/ORM-JPA-Basic">자바 ORM 표준 JPA - 김영한</a>
 > - <a href="https://docs.oracle.com/middleware/1212/wls/KDJJR/ejb3_langref.html#ejb3_langref_path">Oracle - JPQL Language Reference</a>
