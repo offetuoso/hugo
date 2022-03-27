@@ -18,7 +18,10 @@
   
   {{ partial "adsense.html" . }}
 
-     
+  <!-- Open Graph -->
+  <meta property="og:type" content="website"> 
+  <meta property="og:title" content="{{ if .IsHome}}{{ .Site.Params.Description }} {{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}{{ else }}{{.Page.Params.Description}}{{ end }}">
+  <meta property="og:description" content="{{ if .IsHome}}{{ .Site.Params.Description }} {{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}{{ else }}{{.Page.Params.Description}}{{ end }}">
      
   <!-- Twitter -->
   {{ if isset .Site.Params "twitter" }}
