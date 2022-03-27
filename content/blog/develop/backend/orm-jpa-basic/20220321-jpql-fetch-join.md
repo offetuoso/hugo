@@ -8,7 +8,7 @@ date: 2022-03-21
 slug: "jpql-fetch-join"
 description: "JPQL 페치 조인(Fetch Join)"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -1158,7 +1158,7 @@ Team = 팀B, members [Member{id=5, username='회원3', age=33}]
 > - 페치 조인을 사용할 때만 연관된 엔티티도 함께 <mark>조회(즉시 로딩)</mark>
 > - <mark>페치 조인은 객체 그래프를 SQL 한번에 조회하는 개념</mark>
 
-## 페치 조인의 특징과 한계
+## 페치 조인의 특징과 한계 - 1
 ---------------------
 > - <mark>페치 조인 대상에는 별칭을 줄 수 없다.(별칭 사용하지 않는게 관례)</mark>
 >	- 하이버네이트는 가능, 가급적 사용X
@@ -1195,7 +1195,10 @@ Team = 팀B, members [Member{id=5, username='회원3', age=33}]
 
 > 일대일, 다대일 같은 단일 값 연관 필드들은 페치 조인해도 페이징이 가능합니다. 왜냐하면 데이터 뻥튀기(조인으로 인한 1*N)가 발생하지 않기 때문입니다.
 
+
+
 #### 일대다 관계에서 페치 조인 시 페이징 문제
+---------------------
 > 페이징이라는 기능은 DB입장에서 ROW를 줄이는 방법입니다. 
 
 > Member와 Team의 조인을 통해 2건이 나왔을때 '팀A'의 데이터의 위치 로우가 10('회원1 데이터')과 11('회원2 데이터')이라고 가정해 보겠습니다. 
@@ -1206,6 +1209,7 @@ Team = 팀B, members [Member{id=5, username='회원3', age=33}]
 
 
 #### 하이버네이트는 경고 로그를 남기고 메모리에서 페이징(매우 위험)
+---------------------
 > 버전에 따라 다르겠지만 한번 테스트 해보겠습니다.
 
 > JpqlMain.java
@@ -1260,7 +1264,7 @@ Team = 팀A, members [Member{id=3, username='회원1', age=31}, Member{id=4, use
 
 > JPA에서 객체 그래프의 개념은 연관된 모든 데이터를 보여주는 것이기 때문에 전체 데이터를 가져온 후에 경고를 남기고 메모리 상에서 페이징을 처리하게 됩니다. 매우 위험
 
-### 1:N 페치 조인 페이징 사용 제한 해결법
+### 1:N 페치 조인 페이징 사용 제한 해결책
 -----------------
 
 #### 1. 쿼리의 대상을 뒤집어 1:N 쿼리를 N:1 쿼리로 만들어 사용
@@ -1373,11 +1377,13 @@ Team = 팀A, members [Member{id=3, username='회원1', age=31}, Member{id=4, use
 
 ```
 
-#### Fetch를 제거하고, n+1을 @BatchSize로 해결
-> 아까도 테스트 해서 보았지만, "SELECT  t FROM Team t" Team만 조회한 후 Roof에서 Members를 호출하게 되면 지연로딩이 발생하며 N+1 문제가 발생합니다. 이러한 문제를 @BatchSize를 사용하여 해결 할 수 있습니다. <br>
-@BatchSize를 사용하면, 
+#### 2. Fetch를 제거하고, n+1을 @BatchSize로 해결
+----------------------------------
+> 아까도 테스트 해서 보았지만, "SELECT  t FROM Team t" Team만 조회한 후 Roof에서 Members를 호출하게 되면 지연로딩이 발생하며 N+1 문제가 발생합니다. 이러한 문제를 @BatchSize를 사용하여 해결 할 수 있습니다.
 
-> 1. JpqlMain.java - Fetch Join 제거 
+> 1. Fetch Join 제거, paging은 그대로 사용
+
+> JpqlMain.java - Fetch Join 제거 
 
 ```
             Team team1 = new Team();
@@ -1445,9 +1451,260 @@ Team = 팀A, members [Member{id=3, username='회원1', age=31}, Member{id=4, use
 > console
 
 ```
+Hibernate: 
+    /* SELECT
+        t 
+    FROM
+        Team t */ select
+            team0_.id as id1_3_,
+            team0_.name as name2_3_ 
+        from
+            Team team0_ limit ?
+            
+resultCnt = 2
+
+Hibernate: 
+    select
+        members0_.TEAM_ID as team_id5_0_0_,
+        members0_.id as id1_0_0_,
+        members0_.id as id1_0_1_,
+        members0_.age as age2_0_1_,
+        members0_.TEAM_ID as team_id5_0_1_,
+        members0_.type as type3_0_1_,
+        members0_.username as username4_0_1_ 
+    from
+        Member members0_ 
+    where
+        members0_.TEAM_ID=?
+        
+Team = 팀A, members [Member{id=3, username='회원1', age=31}, Member{id=4, username='회원2', age=32}]
+
+Hibernate: 
+    select
+        members0_.TEAM_ID as team_id5_0_0_,
+        members0_.id as id1_0_0_,
+        members0_.id as id1_0_1_,
+        members0_.age as age2_0_1_,
+        members0_.TEAM_ID as team_id5_0_1_,
+        members0_.type as type3_0_1_,
+        members0_.username as username4_0_1_ 
+    from
+        Member members0_ 
+    where
+        members0_.TEAM_ID=?
+        
+Team = 팀B, members [Member{id=5, username='회원3', age=33}]
 
 ```
 
+> 결과를 확인해 보면, Team을 조회한 Select 문 1개, 조회된 Team을 Roof를 통해 getMembers() 를 했기 때문에 지연 로딩이 발생하며, Roof로 도는 Team의 수만큼 Select 문이 발생합니다. 
+
+
+> 2. @BatchSize 적용
+
+> 하이버네이트가 제공하는 org.hibernate.annotations.BatchSize 어노테이션을 이용하면 연관된 엔티티를 조회할 때 지정된 size 만큼 SQL의 IN절을 사용해서 조회합니다.
+
+> 만약 지정한 사이즈가 100이고, 150개의 데이터를 조회한다면 IN 절에 100개를 넣어 쿼리를 날리고, 나머지 IN절에 50개 를 넣은 쿼리를 실행하게 됩니다.
+
+> Team.java - @BatchSize 적용
+
+```
+    ...
+    @OneToMany(mappedBy = "team")
+    @BatchSize(size = 100) // ** 1000 이하의 숫자에서 적절히 사용 
+    private List<Member> members = new ArrayList<>();
+    ...
+```
+
+> console
+
+```
+Hibernate: 
+    /* SELECT
+        t 
+    FROM
+        Team t */ select
+            team0_.id as id1_3_,
+            team0_.name as name2_3_ 
+        from
+            Team team0_ limit ?
+
+resultCnt = 2
+
+Hibernate: 
+    /* load one-to-many jpql.domain.Team.members */ select
+        members0_.TEAM_ID as team_id5_0_1_,
+        members0_.id as id1_0_1_,
+        members0_.id as id1_0_0_,
+        members0_.age as age2_0_0_,
+        members0_.TEAM_ID as team_id5_0_0_,
+        members0_.type as type3_0_0_,
+        members0_.username as username4_0_0_ 
+    from
+        Member members0_ 
+    where
+        members0_.TEAM_ID in (
+            ?, ?
+        )
+
+Team = 팀A, members [Member{id=3, username='회원1', age=31}, Member{id=4, username='회원2', age=32}]
+
+Team = 팀B, members [Member{id=5, username='회원3', age=33}]
+
+```
+
+> N+1의 쿼리 실행에서 IN 절을 사용하여 1+1로 변경 된것을 확인 할 수 있습니다.
+
+##### @BatchSize의 설정 사이즈 초과
+---------------------
+
+> JpqlMain.java
+
+```
+            Team team1 = new Team();
+            team1.setName("팀A");
+            em.persist(team1);
+
+            Team team2 = new Team();
+            team2.setName("팀B");
+            em.persist(team2);
+
+            Team team3 = new Team(); // ** 팀C 생성
+            team3.setName("팀C");
+            em.persist(team3);
+
+            Member member1 = new Member();
+            member1.setUsername("회원1");
+            member1.setAge(31);
+            member1.changeTeam(team1);
+            member1.setType(MemberType.USER);
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("회원2");
+            member2.setAge(32);
+            member2.changeTeam(team1);
+            member2.setType(MemberType.USER);
+            em.persist(member2);
+
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setAge(33);
+            member3.changeTeam(team2);
+            member3.setType(MemberType.USER);
+            em.persist(member3);
+
+            Member member4 = new Member();  // ** 회원4 생성
+            member4.setUsername("회원4");
+            member4.setAge(34);
+            member4.changeTeam(team3);      // ** 회원4 팀C로 변경
+            member4.setType(MemberType.USER);
+            em.persist(member4);
+
+            em.flush();
+            em.clear();
+
+            String sQuery = "SELECT  t FROM Team t"; // Fetch 조인 제거
+
+            List<Team> resultList = em.createQuery(sQuery, Team.class)
+                    .setFirstResult(0)
+                    .setMaxResults(3)		// ** 페이징 MaxResults 3으로 하여 결과 3건 
+                    .getResultList();
+
+            System.out.println("resultCnt = " + resultList.size());
+
+            for(Team team : resultList){
+                System.out.println("Team = " + team.getName()+", members "+team.getMembers());
+            }
+
+            tx.commit();
+```
+
+> Team.java - @BatchSize(size = 2)
+
+```
+    @OneToMany(mappedBy = "team")
+    @BatchSize(size = 2) // ** 배치사이즈 2로 수정
+    private List<Member> members = new ArrayList<>();
+```
+
+> console
+
+```
+Hibernate: 
+    /* SELECT
+        t 
+    FROM
+        Team t */ select
+            team0_.id as id1_3_,
+            team0_.name as name2_3_ 
+        from
+            Team team0_ limit ?
+            
+resultCnt = 3
+
+Hibernate: 
+    /* load one-to-many jpql.domain.Team.members */ select
+        members0_.TEAM_ID as team_id5_0_1_,
+        members0_.id as id1_0_1_,
+        members0_.id as id1_0_0_,
+        members0_.age as age2_0_0_,
+        members0_.TEAM_ID as team_id5_0_0_,
+        members0_.type as type3_0_0_,
+        members0_.username as username4_0_0_ 
+    from
+        Member members0_ 
+    where
+        members0_.TEAM_ID in (
+            ?, ?
+        )
+        
+Team = 팀A, members [Member{id=4, username='회원1', age=31}, Member{id=5, username='회원2', age=32}]
+Team = 팀B, members [Member{id=6, username='회원3', age=33}]
+
+Hibernate: 
+    /* load one-to-many jpql.domain.Team.members */ select
+        members0_.TEAM_ID as team_id5_0_1_,
+        members0_.id as id1_0_1_,
+        members0_.id as id1_0_0_,
+        members0_.age as age2_0_0_,
+        members0_.TEAM_ID as team_id5_0_0_,
+        members0_.type as type3_0_0_,
+        members0_.username as username4_0_0_ 
+    from
+        Member members0_ 
+    where
+        members0_.TEAM_ID=?
+        
+Team = 팀C, members [Member{id=7, username='회원4', age=34}]
+```
+
+> @BatchSize의 설정된 size가 2이기 때문에 Team을 조회한 Select 문 1개와 <br>
+> 팀A의 TEAM_ID, 팀B의 TEAM_ID를 IN 절을 이용한 Member Select 쿼리 1개 <br>
+> 팀C의 TEAM_ID을 이용한 Member Select 쿼리 1개, 총 3개의 쿼리가 실행된 것을 볼 수 있습니다. 
+
+
+## 페치 조인의 특징과 한계 - 2
+---------------------
+
+> - 연관된 엔티티들을 SQL 한 번으로 조회 - 성능 최적화
+> - 엔티티에직접 적용하는 글로벌 로딩 전략보다 우선함
+>	- @OneToMany(fetch = FetchType.LAZY) // 글로벌 로딩 전략
+> - 실무에서 글로벌 로딩 전략은 모두 지연 로딩
+> - 최적화가 필요한 곳은 페치 조인 적용
+>	- N+1이 발생하는 곳은 Fetch 조인
+>	- N+1이 발생하며, 페이징이 필요하다 @BatchSize 설정
+
+## 페치 조인 - 정리 
+> - 모든 것을 페치 조인으로 해결할 수 는 없음
+> - 페치 조인은 객체 그래프를 유지할 때 사용하면 효과적
+> - 여러 테이블을 조인해서 엔티티가 가진 모양이 아닌 전혀 다른 결과를 내야하면, 페치 조인 보다는 일반 조인을 사용하고 필요한 데이터들만 조회해서 DTO로 반환하는 것이 효과적
+
+#### 페치 조인 이후 데이터를 담아 반환하는 방법 3가지 
+
+> 1. 엔티티를 페치조인 해서 엔티티를 그대로 사용
+> 2. 페치 조인을 하여 조회 하고 애플리케이션에서 DTO로 변환해 사용
+> 3. 처음부터 JPQL에서 New 생성자를 통해서 DTO를 지정해서 DTO로 반환해서 사용 
 
 
 
