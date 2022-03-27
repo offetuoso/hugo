@@ -1374,8 +1374,81 @@ Team = 팀A, members [Member{id=3, username='회원1', age=31}, Member{id=4, use
 ```
 
 #### Fetch를 제거하고, n+1을 @BatchSize로 해결
+> 아까도 테스트 해서 보았지만, "SELECT  t FROM Team t" Team만 조회한 후 Roof에서 Members를 호출하게 되면 지연로딩이 발생하며 N+1 문제가 발생합니다. 이러한 문제를 @BatchSize를 사용하여 해결 할 수 있습니다. <br>
+@BatchSize를 사용하면, 
 
-13:03
+> 1. JpqlMain.java - Fetch Join 제거 
+
+```
+            Team team1 = new Team();
+            team1.setName("팀A");
+            em.persist(team1);
+
+            Team team2 = new Team();
+            team2.setName("팀B");
+            em.persist(team2);
+
+            /*
+            // DISTINCT 를 통해 테스트의 편의를 위해 주석
+            Team team3 = new Team();
+            team3.setName("팀C");
+            em.persist(team3);
+            */
+
+            Member member1 = new Member();
+            member1.setUsername("회원1");
+            member1.setAge(31);
+            member1.changeTeam(team1);
+            member1.setType(MemberType.USER);
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("회원2");
+            member2.setAge(32);
+            member2.changeTeam(team1);
+            member2.setType(MemberType.USER);
+            em.persist(member2);
+
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setAge(33);
+            member3.changeTeam(team2);
+            member3.setType(MemberType.USER);
+            em.persist(member3);
+
+            Member member4 = new Member();
+            member4.setUsername("회원4");
+            member4.setAge(34);
+            member4.setType(MemberType.USER);
+            em.persist(member4);
+
+            em.flush();
+            em.clear();
+
+            String sQuery = "SELECT  t FROM Team t"; // Fetch 조인 제거
+
+            List<Team> resultList = em.createQuery(sQuery, Team.class)
+                    .setFirstResult(0)
+                    .setMaxResults(2)
+                    .getResultList();
+
+            System.out.println("resultCnt = " + resultList.size());
+
+            for(Team team : resultList){
+                System.out.println("Team = " + team.getName()+", members "+team.getMembers());
+            }
+
+            tx.commit();
+
+```
+
+> console
+
+```
+
+```
+
+
 
 
 ### 이전 소스
