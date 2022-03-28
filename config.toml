@@ -91,3 +91,6 @@ ignoreErrors = ["error-remote-getjson"]
   category = "categories"
   tag = "tags"
   subcategory = "subcategories"
+
+
+  enableRobotsTXT = true
