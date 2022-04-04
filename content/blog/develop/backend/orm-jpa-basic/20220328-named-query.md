@@ -8,7 +8,7 @@ date: 2022-03-28
 slug: "jpql-named-query"
 description: "JPQL 네임드 쿼리(Named Query)"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
@@ -258,7 +258,93 @@ Member.findByUsername failed because of: org.hibernate.hql.internal.ast.QuerySyn
 
 > 개발하면서 가장 좋은 에러는 즉시 나는 에러가 좋습니다. 바로 찾을 수 있고 수정할 수 있기 때문입니다. 그러면 가장 안좋은 에러는 사용자가 사용중에 무언가 액션을 했을때 나는 오류입니다. 그리고 그 중간 정도의 오류는 컴파일 시점에 나는 오류입니다. 어떻게든지 로컬에서라도 실행은 시키고 배포를 하기 때문에 대부분의 오류를 다 잡아줄수 있습니다.
 
-5:03
+
+### Named 쿼리 - XML에 정의 
+
+> [META-INF/persistence.xml]
+
+```
+<persistance-unit name="jpabook">
+	<mapping-file>META-INF/ormMember.xml</mapping-file>
+```
+
+> [META-INF/ormMemer.xml]
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm" version="2.1">
+	
+	<named-query name="Member.findByUsername">
+		<query><![CDATA[
+			SELECT m
+			FROM Member m
+			WHERE m.username = :username
+		]]></query>
+	</named-query>
+	
+	<named-query name="Member.count">
+		<query><![CDATA[
+			SELECT COUNT(m) FROM Member m
+		]]></query>
+	</named-query>
+	
+</entity-mappings>
+```
+
+### Named 쿼리 환경에 따른 설정
+> - XML이 항상 우선권을 가진다.
+> - 애플리케이션 운영 환경에 따라 다른 XML을 배포할 수 있다.
+
+> 스프링 데이터 JPA를 사용하게 되면 인터페이스 바로 위에 사용 가능합니다. 
+
+> Spring Data JPA
+
+```
+public interface UserRepository extends JpaReposotory<User, Long>{
+	@Query("SELECT u from User u WHERE u.emailAddress = ?1")
+	User findByEmailAddress(String emailAddress);
+}
+
+```
+
+> 스프링 JPA는 JPA를 편하게 사용하기 위해 추상화 하여, JPA의 껍데기 역활만 합니다. <br>
+> @Query("SELECT u from User u WHERE u.emailAddress = ?1") 가 바로 Named 쿼리 입니다. <br>
+> JPA가 해당 어노테이션과 쿼리를 Named 쿼리로 등록합니다. 그래서 애플리케이션 로딩 시점에 파싱하게 되고 문법 오류가 있으면 바로 잡아주게 됩니다.
+
+
+## 결론 
+-------------------------
+```
+@Entity
+@NamedQuery(
+	name = "member.findByUsername",
+	query = "SELECT m FROM Member WHERE n.username :username"
+)
+
+public class Member {
+	...
+}
+
+List<Member> resultList = 
+	em.createQuery("Member.findByUsername", Member.class)
+	  .setParameter("username", "회원1")
+	  .getResultList();
+```
+
+> 위와 같이 엔티티에 Named Query를 추가하는 것은 코드가 매우 지저분 해지고, <br>
+결국 실무에서는 Spring Data JPA를 섞어 쓰는게 좋기 때문에 
+
+> Spring Data JPA
+
+```
+public interface UserRepository extends JpaReposotory<User, Long>{
+	@Query("SELECT u from User u WHERE u.emailAddress = ?1")
+	User findByEmailAddress(String emailAddress);
+}
+
+```
+
+> 이와 같이 Spring Data JPA 방식으로 개발하는게 좋습니다.
 
 
 ### 이전 소스
