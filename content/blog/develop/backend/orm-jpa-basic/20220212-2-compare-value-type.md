@@ -11,7 +11,7 @@ keywords: ["ORM"]
 draft: true
 categories: ["Java"]
 subcategories: ["JPA"]
-tags: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
+tags: ["자바 ORM 표준 JPA","김영한","JPA","ORM","Java","인프런"]
 math: false
 toc: true
 ---

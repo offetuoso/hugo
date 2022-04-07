@@ -7,11 +7,11 @@ opacity: "0.4"
 date: 2022-03-07
 slug: "object-references-an-unsaved-transient-instance-save-the-transient-instance-before-flushing"
 description: "object references an unsaved transient instance - save the transient instance before flushing 에러"
-keywords: ["Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
+keywords: ["자바 ORM 표준 JPA","김영한","JPA","ORM","Java","인프런"]
 draft: false
 categories: ["Troubleshooting"]
 subcategories: ["JPA"]
-tags: ["Troubleshooting","Java","JPA","ORM", "인프런", "김영한", "자바 ORM 표준 JPA"]
+tags: ["Troubleshooting","자바 ORM 표준 JPA","김영한","JPA","ORM","Java","인프런"]
 math: false
 toc: true
 ---
