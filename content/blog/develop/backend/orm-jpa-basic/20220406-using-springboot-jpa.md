@@ -84,6 +84,10 @@ toc: true
 ####	5. Lombok
 >	엔티티의 Getter Setter를 추가 하지 않아도 사용가능하게 만들어주는 어노테이션
 
+
+### SpringBoot 세팅
+---------------------
+
 ![contact](/images/develop/backend/using-springboot-jpa/new-project/img-007.png)
 
 > 여기까지 Dependencies 설정을 하겠습니다.
@@ -170,9 +174,110 @@ tasks.named('test') {
 
 > 파일 우클릭 후 실행 'JpashopApplication(U)' 또는 Ctrl + Shift + F10
 
-09:32
+
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-015.png)
 
 
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-016.png)
+
+> Tomcat started on port(s): 8080 (http) with context path '' <br>
+> 가 정상적으로 나오면 톰캣이 성공적으로 구동된 것을 알 수 있습니다.
+
+> 브라우저에서 localhost:8080 또는 127.0.0.1:8080 를 입력해 봅니다.
+
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-017.png)
+
+> 아무것도 없기 때문에, Whitelabel Error Page 페이지가 뜨는게 맞습니다. 
+
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-018.png)
+
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-019.png)
+
+> src/test/ 경로 밑에 테스트 코드를 자동으로 생성해 주는데 테스트 코드도 실행해 봅니다.
+
+
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-020.png)
+
+> 테스트 코드 작성된게 없지만 설정이 잘 되었는지 확인합니다.
+
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-021.png)
+
+> 외부 라이브러리가 잘 받아졌는지도 확인 합니다.
+
+> 왜 라이브러리가 선택한 것보다 많지? 해도 gradle을 통하여 라이브러리를 가져오게 되면, 의존 관계에 있는 모든 라이브러리를 불러오기 때문에 지정한 라이브러리보다 많이 받습니다.
+
+> 여기까지 확인이되면 세팅이 정상적으로 마무리 된 것입니다.
+
+### Lombok 세팅
+---------------------
+
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-022.png)
+
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-023.png)
+
+> IntelliJ의 파일>설정에서 플러그인을 검색 
+
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-024.png)
+
+> 플러그인 검색에서 Lombok을 검색합니다. 저는 이미 설치가 되어 있지만 설치/업데이트 를 하고 IDE를 재시작합니다.
+
+> Lombok을 깔게 되면 무조건 해줘야 하는 세팅이 있습니다. 
+
+> 다시 파일>설정 (ctrl+alt+S)
+
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-025.png)
+
+> 한글팩 시 어노테이션 프로세서 로 검색 (annotation processors)
+
+
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-026.png)
+
+> 어노테이션 처리 활성화 (Enable annotation processing) 체크 
+
+> Lombok이 설치가 잘 되었는지 아무 class를 추가해서 테스트 해보겠습니다.
+
+> Hello.java 생성
+
+```
+package jpabook.jpashop;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
+public class Hello {
+
+    private String data;
+}
+
+```
+
+> JpashopApplication.java
+
+```
+package jpabook.jpashop;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class JpashopApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(JpashopApplication.class, args);
+
+		Hello hello = new Hello();
+
+		hello. // ctrl+space
+	}
+}
+```
+
+![contact](/images/develop/backend/using-springboot-jpa/new-project/img-027.png)
+
+> Hello 객체를 생성하여 .뒤에서 자동완성(ctrl+space)를 누르면  Lombok을 통해 추가한 Getter Setter가 나오는 것을 확인 할 수 있습니다.
+
+> 이로서 기본적으로 프로젝트를 생성하는것은 정리가 끝났습니다.
 
 #### 참고
 > - <a href="https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-JPA-%ED%99%9C%EC%9A%A9-1">실전! 스프링 부트와 JPA 활용1 - 웹 애플리케이션 개발 - 김영한</a>
