@@ -1,17 +1,17 @@
 ---
-title: "스프링부트 JPA 활용 - 프로젝트 생성"
+title: "[스프링부트 JPA 활용] 프로젝트 생성"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-04-06
-slug: "using-springboot-jpa-new-project"
-description: "스프링부트 JPA 활용 - 프로젝트 생성"	
+slug: "new-project-setting"
+description: "[스프링부트 JPA 활용] 프로젝트 생성"	
 keywords: ["ORM"]
 draft: true
 categories: ["Java"]
 subcategories: ["JPA"]
-tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java","인프런"]
+tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
 math: false
 toc: true
 ---
