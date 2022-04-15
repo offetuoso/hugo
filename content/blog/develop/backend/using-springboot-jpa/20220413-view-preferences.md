@@ -8,7 +8,7 @@ date: 2022-04-13
 slug: "view-preferences"
 description: "[스프링부트 JPA 활용]  View 환경 설정"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -18,10 +18,8 @@ toc: true
 
 
 # View 환경 설정
------------------------------------
 
 ## Thymeleaf
-------------------------------------------
 > <a href="https://www.thymeleaf.org/">Thymeleaf</a>
 
 > Spring에서도 밀고 있고, 스프링과 많은 기능을 제공하고 있어, Jsp 보다 Thymeleaf를 사용하는 추세입니다.

@@ -8,7 +8,7 @@ date: 2022-04-06
 slug: "new-project-setting"
 description: "[스프링부트 JPA 활용] 프로젝트 생성"	
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
