@@ -1,5 +1,5 @@
 ---
-title: "JPA 프록시와 연관관계"
+title: "[자바 ORM 표준 JPA] JPA 프록시와 연관관계"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

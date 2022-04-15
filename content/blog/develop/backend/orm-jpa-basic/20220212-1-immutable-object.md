@@ -1,5 +1,5 @@
 ---
-title: "JPA 값 타입과 불변 객체"
+title: "[자바 ORM 표준 JPA] JPA 값 타입과 불변 객체"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

@@ -1,5 +1,5 @@
 ---
-title: "JPA Projection(SELECT)"
+title: "[자바 ORM 표준 JPA] JPA Projection(SELECT)"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

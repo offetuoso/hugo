@@ -1,5 +1,5 @@
 ---
-title: "JPA 객체지향 쿼리 언어 소개"
+title: "[자바 ORM 표준 JPA] JPA 객체지향 쿼리 언어 소개"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

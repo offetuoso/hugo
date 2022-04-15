@@ -1,5 +1,5 @@
 ---
-title: "JPQL 타입 표현(Type Expression)"
+title: "[자바 ORM 표준 JPA] JPQL 타입 표현(Type Expression)"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

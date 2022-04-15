@@ -1,5 +1,5 @@
 ---
-title: "JPQL 조건문(CONDITIONAL STATEMENT)"
+title: "[자바 ORM 표준 JPA] JPQL 조건문(CONDITIONAL STATEMENT)"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

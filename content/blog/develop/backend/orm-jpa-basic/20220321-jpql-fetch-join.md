@@ -1,5 +1,5 @@
 ---
-title: "JPQL 페치 조인(Fetch Join)"
+title: "[자바 ORM 표준 JPA] JPQL 페치 조인(Fetch Join)"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

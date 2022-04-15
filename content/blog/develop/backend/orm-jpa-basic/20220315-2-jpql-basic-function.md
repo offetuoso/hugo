@@ -1,5 +1,5 @@
 ---
-title: "JPQL 기본 함수(BASIC FUNCTION)"
+title: "[자바 ORM 표준 JPA] JPQL 기본 함수(BASIC FUNCTION)"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

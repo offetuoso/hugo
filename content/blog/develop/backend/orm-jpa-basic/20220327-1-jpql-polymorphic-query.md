@@ -1,5 +1,5 @@
 ---
-title: "JPQL 다형성 쿼리(Polymorphic Query)"
+title: "[자바 ORM 표준 JPA] JPQL 다형성 쿼리(Polymorphic Query)"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

@@ -1,5 +1,5 @@
 ---
-title: "JPA 에필로그(Epilogue)"
+title: "[자바 ORM 표준 JPA] JPA 에필로그(Epilogue)"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

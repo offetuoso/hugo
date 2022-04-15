@@ -1,5 +1,5 @@
 ---
-title: "JPQL 엔티티 직접 사용(Direct Use Of Entity)"
+title: "[자바 ORM 표준 JPA] JPQL 엔티티 직접 사용(Direct Use Of Entity)"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

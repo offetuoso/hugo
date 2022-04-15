@@ -1,5 +1,5 @@
 ---
-title: "JPA 실전 예제 3 - 다양한 연관관계 매핑"
+title: "[자바 ORM 표준 JPA] JPA 실전 예제 3 - 다양한 연관관계 매핑"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

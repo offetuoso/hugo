@@ -1,5 +1,5 @@
 ---
-title: "JPQL 네임드 쿼리(Named Query)"
+title: "[자바 ORM 표준 JPA] JPQL 네임드 쿼리(Named Query)"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

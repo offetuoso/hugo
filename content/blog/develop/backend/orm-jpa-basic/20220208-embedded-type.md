@@ -1,5 +1,5 @@
 ---
-title: "JPA 임베디드 타입"
+title: "[자바 ORM 표준 JPA] JPA 임베디드 타입"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

@@ -1,5 +1,5 @@
 ---
-title: "JPQL 벌크 연산(Bulk Operation)"
+title: "[자바 ORM 표준 JPA] JPQL 벌크 연산(Bulk Operation)"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

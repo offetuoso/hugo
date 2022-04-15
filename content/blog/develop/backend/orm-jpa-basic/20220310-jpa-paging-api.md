@@ -1,5 +1,5 @@
 ---
-title: "JPA Paging API"
+title: "[자바 ORM 표준 JPA] JPA Paging API"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

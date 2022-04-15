@@ -1,5 +1,5 @@
 ---
-title: "JPA 서브 쿼리(Sub Query)"
+title: "[자바 ORM 표준 JPA] JPA 서브 쿼리(Sub Query)"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"

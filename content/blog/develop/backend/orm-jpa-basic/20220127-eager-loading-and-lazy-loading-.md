@@ -1,5 +1,5 @@
 ---
-title: "JPA 즉시 로딩과 지연로딩"
+title: "[자바 ORM 표준 JPA] JPA 즉시 로딩과 지연로딩"
 image: "bg-jpa.png"
 font_color: "white"
 font_size: "28px"
