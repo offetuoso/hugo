@@ -183,7 +183,7 @@ public class HelloController {
 
 
 
-### 뷰 템플릿 리컴파일
+### thymeleaf 수정시 자동 리로드 되도록 설정하기
 ---------------------------
 > 서버사이드 뷰 템플릿을 사용하다 보면 간단 텍스트 수정을 하여도 적용을 하기 위해서는 서버를 재기동 해야하는 불편함이 있습니다.
 
@@ -195,7 +195,7 @@ public class HelloController {
 ...
 dependencies {
 	...
-	implementation 'org.springframework.boot:spring-boot-devtools'
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	...
 }
 ...
@@ -209,5 +209,23 @@ dependencies {
 
 > 이 라이브러리가 개발할때 많은 도와주는 기능을 하는데, 캐시 같은 것들을 제거하고 리로딩이 되게 지원을 합니다.
 
+> Controller에서 return 하는 viewName을 트리거로 서버가 리로딩 되지만, thymeleaf의 화면이 수정되었을때 리로딩되는 것을 원하기 때문에 좀더 찾아보았습니다.
+
+> resources/application.properties
+
+```
+spring.devtools.restart.enabled=true
+spring.devtools.restart.poll-interval=2s
+spring.devtools.restart.quiet-period=1s
+spring.thymeleaf.cache=false
+```
+
+![contact](/images/develop/backend/using-springboot-jpa/view-preferences/img-009.png)
+
+![contact](/images/develop/backend/using-springboot-jpa/view-preferences/img-010.png)
+
+> 애플리케이션 업데이트 정책 실행 중 옵션을 통해 thymeleaf 수정 시 서버가 리로드 되는 것을 사용할 수 있었습니다. <br>
+
+> 현재 IDEA Ultimate 사용중이라 Community도 가능한지는 확인하지 못했습니다.
 
 > - <a href="https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-JPA-%ED%99%9C%EC%9A%A9-1">실전! 스프링 부트와 JPA 활용1 - 웹 애플리케이션 개발 - 김영한</a>
