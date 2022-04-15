@@ -33,7 +33,13 @@ toc: true
 
 > <a href="https://offetuoso.github.io/blog/develop/backend/orm-jpa-basic/start-jpa/">JPA 시작</a> 과거 포스팅 참조
 
-
+#### 데이터베이스 파일 생성 방법
+> - <a href="http://localhost:8082">http://localhost:8082</a> 접속
+> - jdbc:h2:~/jpashop 
+>	(최초 1회, 세션키 유지한 상태로 실행)
+> - ~/jpashop.mv.db 파일 생성 확인
+>	(C:\Users\UserId\에 위치) 
+> - 이후 부터는 jdbc:h2:tcp://localhost/~/jpashop 으로 접속
 
 
 
