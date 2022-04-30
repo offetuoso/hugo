@@ -8,7 +8,7 @@ date: 2022-04-30
 slug: "domain-model-and-db-architecture"
 description: "[스프링부트 JPA 활용] 도메인 모델과 테이블 설계"
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -92,6 +92,9 @@ toc: true
 > 하지만 N:M이나 양방향 관계는 실무에서 사용하면 안되는것이며 N:1, 1:M 으로 변환하여 사용해야합니다. 
 > 관련 내용은 저번 강의 내용을 확인 해 보시면 될듯합니다. 
 
+> <a href="https://offetuoso.github.io/blog/develop/backend/orm-jpa-basic/mapping-various-associations/">[자바 ORM 표준 JPA] JPA 다양한 연관관계 매핑</a>
+
+
 > 회원과 주문의 관계에서 
 > 회원이 주문을 했기 때문에 회원에 주문리스트가 있어야 할 것 같지만, 
 > 시스템의 입장에서 데이터를 구성할 때 주문에 주문한 회원이 있는것이 바람직 합니다. 
@@ -99,7 +102,7 @@ toc: true
 > 주문에서 필터를 통해 회원을 식별하는 것이 가능하기 떄문에 회원에서 주문으로의 리스트는 사실 필요 없다고 보면 됩니다. 
 
 
-### 테이블
+### 테이블 분석 
 -----------------------------------------------------------
 
 ![contact](/images/develop/backend/using-springboot-jpa/domain-model-and-db-architecture/img-007.png)
@@ -114,11 +117,77 @@ toc: true
 > 상속구조로 되어있던 구조가 한개의 테이블로 생성되었습니다. 또한 DTYPE라는 컬럼이 추가되었습니다. 
 > 이것은 Single Table 전략을 적용된것입니다. 
 
-> <a href="https://offetuoso.github.io/blog/develop/backend/orm-jpa-basic/proxy-and-relation/"></a>
+> <a href="https://offetuoso.github.io/blog/develop/backend/orm-jpa-basic/inheritance-mapping/">[자바 ORM 표준 JPA] JPA 상속관계 매핑</a>
 
 
 
+#### 주문(ORDERS)
+> 회원ID와 주문ID를 가지고, 날짜와 상태를 가집니다. 
+> 또 ORDER는 키워드이기 때문에 ORDERS라는 이름으로 관례상 많이 사용합니다. 
 
- 
+#### 주문 상품(ORDER_ITEM) 
+> 주문ID와 상품ID를 외래키로 가지고 있습니다. 
+> 주문했을 당시의 ITEM 단가, 구매 수량 등을 가지고 있습니다. 
 
+
+#### 카테고리(CATEGORY), 상품(ITEM)
+> 객체지향에서는 양방향 관계에서 각각 List를 가질 수 있지만, 
+> 관계형 DB에서는 불가하기 때문에 중간에 CATEGORY_ITEM 라는 매핑 테이블을 두고 N:1, 1:M 관계로 풀어야 합니다. 
+
+> 참고로 생성할 때에는 테이블 명과 컬럼은 소문자 그리고 언더스코어 스타일로 사용합니다.
+
+
+
+### 연관관계 분석 
+-----------------------------------------------------------
+
+#### 회원 - 주문
+> N:1, 1:M의 스타일로 회원에서 주문으로 주문에서 회원으로 모두 가능하며, 
+> 연관관계의 주인을 정해야 하는데 외래키가 있는 주문을 연관관계의 주인으로 정하는게 좋다. 
+> 그러므로 Order.member를 ORDERS.MEMBER_ID 외래 키와 매핑한다.
+
+> 관계형 DB에서는 1:N이라면 N인 위치에 외래키를 두게 됩니다. 
+
+![contact](/images/develop/backend/using-springboot-jpa/domain-model-and-db-architecture/img-007.png)
+
+> 외래키가 있는 Oder에 연관관계를 두고 Member에는 mappedBy를 써서 연결을 해둡니다. 
+> 연관관계의 반대 쪽은 단순 조회 용으로 사용하며 연관관계의 주인을 등록 할때 데이터 세팅을 같이 해줘야 사용할 수 있습니다. 
+
+#### 주문 - 주문상품ㄷ
+![contact](/images/develop/backend/using-springboot-jpa/domain-model-and-db-architecture/img-003.png)
+
+> 주문을 할때 여러개의 상품을 주문할 수 있고 
+> 주문 할때 상품 수량과 가격을 가지게 되는데 원 데이터인 상품을 수정할 수 없기 때문에 중간에 테이블 하나를 더 둡니다. 
+
+> Order가 1이고 OrderItem이 N이 됩니다. 그렇기 때문에 
+> 외래키는 OrderItem에 두게 되며 연관관계의 주인은 OrderItem이 되게 됩니다.
+> OrderItem.order를 ORDER_ITEM.ITEM_ID 와 매핑합니다.
+
+
+#### 주문상품 - 상품
+
+![contact](/images/develop/backend/using-springboot-jpa/domain-model-and-db-architecture/img-003.png)
+
+> 주문상품과 상품은 N : 1 관계이며 단방향 관계 입니다. 
+> OrderItem은 Item을 가지고 있으며 Item을 갈 수있지만, Item에서는 OrderItem으로 갈 수 없습니다.
+> OrderItem * - 1 Item의 *도 지워야하지만, N:1의 관계를 설명하기 위해 추가하고 대신 단방향이라고 설명하기 위해서 화살표를 추가하였습니다. 
+
+> 다대일 단방향 관계 OrderItem.order를 ORDER_ITEM.ITEM_ID 외래키랑 매핑한다.
+
+#### 주문 - 배송
+> 일대일 단방향 관계 Order.Delivery를 ORDERS.DELIVERY_ID 외래키랑 매핑한다.
+
+#### 카테고리 - 상품
+> @ManyToMany를 사용해서 사용한다<mark>실무에서 @ManyToMany는 사용하지 말자, 공부 예제를 위해 사용</mark>
+
+##### 연관관계의 주인
+> 외래키가 있는 곳을 연관관계의 주인으로 정해야한다.
+> 연관관계의 주인은 단순히 외래키를 누가 관리하나의 문제지 비즈니스상 우위에 있다고 주인으로 정하면 안된다.
+> 예를 들어서 자동차의 바퀴가 있으면, 일대다 관계에서 항상 다쪽에  외래키가 있으므로 바퀴를 연관관계의 주인으로 정하면 된다. 물론 자동차를 연관관계의 주인으로 정하는 것이 불가능 하지 않지만 자동차를 연관관계의 주인으로 정하면 자동차가 관리하지 않는 바퀴테이블의 외래 키 값이 업데이트 되므로 관리와 유지보수가 어렵고 추가적으로 별도의 업데이트 쿼리가 발생하는 성능 문제도 있다. 
+
+> <a href="https://offetuoso.github.io/blog/develop/backend/orm-jpa-basic/mapping-various-associations/">[자바 ORM 표준 JPA] JPA 다양한 연관관계 매핑</a>
+
+
+
+#### 참고 
 > - <a href="https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-JPA-%ED%99%9C%EC%9A%A9-1">실전! 스프링 부트와 JPA 활용1 - 웹 애플리케이션 개발 - 김영한</a>
