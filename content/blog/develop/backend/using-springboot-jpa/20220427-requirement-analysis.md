@@ -6,7 +6,7 @@ font_size: "28px"
 opacity: "0.4"
 date: 2022-04-27
 slug: "requirement-analysis"
-description: "[스프링부트 JPA 활용] JPA 동작확인"	
+description: "[스프링부트 JPA 활용] 요구사항 분석"
 keywords: ["ORM"]
 draft: false
 categories: ["Java"]
