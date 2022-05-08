@@ -8,7 +8,7 @@ date: 2022-05-01
 slug: "entity-class-development"
 description: "[스프링부트 JPA 활용] 엔티티 클래스 개발"
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -28,6 +28,8 @@ toc: true
 
 ## 엔티티 클래스 개발
 ----------------------------------
+![contact](/images/develop/backend/using-springboot-jpa/domain-model-and-db-architecture/img-007.png)
+
 > - 예제에서는 설명을 쉽게하기 위해 엔타타 클래스에 Getter, Setter를 모두 열고, 최대한 단순하게 설계
 > - 실무에서는 가급적 Getter, Setter는 꼭 필요한 경우에만 사용하는 것을 추천
 
@@ -390,9 +392,84 @@ public enum DeliveryStatus {
 ```
 
 
+#### Order - Delivery
+> 1:1 관계에서는 FK를 어느 위치에 둬도 상관은 없지만, Order에서 Delivery를 조회하는게 Delivery에서 Order를 조회 하는것보다 많기 때문에 FK를 더 많이 접근하는 엔티티에 FK를 위치 시킵니다. 
 
-![contact](/images/develop/backend/using-springboot-jpa/entity-class-development/img-001.png)
 
+> Order - @JoinColumn(name = "delivery_id") 추가
+
+```
+package jpabook.jpashop.domain;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter @Setter
+@Table(name = "orders")
+public class Order {
+
+    @Id @GeneratedValue
+    @Column(name="order_id")
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id") // Order의 member가 수정되면 Order의 외래키 값이 변경됩니다.
+    private Member member;
+
+    @OneToMany(mappedBy = "order") // 연관관계의 주인인 OrderItem의 order로 매핑 되어있다는 뜻
+    private List<OrderItem> orderItems = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "delivery_id")
+    private Delivery delivery;
+
+    private LocalDateTime orderDate; //주문시간
+
+    @Enumerated(EnumType.STRING) // EnumType.ORDINAL(숫자라 순서바뀌면 큰일)이 기본이지만 무조건 EnumType.STRING(문자 코드)
+    private OrderStatus status; // 주문상태 [ORDER, CANCEL]
+}
+
+```
+
+> Delivery.java - @OneToOne(mappedBy = "delivery") 추가
+
+```
+package jpabook.jpashop.domain;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+
+@Entity
+@Getter @Setter
+public class Delivery {
+
+    public Delivery() {
+    }
+
+    @Id @GeneratedValue
+    @Column(name = "delivery_id")
+    private Long id;
+
+    @OneToOne(mappedBy = "delivery")
+    private Order order;
+
+    @Embedded
+    private Address address;
+
+    @Enumerated(EnumType.STRING)
+    private DeliveryStatus status; //READY, COMP
+
+}
+
+```
 
 
 #### 참고 
