@@ -4,7 +4,7 @@ image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2022-05-01
+date: 2022-05-08
 slug: "entity-class-development"
 description: "[스프링부트 JPA 활용] 엔티티 클래스 개발"
 keywords: ["ORM"]
@@ -470,6 +470,7 @@ public class Delivery {
 }
 
 ```
+
 
 
 #### 참고 
