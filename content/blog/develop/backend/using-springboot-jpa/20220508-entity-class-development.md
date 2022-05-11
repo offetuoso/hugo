@@ -471,10 +471,135 @@ public class Delivery {
 
 ```
 
+### CATEGORY.java
 
-### Category.java
+#### CATEGORY -  ITEM (N : M)
 ------------------------
+> N:M 관계를 JPA로 구현하기 위해서는 테이블과 테이블 사이에 JoinTable을 추가해 N:1, 1:M 구조가 되게끔 생성합니다.
 
+> Category.java 
+> - @ManyToMany 추가
+> - @JoinTable 추가
+
+```
+package jpabook.jpashop.domain;
+
+import jpabook.jpashop.domain.item.Item;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter @Setter
+public class Category {
+
+    @Id @GeneratedValue
+    @Column(name = "category_id")
+    private Long id;
+
+    private String name;
+
+    @ManyToMany
+    @JoinTable(name = "category_item"
+            , joinColumns = @JoinColumn(name = "category_id")
+            , inverseJoinColumns = @JoinColumn(name = "item_id")
+    )
+    private List<Item> items = new ArrayList<>();
+
+}
+
+```
+
+> Item.java - @ManyToMany(mappedBy = "items") 추가
+
+```
+package jpabook.jpashop.domain.item;
+
+import jpabook.jpashop.domain.Category;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype")
+@Getter @Setter
+public abstract class Item {
+
+    @Id @GeneratedValue
+    @Column(name = "item_id")
+    private Long id;
+
+    private String name;
+    private int price;
+    private int stockQuantity;
+
+    @ManyToMany(mappedBy = "items")
+    private List<Category> categories = new ArrayList<>();
+
+}
+
+```
+
+#### Category의 계층형 관계 
+------------------------
+> 카테고리나 코드 같은 엔티티는 본인과 부모 관계의 계층형 관계의 구조로 구성할 수 있는데 
+> parent와 child 모두 본인 엔티티에 가지게 된다. <br> 
+> 코드성 테이블 생성시 부모(또는 그룹코드)를 가지고 있지만, JPA에서는 자식을 조회할 수 있도록 child도 가진다.
+
+> - @ManyToOne - 추가
+> - @OneToMany - 추가
+
+```
+package jpabook.jpashop.domain;
+
+import jpabook.jpashop.domain.item.Item;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter @Setter
+public class Category {
+
+    @Id @GeneratedValue
+    @Column(name = "category_id")
+    private Long id;
+
+    private String name;
+
+    @ManyToMany
+    @JoinTable(name = "category_item"
+            , joinColumns = @JoinColumn(name = "category_id")
+            , inverseJoinColumns = @JoinColumn(name = "item_id")
+    )
+    private List<Item> items = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Category parent;
+
+    @OneToMany(mappedBy = "parent")
+    private List<Category> child = new ArrayList<>();
+}
+
+```
+
+
+> 애플리케이션을 실행
+
+![contact](/images/develop/backend/using-springboot-jpa/entity-class-development/img-001.png)
+
+> 테이블이 정상적으로 생성된것을 확인할 수 있습니다.
 
 
 
