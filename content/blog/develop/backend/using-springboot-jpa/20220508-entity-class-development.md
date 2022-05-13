@@ -199,6 +199,7 @@ package jpabook.jpashop.domain;
 import javax.persistence.*;
 
 @Entity
+@Getter @Setter
 public class OrderItem {
 
     @Id @GeneratedValue
@@ -708,6 +709,306 @@ private Member member;
 > - 하이버네이트는 엔티티를 영속화 할 때, 컬렉션을 감싸서 하이버네이트가 제공하는 내장 컬렉션으로 변경한다. 만약 getOrders() 처럼 임의의 메서드에서 컬렉션을 잘못 생성하면 하이버네이트 내부 메커니즘에 문제가 발생할 수 있다. 따라서 필드레벨에서 생성하는 것이 가장 안전하고, 코드도 간결하다.
 
 
+#### 컬렉션은 초기화 후 변경하면 절대 안됨
+
+> JAVA
+
+```
+
+Member member = new Member();
+System.out.println(member.getOrders().getClass());
+em.persist(member);
+System.out.println(member.getOrders().getClass());
+
+//출력결과 
+class java.util.ArrayList
+class org.hibernate.collection.internal.PersistentBag
+
+```
+
+> JPA에서 컬렉션을 JPA에서 추적할 수 있는 객체로 변경합니다.
+
+> JPA가 기껏 컬렉션을 PersistentBag으로 변환 했는데, set을 통해 새로 객체를 생성한다면 Hibernate가 원하는 메커니즘으로 동작 못하게 됩니다.
+
+> 그렇기 때문에 최초 객체를 생성해서 컬렉션을 생성하면, 변경하면 안됩니다. 
+
+
+### 테이블, 컬럼명 생성 전략
+--------------
+> 스프링 부트에서 하이버네이트 기본 매핑 전략을 변경해서 실제 테이블 필드명은 다름
+
+> - <a href="https://docs.spring.io/spring-boot/docs/2.1.3.RELEASE/reference/htmlsingle/#howto-configure-hibernate-naming-strategy">https://docs.spring.io/spring-boot/docs/2.1.3.RELEASE/reference/htmlsingle/#howto-configure-hibernate-naming-strategy</a>
+> - <a href="https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html">https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html</a>
+
+
+#### 하이버네이트 기존 구현
+> 엔티티의 필드명을 그대로 테이블 명으로 사용되었지만, 아래와 같은 방식으로 변경 되었습니다.
+
+
+#### 스프링부트 기본 네이밍 전략
+
+```
+'SpringPhysicalNamingStrategy'
+```
+
+> 스프링 부트 신규 설정(엔티티(필드) -> 테이블(컬럼))
+>	1. 카멜 케이스 -> 언더스코어(memberPoint -> member_point)
+>	2. .(점) -> _(언더스코어)
+>	3. 대문자 -> 소문자
+
+
+> 예를 들면
+
+> Order.java
+
+```
+// order_date
+private LocalDateTime orderDate; //주문시간
+```
+
+![contact](/images/develop/backend/using-springboot-jpa/entity-class-development/img-002.png)
+
+> 카멜케이스를 언더스코어 방식으로 변경하는 것을 알 수 있습니다. 
+
+> H2 DB에서 컬럼이 대문자로 보이지만, 소문자로 컬럼을 사용 가능합니다. <code>SELECT order_date FROM ORDERS</code>
+
+
+#### 적용 2단계(설정)
+
+> 1. 논리명 생성 : 명시적으로 컬럼, 테이블명을 직접 적지 않으면 ImplicitNamingStrategy 사
+
+```
+'spring.jpa.hibernate.naming.implicit-strategy' //테이블이나, 컬럼명을 명시 하지 않을 때 논리명 적용
+```
+
+> 2. 물리명 적용 :
+
+```
+'spring.jpa.hibernate.naming.physical-strategy' //모든 논리명에 적용됨, 실제 테이블에 적용(username -> usernm 등으로 회사 룰로 바꿀 수 있음)
+```
+
+#### 스프링 부트 기본 설정
+```
+'spring.jpa.hibernate.naming.implicit-strategy : org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamimgStrategy'
+
+'spring.jpa.hibernate.naming.physical-strategy : org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamimgStrategy'
+```
+
+### 영속화 전파 (Cascade)
+--------------
+
+> Order.java  - cascade = CascadeType.ALL 추가
+
+```
+package jpabook.jpashop.domain;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter @Setter
+@Table(name = "orders")
+public class Order {
+
+    @Id @GeneratedValue
+    @Column(name="order_id")
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)  // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
+    @JoinColumn(name = "member_id") // Order의 member가 수정되면 Order의 외래키 값이 변경됩니다.
+    private Member member;
+
+
+    // mappedBy 연관관계의 주인인 OrderItem의 order로 매핑 되어있다는 뜻
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems = new ArrayList<>();
+
+
+    // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)  
+    @JoinColumn(name = "delivery_id")
+    private Delivery delivery;
+
+    private LocalDateTime orderDate; //주문시간
+
+    @Enumerated(EnumType.STRING) // EnumType.ORDINAL(숫자라 순서바뀌면 큰일)이 기본이지만 무조건 EnumType.STRING(문자 코드)
+    private OrderStatus status; // 주문상태 [ORDER, CANCEL]
+}
+
+```
+
+> Order를 저장(.persist())할때, orderItems를 따로 저장해줘야 하는데 Cascade를 추가해 같이 저장시킬 수 있다.
+
+> 예를들어 orderItemA,B,C 를 가지는 order를 저장 시 
+
+```
+persist(orderItemA)
+persist(orderItemB)
+persist(orderItemC)
+
+persist(order)
+
+```
+
+> 각각의 객체들을 저장해 줘야 하지만, 
+
+> Cascade를 적용했다면
+
+```
+//persist(orderItemA)
+//persist(orderItemB)
+//persist(orderItemC)
+
+persist(order)
+
+```
+
+> order에 저장되는 각각의 orderItemA,B,C를 persist 안해도 persist를 전파(cascade) 합니다.
+
+
+
+### 연관관계 편의 메서드
+--------------
+
+> 양방향 연관관계를 세팅하려고 하면
+
+> 예를 들어 Member가 Order를 추가 하게 되면 member.orders 추가해 줘야합니다.
+
+> Java
+
+```
+public static void main(String[] args){
+	Member member = new Member();
+	Order order = new Order();
+	
+	member.getOrders().add(order); //orders 컬렉션에 order 추가
+	order.setMember(member); // order에 member 추가
+}
+
+```
+
+> 위와 같이 양쪽다 세팅을 해줘야 합니다. 하지만 개발을 하다보면, 한쪽을 빼먹고 안넣는 경우가 발생 할 수 있습니다. 
+
+> 그래서 연관관계 편의 메서드를 추가해 2개를 같이 세팅하는 메서드를 만들어 제공하면 휴먼 에러를 줄일 수 있습니다.
+
+
+> Order.java - 연관관계 편의 메서드 추가
+
+```
+package jpabook.jpashop.domain;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter @Setter
+@Table(name = "orders")
+public class Order {
+
+    @Id @GeneratedValue
+    @Column(name="order_id")
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)  // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
+    @JoinColumn(name = "member_id") // Order의 member가 수정되면 Order의 외래키 값이 변경됩니다.
+    private Member member;
+
+
+    // mappedBy 연관관계의 주인인 OrderItem의 order로 매핑 되어있다는 뜻
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems = new ArrayList<>();
+
+
+    // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "delivery_id")
+    private Delivery delivery;
+
+    private LocalDateTime orderDate; //주문시간
+
+    @Enumerated(EnumType.STRING) // EnumType.ORDINAL(숫자라 순서바뀌면 큰일)이 기본이지만 무조건 EnumType.STRING(문자 코드)
+    private OrderStatus status; // 주문상태 [ORDER, CANCEL]
+
+
+    //==연관관계 메서드 (양방향 연관관계시 추가)==//
+    public void setMember(Member member){
+        this.member = member;
+        member.getOrders().add(this);
+    }
+
+    public void addOrderItem(OrderItem orderItem){
+        this.orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    }
+
+    public void setDelivery(Delivery delivery){
+        this.delivery = delivery;
+        delivery.setOrder(this);
+    }
+
+
+}
+
+```
+
+> Category.java
+
+```
+package jpabook.jpashop.domain;
+
+import jpabook.jpashop.domain.item.Item;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter @Setter
+public class Category {
+
+    @Id @GeneratedValue
+    @Column(name = "category_id")
+    private Long id;
+
+    private String name;
+
+    @ManyToMany
+    @JoinTable(name = "category_item"
+            , joinColumns = @JoinColumn(name = "category_id")
+            , inverseJoinColumns = @JoinColumn(name = "item_id")
+    )
+    private List<Item> items = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)  // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
+    @JoinColumn(name = "parent_id")
+    private Category parent;
+
+    @OneToMany(mappedBy = "parent")
+    private List<Category> child = new ArrayList<>();
+
+    //==연관관계 메서드 (양방향 연관관계시 추가)==//
+    public void addChildCategory(Category child){
+        this.child.add(child);
+        child.setParent(this);
+    }
+}
+
+```
+
+
+> 여기까지 세팅은 어느정도 된것 같고 다음 강의 부터는 실제 요구사항을 보며 비즈니스 서비스를 개발해보도록 하겠습니다.
 
 
 
