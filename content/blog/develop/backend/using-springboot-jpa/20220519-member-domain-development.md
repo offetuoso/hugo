@@ -5,10 +5,10 @@ font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-05-17
-slug: "preparing-for-application-implementation"
+slug: "member-domain-development"
 description: "[스프링부트 JPA 활용] 구현 요구사항"
 keywords: ["ORM"]
-draft: false
+draft: true
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
