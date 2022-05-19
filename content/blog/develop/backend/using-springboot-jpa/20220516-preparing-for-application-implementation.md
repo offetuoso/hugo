@@ -1,5 +1,5 @@
 ---
-title: "[스프링부트 JPA 활용] 구현 요구사항"
+title: "[스프링부트 JPA 활용] 애플리케이션 구현 준비"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"

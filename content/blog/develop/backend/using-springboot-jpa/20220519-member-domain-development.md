@@ -1,12 +1,12 @@
 ---
-title: "[스프링부트 JPA 활용] 구현 요구사항"
+title: "[스프링부트 JPA 활용] 회원 도메인 개발"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-05-17
 slug: "member-domain-development"
-description: "[스프링부트 JPA 활용] 구현 요구사항"
+description: "[스프링부트 JPA 활용] 회원 도메인 개발"
 keywords: ["ORM"]
 draft: true
 categories: ["Java"]
