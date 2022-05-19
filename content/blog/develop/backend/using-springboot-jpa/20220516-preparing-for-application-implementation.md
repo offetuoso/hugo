@@ -5,7 +5,7 @@ font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-05-17
-slug: "implementation-requirements"
+slug: "preparing for application implementation"
 description: "[스프링부트 JPA 활용] 구현 요구사항"
 keywords: ["ORM"]
 draft: true
@@ -51,14 +51,14 @@ toc: true
 
 #### 회원 등록
 
-![contact](/images/develop/backend/using-springboot-jpa/implementation-requirements/img-001.png)
+![contact](/images/develop/backend/using-springboot-jpa/preparing-for-application-implementation/img-001.png)
 
 > - 회원 등록하는 페이지이며, 비지니스 메서드를 통해 회원등록 구현 되어야 합니다.
 
 
 #### 회원 조회
 
-![contact](/images/develop/backend/using-springboot-jpa/implementation-requirements/img-002.png)
+![contact](/images/develop/backend/using-springboot-jpa/preparing-for-application-implementation/img-002.png)
 
 > - 등록된 회원을 조회하고 화면에 리스트로 뿌려줘야 합니다.
 
@@ -68,12 +68,12 @@ toc: true
 
 #### 상품 등록
 
-![contact](/images/develop/backend/using-springboot-jpa/implementation-requirements/img-003.png)
+![contact](/images/develop/backend/using-springboot-jpa/preparing-for-application-implementation/img-003.png)
 
 > - 상품을 등록하고 수정할 수 있어야 합니다. 
 > - 상품종류를 선택하여, 각각의 상품을 등록할 수 있어야 합니다.
 
-![contact](/images/develop/backend/using-springboot-jpa/implementation-requirements/img-004.png)
+![contact](/images/develop/backend/using-springboot-jpa/preparing-for-application-implementation/img-004.png)
 
 > - 등록된 상품을 조회할 수 있어야 합니다. 
 > - 수정버튼을 눌러 상품을 수정할 수 있습니다. 
@@ -86,7 +86,7 @@ toc: true
 
 #### 상품 주문
 
-![contact](/images/develop/backend/using-springboot-jpa/implementation-requirements/img-005.png)
+![contact](/images/develop/backend/using-springboot-jpa/preparing-for-application-implementation/img-005.png)
 
 > - 등록된 회원과 재고가 있는 상품을 선택 후 주문수량을 입력해 주문을 등록합니다.
 > - 주문 수량은 재고보다 많으면 안됩니다.
@@ -95,15 +95,110 @@ toc: true
 
 #### 주문 내역 조회
 
-![contact](/images/develop/backend/using-springboot-jpa/implementation-requirements/img-006.png)
+![contact](/images/develop/backend/using-springboot-jpa/preparing-for-application-implementation/img-006.png)
 
 > - 주문을 하면 주문 내역에 리스트 형태로 조회가 됩니다.
-> - 조건에 따라 조회가 가능합니다.
+
+#### 주문 취소
 > - 주문을 하면, 주문한 물품 갯수에 따라 상품 재고가 줄어듭니다. 
 > - 취소를 하면 주문한 상품의 재고가 다시 늘어납니다.
 
+#### 검색 
+> - 조건에 따라 조회가 가능합니다.
 
-#### 주문 취소
+
+![contact](/images/develop/backend/using-springboot-jpa/preparing-for-application-implementation/img-007.png)
+
+
+
+### 기능구현 제외 
+------------------------------------------
+> 선택과 집중을 하기 위하여 강좌에서 예제를 단순화 하여 다음 기능은 구현하지 않습니다. 
+
+> - 로그인과 권한 관리 X
+> - 파라미터 검증과 예외 처리 단순화
+> - 상품은 도서만 사용
+> - 카테고리는 사용 X
+> - 배송 정보는 사용 X
+
+> 강좌를 정리하고 추가적으로 공부할 여력이 된다면 추가 하도록 하겠습니다.
+
+
+## 애플리케이션 아키텍처
+----------------------------------
+![contact](/images/develop/backend/using-springboot-jpa/preparing-for-application-implementation/img-008.png)
+
+### 계층형 구조
+----------------------------------
+> Controller를 통해 Service, Repository를 거처 DB에 접근하지만, Controller에서 Repository를 바로 접근하여 DB에 접근할 수 있게 유연하게 개발하도록 하겠습니다.
+
+> - controller, web : 웹 계층
+> - service : 비즈니스 로직, 트랜잭션 처리
+> - repository : JPA를 직접 사용하는 계층, 엔티티 매니저 사용
+> - domain : 엔티티가 모여있는 계층, 모든 계층에서 사용
+
+### 계층형 구조
+----------------------------------
+> - controller, web : 웹 계층
+> - service : 비즈니스 로직, 트랜잭션 처리
+> - repository : JPA를 직접 사용하는 계층, 엔티티 매니저 사용
+> - domain : 엔티티가 모여있는 계층, 모든 계층에서 사용
+
+### 패키지 구조
+----------------------------------
+> - jpabook.jpashop
+>	- domain
+>	- exection
+>	- repository
+>	- service
+>	- web
+
+### 개발 순서
+----------------------------------
+> 1. 서비스, 리포지토리 계층을 개발
+> 2. 테스트 케이스를 작성 및 검증
+> 3. 웹 계층 적용
+
+### 목차
+----------------------------------
+> 1. 회원 도메인 개발
+>	- 회원 리포지토리 개발
+>	- 회원 서비스 개발
+>	- 기능 테스트
+> 2. 상품 도메인 개발
+>	- 상품 엔티티개발(비즈니스 로직추가)
+>	- 상품 리포지토리 개발
+>	- 상품 서비스 개발
+> 3. 주문 도메인 개발
+>	- 주문, 주문상품 엔티티 개발
+>	- 주문 리포지토리 개발
+>	- 주문 서비스 개발
+> 4. 웹 계층 개발
+>	- 홈 화면과 레이아웃
+>	- 회원 등록
+>	- 회원 목록 조회
+>	- 상품 등록
+>	- 상품 목록
+>	- 상품 수정
+>	- 변경 감지와 병함(merge)
+>	- 상품 주문
+>	- 주문 목록 검색, 취소
+> 5. API 개발 기본
+>	- 회원 등록 API
+>	- 회원 수정 API
+>	- 회원 조회 API
+> 6. API 개발 고급
+>	- 조회용 샘플 데이터 입력
+>	- 지연 로딩과 조회 성능 최적화
+>	- 페이징과 한계 돌파
+>	- OSIV와 성능 최적화
+> 7. 다음으로
+>	- 스프링 데이터 JPA 소개
+>	- QueryDSL 소개
+>	- 마무리
+
+
+
 
 
 
