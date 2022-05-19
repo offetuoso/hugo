@@ -1,14 +1,14 @@
 ---
-title: "[스프링부트 JPA 활용] 회원 도메인 개발"
+title: "[스프링부트 JPA 활용] 회원 서비스 개발"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2022-05-19
-slug: "member-domain-development"
-description: "[스프링부트 JPA 활용] 회원 도메인 개발"
+date: 2022-05-20
+slug: "member-service-development"
+description: "[스프링부트 JPA 활용] 회원 서비스 개발"
 keywords: ["ORM"]
-draft: false
+draft: true
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -57,127 +57,74 @@ toc: true
 >	- QueryDSL 소개
 >	- 마무리
 
-## 회원 도메인 개발
+## 회원 서비스 개발
 ---------------------------
 
-#### 구현 기능
----------------------------
-> - 회원 등록
-> - 회원 목록 조회
+#### 서비스 디렉토리 생성
+> java/jpabook/jpashop/service 위치에 리포지토리 경로 생성
 
-#### 순서
----------------------------
-> 1. 회원 엔티티 코드 다시 보기
-> 2. 회원 리포지토리 개발
-> 3. 회원 서비스 개발
-> 4. 회원 기능 테스트
+![contact](/images/develop/backend/using-springboot-jpa/member-service-development/img-001.png)
 
+### 회원 서비스 생성
 
-### 회원 엔티티 코드 다시 보기
----------------------------
-
-> java/jpabook/jpashop/domain/Member.java
+> java/jpabook/jpashop/service/MemberService.java
 
 ```
-	package jpabook.jpashop.domain;
-	
-	import lombok.Getter;
-	import lombok.Setter;
-	
-	import javax.persistence.*;
-	import java.util.ArrayList;
-	import java.util.List;
-	
-	@Entity
-	@Getter @Setter
-	public class Member {
-	
-	    public Member() {
-	    }
-	
-	    @Id @GeneratedValue
-	    @Column(name = "member_id")
-	    private Long id;
-	
-	    private String name;
-	
-	    @Embedded
-	    private Address address;
-	
-	
-	    @OneToMany(mappedBy = "member")
-	    private List<Order> orders = new ArrayList<>();
-	
-	}
-```
-
-> 간단하게 id, name, address, 1:N 관계로 orders가 속성으로 있었고, 이를 사용해 리포지토리를 개발하도록 하겠습니다.
-
-
-### 회원 리포지토리 개발
----------------------------
-
-#### 리포지토리 디렉토리 생성
-> java/jpabook/jpashop/repository 위치에 리포지토리 경로 생성
-
-![contact](/images/develop/backend/using-springboot-jpa/member-domain-development/img-001.png)
-
-#### 회원 리포지토리 생성
-
-> java/jpabook/jpashop/repository/MemberRepository.java
-
-```
-package jpabook.jpashop.repository;
+package jpabook.jpashop.service;
 
 import jpabook.jpashop.domain.Member;
-import org.springframework.stereotype.Repository;
+import jpabook.jpashop.repository.MemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import java.util.List;
 
-@Repository
-public class MemberRepository {
+@Service
+public class MemberService {
 
-    @PersistenceContext
-    private EntityManager em;
+    @Autowired
+    private MemberRepository memberRepository;
 
-    public void save(Member member){
-        em.persist(member);
+    /**
+     * 회원 가입
+     */
+    public Long join(Member member){
+        validateDuplicateMember(member); //중복 회원 검증
+        memberRepository.save(member);
+        return member.getId(); //save()를 통해 em.persist()를 수행하므로 Member 엔티티의 키 생성을 보장함
     }
 
-    public Member findOne(Long id){
-        return em.find(Member.class, id);
+    private void validateDuplicateMember(Member member) {
+        List<Member> findMembers = memberRepository.findByName(member.getName());
+        if(findMembers.size() != 0){
+            throw new IllegalStateException("이미 존재하는 회원입니다.");
+        }
+
     }
 
-    public List<Member> findAll(){
-
-        return em.createQuery("select m from Member m", Member.class)
-                .getResultList();
+    /**
+     * 회원 전체 조회
+     */
+    public List<Member> findMembers(){
+        return memberRepository.findAll();
     }
 
-    public List<Member> findByName(String name){
-        return em.createQuery("select m from Member m where m.name = :name", Member.class)
-                .setParameter("name",name).getResultList();
+    /**
+     * 회원 조회
+     */
+    public Member findOne(Long memberId){
+        return memberRepository.findOne(memberId);
     }
-
 }
 
 ```
 
-#### @Repository 
+6:12
 
+####  @Service 
 > 스프링을 사용하기 때문에 @Repository 어노테이션을 리포지토리에 추가하게 되면, 컴포넌트 스캔에 의해서 자동으로 스프링 빈으로 관리가 되게 됩니다.
 
 
-
-
-#### @PersistenceContext
-
-> 또한 JPA를 사용하므로 스프링에서 제공하는 @PersistenceContext로 private EntityManager em를 추가합니다. 그러면 스프링이 EntityManager 객체를 만들어서 주입(injection)해주게 됩니다.
-
-> 만약 EntityManagerFactory를 직접 사용하고 싶다면 @PersistenceUnit을 사용하면 private EntityManagerFactory emf를 주입받을 수 있습니다.
 
 
 ### 이전 소스
@@ -599,6 +546,51 @@ public class MemberRepository {
 	}
 
 
+
+</details> 
+
+
+> java/jpabook/jpashop/repository/MemberRepository.java
+
+<details title="펼치기/숨기기">
+ 	<summary> MemberRepository.java </summary>
+
+	package jpabook.jpashop.repository;
+	
+	import jpabook.jpashop.domain.Member;
+	import org.springframework.stereotype.Repository;
+	
+	import javax.persistence.EntityManager;
+	import javax.persistence.PersistenceContext;
+	import javax.persistence.TypedQuery;
+	import java.util.List;
+	
+	@Repository
+	public class MemberRepository {
+	
+	    @PersistenceContext
+	    private EntityManager em;
+	
+	    public void save(Member member){
+	        em.persist(member);
+	    }
+	
+	    public Member findOne(Long id){
+	        return em.find(Member.class, id);
+	    }
+	
+	    public List<Member> findAll(){
+	
+	        return em.createQuery("select m from Member m", Member.class)
+	                .getResultList();
+	    }
+	
+	    public List<Member> findByName(String name){
+	        return em.createQuery("select m from Member m where m.name = :name", Member.class)
+	                .setParameter("name",name).getResultList();
+	    }
+	
+	}
 
 </details> 
 
