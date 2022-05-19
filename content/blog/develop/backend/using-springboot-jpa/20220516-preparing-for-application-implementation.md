@@ -6,7 +6,7 @@ font_size: "28px"
 opacity: "0.4"
 date: 2022-05-17
 slug: "preparing-for-application-implementation"
-description: "[스프링부트 JPA 활용] 구현 요구사항"
+description: "[스프링부트 JPA 활용] 애플리케이션 구현 준비"
 keywords: ["ORM"]
 draft: false
 categories: ["Java"]
