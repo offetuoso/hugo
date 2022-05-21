@@ -119,11 +119,52 @@ public class MemberService {
 
 ```
 
-6:12
 
-####  @Service 
-> 스프링을 사용하기 때문에 @Repository 어노테이션을 리포지토리에 추가하게 되면, 컴포넌트 스캔에 의해서 자동으로 스프링 빈으로 관리가 되게 됩니다.
+#### @Component-scan
 
+> 기존에 오래된 버전의 스프링으로 프로젝트를 진행했을때, 가장 어려운 점이 XML을 이용한 설정이였고, 그중에 생성한 Java 파일들이 Bean으로 사용할 수 있도록 각각 추가하여 설정하는 부분이 있었습니다. 
+
+> component-scan은 이러한 일련의 작업을 드라마틱하게 줄여주는 기능입니다.
+
+> component-scan의 대상으로는 
+
+
+
+
+component-scan이란, 우리가 스프링에서 위의 이미지와 같은 어노테이션을 클래스에 함께 선언하게 되면 스프링이 자동으로 해당 어노테이션이 붙은 클래스들을 스캔하여 bean으로서 생성해주는 것을 가능하게 해주는 설정이다. 
+
+
+
+
+
+#### @Component
+
+#### @Service 
+> @Controller, @Service, @Repository 모두 @Component를 상속 받으며, 
+비즈니스 로직에 (*Service.java) @Service 어노테이션을 추가하면, 컴포넌트 스캔에 의해서 자동으로 스프링 빈으로 관리가 되게 됩니다.
+
+> - 비즈니스 로직이나 리포지토리 layer 호출하는 함수에 사용
+> - 다른 어노테이션과 다르게 @Component에 추가된 기능은 없음
+> - 비즈니스 로직에 @Service 어노테이션을 추가해야 나중에 추가적인 exception handling을 해줄 수도 있음
+
+
+#### @Repository
+
+이것은 Annotation based Configuration, @Repository의 작업은 플랫폼 별 예외를 잡아서 Spring의 통합 검사되지 않은 예외 중 하나로 다시 던지는 것입니다. 이를 위해 PersistenceExceptionTranslationPostProcessor이 제공되며 다음과 같이 Spring의 애플리케이션 컨텍스트에 추가해야합니다.
+
+
+4.10.1 @Component와 스테레오타입(stereotype) 어노테이션
+스프링 2.0 이상의 버전에서 @Repository 어노테이션은 어떤 클래스가 그 역할을 충족시켰거나 레파지토리의 stereotype (또는 데이터 접근계층이나 DAO로 알려진)이라는 표시이다. 이 표시의 사용은 Section 14.2.2, “Exception translation”에서 설명했듯이 예외의 자동 변환이다.
+
+스프링 2.5에 도입된 스테레오타입 어노테이션: @Component, @Service, @Controller. @Component 는 스프링이 관리하는 모든 컴포넌트에 대한 제너릭 스테레오타입이다. @Repository, @Service, @Controller는 더 특정한 유즈케이스에 대한 @Component의 특수한 형태이다. 예를 들어 퍼시스턴스, 서비스, 프리젠테이션 계층에서 각각 사용한다. 그러므로 컴포넌트 클래스에 @Component 어노테이션을 붙힐 수도 있지만 대신 @Repository, @Service, @Controller 어노테이션을 붙힘으로써 클래스들이 도구가 처리하는데 더 적합하도록 할 수 있고 관점에 더 연관성이 있게 한 수 있다. 예를 들어 이러한 스테레오타입 어노테이션은 포인트컷에 대한 이상적인 타겟을 만든다. 또한 @Repository, @Service, @Controller는 스프링 프레임웍의 차기 릴리즈버전에서 추가적인 의미가 생길 가능성도 있다. 그래서 서비스계층에 @Component나 @Service 중에서 어느 것을 사용할기 선택해야 한다면 @Service가 명확하게 더 나은 선택이다. 비슷하게 앞에서 얘기했듯이 @Repository는 퍼시스턴스 계층에서 자동 예외변환에 대한 표시로서 이미 지원된다.
+
+
+
+
+
+
+
+#### 
 
 
 
