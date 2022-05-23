@@ -9,7 +9,7 @@ date: 2022-05-20
 slug: "contoller-service-repository-annotation"
 description: "@Controller, @Service, @Repository 어노테이션"	
 keywords: ["Spring"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["Spring"]
 tags: ["Spring","Framework","SpringFramework"]
