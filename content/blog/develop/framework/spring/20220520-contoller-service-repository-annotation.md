@@ -220,6 +220,8 @@ public class Application {
 
 
 ### @Component
+--------------------------------
+
 > IoC Container는 특정 어노테이션이 달려있는 클래스를 빈으로 만들기 위해 빈 스캐닝을 합니다. 
 
 > - @Configuration
@@ -245,12 +247,59 @@ public class TestClassSample {
 > 그리고 @Controller, @Service, @Repository 모두 @Component를 상속받아 컴포넌트 스캔에 의해서 자동으로 스프링 빈으로 관리가 되게 됩니다.
 
 
+### @Controller, @Service, @Repository
+------------------------------------
+> 해당 어노테이션들은 @Component를 상속 받기 때문에 Component Scan의 대상입니다. 
+
+![contact](/images/develop/framework/spring/component-scan-and-component/img-002.png)
+
+
+> 그리고 각각의 어노테이션들을 설명하기 위해 MVC 패턴 모델을 먼저 아는 것이 중요합니다.
+
+#### MVC 모델 
+> MVC 모델이란 Model, View, Controller의 약자로서 개발을 할때 3가지 역할로 나누어 개발하는 방법론입니다. 
+
+![contact](/images/develop/framework/spring/component-scan-and-component/img-003.png)
+
+##### Model
+>	어 어플리케이션이 무엇을 할 것인지 정의하는 부분 입니다. 즉, 내부 비즈니스 로직을 처리하기 위한 역할을 합니다. <br> DB와 연동하여 사용자가 입력한 데이터나 사용자에게 출력할 데이터를 다룹니다. 특히 여러 개의 데이터 변경 작업을 하나의 작업으로 묶는 트랜잭션을 다루는 일도 합니다.
+<br> Controller 이하 Service(ServiceImpl), DAO(Repository), SQL(JPQL, Persistence)이 Model에 해당합니다.
+
+##### View
+>	최종 사용자에게 무엇을 화면(UI)로 보여줍니다. 화면에 무엇을 보여주기 위한 역할 이며, 모델이 처리한 데이터나 그 작업 결과를 가지고 사용자에게 출력할 화면을 만듭니다. 만든 화면은 웹 브라우저가 랜더링합니다.
+
+##### Controller
+>	Model과 View 사이에 있는 컴포넌트이며, View에서 클라이언트의 요청에 맞게 Model이 데이터를 어떻게 처리할지 알려주는 역할을 합니다. 클라이언트가 보낸 데이터가 있다면, 모델을 호출할 때 전달하기 쉽게 적절히 가공하며, Model이 로직 수행을 완료하면 그 결과를 가지고 화면을 생성하도록 View에 전달합니다.
+
+
+#### 스프링과 Controller
+> 스프링에서 컨트롤러를 지정해주기 위한 어노테이션은 @Controller와 @RestController가 있습니다. <br>
+두 어노테이션은 컨트롤러(*Controller.java)에 붙여두면, 컴포넌트 스캔에 의해서 자동으로 스프링 빈으로 관리가 되게 됩니다.
+
+
+##### @Controller
+
+> 전통적인 Spring MVC의 컨트롤러인 @Controller는 주로 View를 반환하기 위해 사용합니다.
+
+> 하지만 <mark>@ResponseBody</mark> 어노테이션을 같이 사용하면 RestController와 똑같은 기능을 수행할 수 있습니다.
+
+> 즉, JSON/XML형태로 객체 데이터 반환을 목적으로 동작할 수 있습니다.
+
+ 
+##### @RestController
+
+> RestController는 Controller에서 @ResponseBody 어노테이션이 붙은 효과를 지니게 됩니다.
+
+> 즉, 주용도는 JSON/XML형태로 객체 데이터 반환을 목적으로 합니다.
+
+
 #### @Service 
-> 비즈니스 로직에 (*Service.java) @Service 어노테이션을 추가하면, 컴포넌트 스캔에 의해서 자동으로 스프링 빈으로 관리가 되게 됩니다.
+> 비즈니스 로직에(*Service.java) @Service 어노테이션을 추가하면, 컴포넌트 스캔에 의해서 자동으로 스프링 빈으로 관리가 되게 됩니다.
 
 > - 비즈니스 로직이나 리포지토리 레이어를 호출하는 함수에 사용
 > - 다른 어노테이션과 다르게 @Component에 추가된 기능은 없음
 > - 비즈니스 로직에 @Service 어노테이션을 추가해야 나중에 추가적인 exception handling을 해줄 수도 있음
+
 
 
 #### @Repository
@@ -262,8 +311,17 @@ public class TestClassSample {
 > @Component를 사용하면, Persistence 기술(JPA 또는 Hibernate API)를 사용하면, 네이티브 예외 클래스를 처리할지 정해야합니다. Persistence 기술에 따라 HibernateException PersistenceException의 하위 클래스를 던지겠지만, 모두 런타임 예외라 선언하거나 Catch 하지 않아도 됩니다. 던져지는 예외의 타입을 알 수 있는 방법이 없기 때문에 각각 다 예외처리 하거나 전체를 다 예외처리 해야하는 문제가 있어 @Repository를 사용하여 Exception translation의 특성을 이용해 예외가 더 디테일 하게 스프링의 커스텀 예외 계층 구조로 변환하여 처리할 수 있도록 해야합니다.
 
 
+
+
+
+
+
+
+
+
 <a href="https://goodgid.github.io/Spring-Framework-ApplicationContext-XML-Component-Scan/">[Spring] context:component-scan에 관하여</a>
 <a href="https://fbtmdwhd33.tistory.com/261">[Spring] context:component-scan에 관하여</a>
 <a href="https://codevang.tistory.com/258">@Repository, @Service 어노테이션</a>
-<a href="https://godekdls.github.io/Spring%20Data%20Access/ormdataaccess/">Object Relational Mapping (ORM) Data Access</a>
+<a href="https://godekdls.github.io/Spring%20Data%20Access/ormdataaccess/">Object Relational Mapping (ORM) Data Access</a><a href="https://godekdls.github.io/Spring%20Data%20Access/ormdataaccess/">Controller, Service, Repository 가 무엇일까?</a>
+
 
