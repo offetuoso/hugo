@@ -308,20 +308,19 @@ public class TestClassSample {
 > 또 @Component와 다르게 Exception translation 라는 특성이 추가됩니다. 
 
 ##### Exception translation 
-> @Component를 사용하면, Persistence 기술(JPA 또는 Hibernate API)를 사용하면, 네이티브 예외 클래스를 처리할지 정해야합니다. Persistence 기술에 따라 HibernateException PersistenceException의 하위 클래스를 던지겠지만, 모두 런타임 예외라 선언하거나 Catch 하지 않아도 됩니다. 던져지는 예외의 타입을 알 수 있는 방법이 없기 때문에 각각 다 예외처리 하거나 전체를 다 예외처리 해야하는 문제가 있어 @Repository를 사용하여 Exception translation의 특성을 이용해 예외가 더 디테일 하게 스프링의 커스텀 예외 계층 구조로 변환하여 처리할 수 있도록 해야합니다.
+> @Component를 사용하면, Persistence 기술(JPA 또는 Hibernate API)를 사용하면, 네이티브 예외 클래스를 처리할지 정해야합니다.
+ 
+> Persistence 기술에 따라 HibernateException PersistenceException의 하위 클래스를 던지겠지만, 모두 런타임 예외라 선언하거나 Catch 하지 않아도 됩니다. <br>
+던져지는 예외의 타입을 알 수 있는 방법이 없기 때문에 각각 다 예외처리 하거나 전체를 다 예외처리 해야하는 문제가 있습니다. <br>
+
+> @Repository를 사용하여 Exception translation의 특성을 이용해 예외가 더 디테일 하게 스프링의 커스텀 예외 계층 구조로 변환하여 처리할 수 있도록 해야합니다.
 
 
 
-
-
-
-
-
-
-
-<a href="https://goodgid.github.io/Spring-Framework-ApplicationContext-XML-Component-Scan/">[Spring] context:component-scan에 관하여</a>
-<a href="https://fbtmdwhd33.tistory.com/261">[Spring] context:component-scan에 관하여</a>
-<a href="https://codevang.tistory.com/258">@Repository, @Service 어노테이션</a>
-<a href="https://godekdls.github.io/Spring%20Data%20Access/ormdataaccess/">Object Relational Mapping (ORM) Data Access</a><a href="https://godekdls.github.io/Spring%20Data%20Access/ormdataaccess/">Controller, Service, Repository 가 무엇일까?</a>
+> - <a href="https://goodgid.github.io/Spring-Framework-ApplicationContext-XML-Component-Scan/">[Spring] context:component-scan에 관하여</a>
+> - <a href="https://fbtmdwhd33.tistory.com/261">[Spring] context:component-scan에 관하여</a>
+> - <a href="https://codevang.tistory.com/258">@Repository, @Service 어노테이션</a>
+> - <a href="https://godekdls.github.io/Spring%20Data%20Access/ormdataaccess/">Object Relational Mapping (ORM) Data Access</a>
+> - <a href="https://godekdls.github.io/Spring%20Data%20Access/ormdataaccess/">Controller, Service, Repository 가 무엇일까?</a>
 
 
