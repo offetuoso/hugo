@@ -66,6 +66,7 @@ toc: true
 ![contact](/images/develop/backend/using-springboot-jpa/member-service-development/img-001.png)
 
 ### 회원 서비스 생성
+------------------------
 
 > java/jpabook/jpashop/service/MemberService.java
 
@@ -119,12 +120,236 @@ public class MemberService {
 
 ```
 
-<a></a>
+### Service 기능 설명 및 성능 향상
+------------------------
 
 
-#### 
+> <a href="https://offetuoso.github.io/blog/develop/framework/spring/contoller-service-repository-annotation/">[Spring] @Controller, @Service, @Repository 어노테이션</a>
 
 
+
+#### @Transactional
+> @Transactional를 import 하려고 보면, 'org.springframework.transaction.annotation.Transactional' 과 'javax.transaction.Transactional' 2개가 있습니다. 
+
+> springframework에서 제공하는 기능들이 더 많기 때문에 @Transactional을 사용하는 것을 권장드립니다.
+
+> MemberService.java
+
+```
+...
+
+import javax.transaction.Transactional;
+
+
+@Service
+@Transactional
+public class MemberService {
+
+...
+```
+
+> Service에 @Transactional를 걸어둘 수 있지만 서비스 내부에서 JPA를 사용할때 @Transactional 설정에 따라 성능향상을 시킬 수 있습니다.
+
+##### @Transactional(readOnly = true) 
+> 스프링 프레임워크에서 어노테이션으로 트랜잭션을 읽기 전용 모드로 설정할 수 있다. <br>
+> (boolean readOnly() default false; 기본값은 false) 
+
+> 트랜젝션에 readOnly=true 옵션을 주면 스프링 프레임워크가 하이버네이트 세션 플러시 모드를 수동(Manual)로 설정한다. <br>
+> 이렇게 되면 강제로 플러시를 호출 하지 않는 이상 플러시가 일어나지 않습니다. <br>
+> 따라서 트랜잭션을 커밋하더라도 영속성 컨텍스트가 플러시 되지 않아서 엔티티의 등록, 수정, 삭제가 동작하지 않으며, 읽기 전용으로 영속성 컨텍스트는 변경 감지를 위한 스냅샷을 보관하지 않기 때문에 성능향상이 됩니다. 
+
+
+> readOnly=true 옵션을 사용하면 엔티티의 등록, 수정, 삭제가 동작하지 않기 때문에 기본적으로 Service를 통으로 @Transactional(readOnly = true) 으로 세팅하고, 
+
+> 등록, 수정, 삭제가 필요한 로직에 @Transactional(readOnly = false)를 지정하면, 지정된 로직만 오버라이딩 되어 readOnly = false의 옵션을 사용할 수 있습니다.
+
+```
+package jpabook.jpashop.service;
+
+import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.repository.MemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+
+
+@Service
+@Transactional(readOnly = true) // 조회 모드
+public class MemberService {
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    /**
+     * 회원 가입
+     */
+    @Transactional(readOnly = false) // 등록, 수정, 삭제 가능 트랜잭션
+    public Long join(Member member){
+        validateDuplicateMember(member); //중복 회원 검증
+        memberRepository.save(member);
+        return member.getId(); //save()를 통해 em.persist()를 수행하므로 Member 엔티티의 키 생성을 보장함
+    }
+
+    private void validateDuplicateMember(Member member) {
+        List<Member> findMembers = memberRepository.findByName(member.getName());
+        if(findMembers.size() != 0){
+            throw new IllegalStateException("이미 존재하는 회원입니다.");
+        }
+
+    }
+
+    /**
+     * 회원 전체 조회
+     */
+    //@Transactional(readOnly = true) // 조회 모드
+    public List<Member> findMembers(){
+        return memberRepository.findAll();
+    }
+
+    /**
+     * 회원 조회
+     */
+    //@Transactional(readOnly = true) // 조회 모드
+    public Member findOne(Long memberId){
+        return memberRepository.findOne(memberId);
+    }
+
+}
+
+```
+
+#### validateDuplicateMember 
+> 해당 벨리데이션 함수는 예제를 위해 추가한 로직이기 때문에 중복체크를 이름만 걸었습니다. <br>
+
+```
+...
+	private void validateDuplicateMember(Member member) {
+        List<Member> findMembers = memberRepository.findByName(member.getName());
+        if(findMembers.size() != 0){
+            throw new IllegalStateException("이미 존재하는 회원입니다.");
+        }
+
+    }
+...
+```
+
+> 또한 WAS 환경 상 멀티쓰레드를 지원하기 때문에 동시에 같은 이름으로 등록을 할 경우에도 등록이 되기 때문에 <br> 
+> 최후의 보루로 name 컬럼에 UNIQUE 제약 조건을 추가해 두어야 합니다.
+
+
+
+#### @Autowired
+> 해당 어노테이션은 스프링 빈에 등록된 객체를 주입(Injection) 해줍니다. 
+
+> MemberService.java
+
+```
+...
+
+@Service
+@Transactional(readOnly = true)
+public class MemberService {
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+...
+```
+
+> 위와 같은 방식을 필드 인젝션(field injection)이라 합니다. <br>
+> 필드 인젝션은 강한 결합으로 @Autowired로 지정된 객체를 변경한다면 소스를 모두 수정해야하는 단점이 있습니다. <br>
+> 이를 해결하기 위하여 수정자(Setter) 주입 방식으로 변경하면 됩니다. 
+
+
+##### 수정자(Setter) 주입
+
+> MemberService.java
+
+```
+...
+
+@Service
+@Transactional(readOnly = true)
+public class MemberService {
+
+    private MemberRepository memberRepository;
+    
+    @Autowired
+    public void setMemberRepository(MemberRepository memberRepository){
+    		this.memberRepository = memberRepository;
+    }
+
+...
+```
+
+> 
+
+> 위와 같이 변경해줍니다.
+
+> 하지만 수정자(Setter) 주입 방식에도 큰 단점이 있습니다. <br>
+> setter를 이용해 최초 1회만 세팅되고 나면 수정될일이 없지만, <br>
+> setMemberRepository()를 코드에서 직접 호출해 수정할 수 있는 여지가 있기 때문에 이 방법보다 더 좋은 방법이 있습니다. 
+
+#### 생성자(Constructor) 주입
+
+> 심지어 InteliJ IDEA에서도 경고를 통해 생성자 주입 방식으로 수정을 권고하고 있습니다. 
+
+![contact](/images/develop/backend/using-springboot-jpa/member-service-development/img-002.png)
+
+
+```
+    // 생성 시점에 세팅하고 변경하지 않기 때문에 fianl로 지정하고, 컴파일 시점에 주입을 빼먹었을때도 체크를 해주기 때문에 final 키워드 추가하는 것을 권장
+    private final MemberRepository memberRepository; 
+    
+    //@Autowired // 또한 최신의 스프링 버전 사용시 1개의 생성자는 @Autowired를 생략해도 자동으로 Autowired를 해줌 
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
+```
+
+> 생성자 주입방식을 사용하면 생성시 세팅이 되어 끝나 버리기 때문에 중간에 수정을 할 수 없습니다. 
+
+> 또한 좋은점은 테스트케이스 작성할 때, 
+
+```
+public static void main(String[] args){
+	MemberService memberService = new MemberService(Mock()); //가짜객체 주입 
+}
+
+```
+
+> 가짜 객체를 주입하여 테스트를 할 수 도 있습니다.
+
+> 여기에 lombok 까지 적용을 하게 된다면 !! 
+
+#### 생성자(Constructor) 주입 lombok 적용
+> - @AllArgsConstructor : 모든 필드 값을 파라미터로 받는 생성자를 만들어 줍니다.
+> - @RequiredArgsConstructor : final로 지정된 필드 값을 파라미터로 받는 생성자를 만들어 줍니다.
+
+> 물론 생성자 주입을 위한 생성자를 만들어주기 때문에, @RequiredArgsConstructor를 추가합니다.
+
+```
+...
+@Service
+@Transactional(readOnly = true)
+@RequireArgsConstructor
+public class MemberService {
+
+    private final MemberRepository memberRepository; 
+    
+    /*
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+    */
+
+```
+
+15:26
 
 ### 이전 소스
 ---------------------
