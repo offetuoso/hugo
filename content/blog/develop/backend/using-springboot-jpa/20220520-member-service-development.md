@@ -124,6 +124,9 @@ public class MemberService {
 ------------------------
 
 
+#### @Service 
+> @Service는 아래 게시물 링크에서 설명하도록 하겠습니다.
+
 > <a href="https://offetuoso.github.io/blog/develop/framework/spring/contoller-service-repository-annotation/">[Spring] @Controller, @Service, @Repository 어노테이션</a>
 
 
