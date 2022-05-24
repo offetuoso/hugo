@@ -316,6 +316,7 @@ public class TestClassSample {
 > @Repository를 사용하여 Exception translation의 특성을 이용해 예외가 더 디테일 하게 스프링의 커스텀 예외 계층 구조로 변환하여 처리할 수 있도록 해야합니다.
 
 
+#### 참조 
 
 > - <a href="https://goodgid.github.io/Spring-Framework-ApplicationContext-XML-Component-Scan/">[Spring] context:component-scan에 관하여</a>
 > - <a href="https://fbtmdwhd33.tistory.com/261">[Spring] context:component-scan에 관하여</a>
