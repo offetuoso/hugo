@@ -4,11 +4,11 @@ image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2022-05-20
+date: 2022-05-26
 slug: "member-service-development"
 description: "[스프링부트 JPA 활용] 회원 서비스 개발"
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -352,7 +352,48 @@ public class MemberService {
 
 ```
 
-15:26
+> 그리고 생성했던 Repository에서 
+
+> MemberRepository.java
+
+```
+...
+@Repository
+public class MemberRepository {
+
+    @PersistenceContext
+    private EntityManager em;
+...
+```
+
+> 추가된 EntityManager또한 생성자 주입을 할 수 있습니다.
+
+> MemberRepository.java 
+
+```
+@Repository
+@RequiredArgsConstructor // 생성자 주입
+public class MemberRepository {
+
+    /*
+    //최초 소스이며 아래 소스로 대체
+    @PersistenceContext
+    private EntityManager em;
+    */
+
+    /*
+    //2번째 버전의 소스이며, @RequiredArgsConstructor로 대체
+    @Autowired //스프링 DATA 지원
+    private EntityManager em;
+
+    public MemberRepository(EntityManager em){
+        this.em = em;
+    }
+    */
+
+    private final EntityManager em;
+```
+
 
 ### 이전 소스
 ---------------------
