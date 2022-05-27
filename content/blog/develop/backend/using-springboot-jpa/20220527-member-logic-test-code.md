@@ -79,20 +79,269 @@ toc: true
 
 > 이전에 생성한 tdd + Tab (라이브 템플릿) 사용
 
+> tdd + Tab (라이브 템플릿)
+
+```
+@Test
+    public void 회원가입() throws Exception{
+        //given 
+        
+        //when 
+
+        //then 
+    }
+```
+
+> - given : 이렇게 주어졌을때
+> - when : 이렇게 하면
+> - then : 이렇게 된다.
+
+
 > 아래 링크 참조
 
 > <a href="https://offetuoso.github.io/blog/develop/backend/using-springboot-jpa/jpa-start/#%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%BD%94%EB%93%9C">[스프링부트 JPA 활용] JPA 동작확인</a>
 
 
 
+#### 회원가입 테스트
+
 > java/jpabook/jpashop/service/MemberServiceTest.java
 
 ```
+package jpabook.jpashop.service;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.repository.MemberRepository;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+//@RunWith(SpringRunner.class) //Unit4 전용
+@ExtendWith(SpringExtension.class) //Unit5 이후 사용
+@SpringBootTest
+@Transactional
+class MemberServiceTest {
+    
+    @Autowired MemberService memberService; // 테스트 케이스에서는 다른곳에서 참조할 곳이 없으므로 @Autowired로 사용
+    @Autowired MemberRepository memberRepository; // 테스트 케이스에서는 다른곳에서 참조할 곳이 없으므로 @Autowired로 사용
+
+    @Test
+    public void 회원가입() throws Exception{
+        //given //given : 이렇게 주어졌을때
+        Member member = new Member();
+        member.setName("userA");
+        
+        //when //when : 이렇게 하면
+        Long savedId = memberService.join(member);
+
+        //then //then : 이렇게 된다.
+        // JPA안에서 하나의 트랜잭션에서 같은 엔티티에서 PK 키가 같으면 같은 영속성 컨텍스트 1차 캐시로 같은 객체로 관리
+        assertEquals(member, memberRepository.findOne(savedId));
+    }
+    
+}
+```
+
+> console 
+
+```
+...
+...
+
+2022-05-27 23:28:38.297  INFO 1724 --- [    Test worker] j.jpashop.service.MemberServiceTest      : Started MemberServiceTest in 5.799 seconds (JVM running for 8.277)
+2022-05-27 23:28:38.455  INFO 1724 --- [    Test worker] o.s.t.c.transaction.TransactionContext   : Began transaction (1) for test context [DefaultTestContext@1deb2c43 testClass = MemberServiceTest, testInstance = jpabook.jpashop.service.MemberServiceTest@8aafd70, testMethod = 회원가입@MemberServiceTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@3bb9efbc testClass = MemberServiceTest, locations = '{}', classes = '{class jpabook.jpashop.JpashopApplication}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{org.springframework.boot.test.context.SpringBootTestContextBootstrapper=true}', contextCustomizers = set[org.springframework.boot.test.autoconfigure.actuate.metrics.MetricsExportContextCustomizerFactory$DisableMetricExportContextCustomizer@7756c3cd, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@0, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory$Customizer@328cf0e1, org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@183e8023, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@67ab1c47, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer@14b030a0, org.springframework.boot.test.context.SpringBootTestArgs@1, org.springframework.boot.test.context.SpringBootTestWebEnvironment@30b6ffe0], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.boot.test.context.SpringBootContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.activateListener' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true, 'org.springframework.test.context.event.ApplicationEventsTestExecutionListener.recordApplicationEvents' -> false]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@3986b9e9]; rollback [true]
+2022-05-27 23:28:38.809 DEBUG 1724 --- [    Test worker] org.hibernate.SQL                        : 
+    select
+        member0_.member_id as member_i1_4_,
+        member0_.city as city2_4_,
+        member0_.street as street3_4_,
+        member0_.zipcode as zipcode4_4_,
+        member0_.name as name5_4_ 
+    from
+        member member0_ 
+    where
+        member0_.name=?
+2022-05-27 23:28:38.818 TRACE 1724 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [1] as [VARCHAR] - [userA]
+2022-05-27 23:28:38.828  INFO 1724 --- [    Test worker] p6spy                                    : #1653661718828 | took 7ms | statement | connection 3| url jdbc:h2:tcp://localhost/~/jpashop
+select member0_.member_id as member_i1_4_, member0_.city as city2_4_, member0_.street as street3_4_, member0_.zipcode as zipcode4_4_, member0_.name as name5_4_ from member member0_ where member0_.name=?
+select member0_.member_id as member_i1_4_, member0_.city as city2_4_, member0_.street as street3_4_, member0_.zipcode as zipcode4_4_, member0_.name as name5_4_ from member member0_ where member0_.name='userA';
+2022-05-27 23:28:38.843 DEBUG 1724 --- [    Test worker] org.hibernate.SQL                        : 
+    call next value for hibernate_sequence
+2022-05-27 23:28:38.845  INFO 1724 --- [    Test worker] p6spy                                    : #1653661718845 | took 1ms | statement | connection 3| url jdbc:h2:tcp://localhost/~/jpashop
+call next value for hibernate_sequence
+call next value for hibernate_sequence;
+2022-05-27 23:28:38.909  INFO 1724 --- [    Test worker] p6spy                                    : #1653661718909 | took 0ms | rollback | connection 3| url jdbc:h2:tcp://localhost/~/jpashop
+
+...
+...
+
+BUILD SUCCESSFUL in 11s
+4 actionable tasks: 2 executed, 2 up-to-date
+오후 11:28:39: 작업 실행이 완료되었습니다 ':test --tests "jpabook.jpashop.service.MemberServiceTest"'.
 
 ```
 
-1:26
+> 신기한 것은 Insert Query가 없는데 JPA에서는  memberRepository.save(member); 까지 하여도 
+> em.persist() 까지 한 상태이고 flush() 가 되어야 Insert SQL이 수행됩니다.
 
+> Transaction Commit이 발생되어야 flush()가 수행되는데, <br>
+> @Transactional은 기본적으로 RollBack을 합니다.
+
+> 그래도 DB에 Insert 되는 것까지 보고싶다 하면 @Rollback(value = false)을 추가합니다.
+
+> MemberServiceTest.java
+
+```
+@Test
+    @Rollback(value = false)
+    public void 회원가입() throws Exception{
+        //given //given : 이렇게 주어졌을때
+        Member member = new Member();
+        member.setName("userA");
+        
+        //when //when : 이렇게 하면
+        Long savedId = memberService.join(member);
+
+        //then //then : 이렇게 된다.
+        // JPA안에서 하나의 트랜잭션에서 같은 엔티티에서 PK 키가 같으면 같은 영속성 컨텍스트 1차 캐시로 같은 객체로 관리
+        assertEquals(member, memberRepository.findOne(savedId));
+```
+
+> console 
+
+```
+...
+...
+
+    select
+        member0_.member_id as member_i1_4_,
+        member0_.city as city2_4_,
+        member0_.street as street3_4_,
+        member0_.zipcode as zipcode4_4_,
+        member0_.name as name5_4_ 
+    from
+        member member0_ 
+    where
+        member0_.name=?
+2022-05-27 23:41:33.726 TRACE 3504 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [1] as [VARCHAR] - [userA]
+2022-05-27 23:41:33.735  INFO 3504 --- [    Test worker] p6spy                                    : #1653662493735 | took 6ms | statement | connection 3| url jdbc:h2:tcp://localhost/~/jpashop
+select member0_.member_id as member_i1_4_, member0_.city as city2_4_, member0_.street as street3_4_, member0_.zipcode as zipcode4_4_, member0_.name as name5_4_ from member member0_ where member0_.name=?
+select member0_.member_id as member_i1_4_, member0_.city as city2_4_, member0_.street as street3_4_, member0_.zipcode as zipcode4_4_, member0_.name as name5_4_ from member member0_ where member0_.name='userA';
+2022-05-27 23:41:33.748 DEBUG 3504 --- [    Test worker] org.hibernate.SQL                        : 
+    call next value for hibernate_sequence
+2022-05-27 23:41:33.749  INFO 3504 --- [    Test worker] p6spy                                    : #1653662493749 | took 0ms | statement | connection 3| url jdbc:h2:tcp://localhost/~/jpashop
+call next value for hibernate_sequence
+call next value for hibernate_sequence;
+2022-05-27 23:41:33.816 DEBUG 3504 --- [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        member
+        (city, street, zipcode, name, member_id) 
+    values
+        (?, ?, ?, ?, ?)
+2022-05-27 23:41:33.817 TRACE 3504 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [1] as [VARCHAR] - [null]
+2022-05-27 23:41:33.818 TRACE 3504 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [2] as [VARCHAR] - [null]
+2022-05-27 23:41:33.818 TRACE 3504 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [3] as [VARCHAR] - [null]
+2022-05-27 23:41:33.818 TRACE 3504 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [4] as [VARCHAR] - [userA]
+2022-05-27 23:41:33.819 TRACE 3504 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [5] as [BIGINT] - [1]
+2022-05-27 23:41:33.821  INFO 3504 --- [    Test worker] p6spy                                    : #1653662493821 | took 0ms | statement | connection 3| url jdbc:h2:tcp://localhost/~/jpashop
+insert into member (city, street, zipcode, name, member_id) values (?, ?, ?, ?, ?)
+insert into member (city, street, zipcode, name, member_id) values (NULL, NULL, NULL, 'userA', 1);
+...
+...
+```
+
+> 또한 @Rollback(value = false) 옵션을 사용하지 않고도 <br>
+> @Autowired EntityManager em; 를 추가하고 em.flush();으로 같은 효과를 볼 수 있습니다.
+
+
+```
+...
+...
+@ExtendWith(SpringExtension.class) //Unit5 이후 사용
+@SpringBootTest
+@Transactional
+class MemberServiceTest {
+
+    // 테스트 케이스에서는 다른곳에서 참조할 곳이 없으므로 @Autowired로 사용
+    @Autowired MemberRepository memberRepository;
+    @Autowired MemberService memberService;
+    @Autowired EntityManager em;
+
+    @Test
+    //@Rollback(value = false)
+    public void 회원가입() throws Exception{
+        //given //given : 이렇게 주어졌을때
+        Member member = new Member();
+        member.setName("userA");
+        
+        //when //when : 이렇게 하면
+        Long savedId = memberService.join(member);
+
+        //then //then : 이렇게 된다.
+        // JPA안에서 하나의 트랜잭션에서 같은 엔티티에서 PK 키가 같으면 같은 영속성 컨텍스트 1차 캐시로 같은 객체로 관리
+        em.flush();
+        assertEquals(member, memberRepository.findOne(savedId));
+    }
+
+}
+
+...
+...
+```
+
+> console
+
+```
+2022-05-27 23:47:07.462 DEBUG 5664 --- [    Test worker] org.hibernate.SQL                        : 
+    select
+        member0_.member_id as member_i1_4_,
+        member0_.city as city2_4_,
+        member0_.street as street3_4_,
+        member0_.zipcode as zipcode4_4_,
+        member0_.name as name5_4_ 
+    from
+        member member0_ 
+    where
+        member0_.name=?
+2022-05-27 23:47:07.462 TRACE 5664 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [1] as [VARCHAR] - [userA]
+2022-05-27 23:47:07.477  INFO 5664 --- [    Test worker] p6spy                                    : #1653662827477 | took 6ms | statement | connection 3| url jdbc:h2:tcp://localhost/~/jpashop
+select member0_.member_id as member_i1_4_, member0_.city as city2_4_, member0_.street as street3_4_, member0_.zipcode as zipcode4_4_, member0_.name as name5_4_ from member member0_ where member0_.name=?
+select member0_.member_id as member_i1_4_, member0_.city as city2_4_, member0_.street as street3_4_, member0_.zipcode as zipcode4_4_, member0_.name as name5_4_ from member member0_ where member0_.name='userA';
+2022-05-27 23:47:07.486 DEBUG 5664 --- [    Test worker] org.hibernate.SQL                        : 
+    call next value for hibernate_sequence
+2022-05-27 23:47:07.493  INFO 5664 --- [    Test worker] p6spy                                    : #1653662827493 | took 0ms | statement | connection 3| url jdbc:h2:tcp://localhost/~/jpashop
+call next value for hibernate_sequence
+call next value for hibernate_sequence;
+2022-05-27 23:47:07.540 DEBUG 5664 --- [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        member
+        (city, street, zipcode, name, member_id) 
+    values
+        (?, ?, ?, ?, ?)
+2022-05-27 23:47:07.540 TRACE 5664 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [1] as [VARCHAR] - [null]
+2022-05-27 23:47:07.540 TRACE 5664 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [2] as [VARCHAR] - [null]
+2022-05-27 23:47:07.540 TRACE 5664 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [3] as [VARCHAR] - [null]
+2022-05-27 23:47:07.540 TRACE 5664 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [4] as [VARCHAR] - [userA]
+2022-05-27 23:47:07.540 TRACE 5664 --- [    Test worker] o.h.type.descriptor.sql.BasicBinder      : binding parameter [5] as [BIGINT] - [1]
+2022-05-27 23:47:07.540  INFO 5664 --- [    Test worker] p6spy                                    : #1653662827540 | took 0ms | statement | connection 3| url jdbc:h2:tcp://localhost/~/jpashop
+insert into member (city, street, zipcode, name, member_id) values (?, ?, ?, ?, ?)
+insert into member (city, street, zipcode, name, member_id) values (NULL, NULL, NULL, 'userA', 1);
+2022-05-27 23:47:07.571  INFO 5664 --- [    Test worker] p6spy                                    : #1653662827571 | took 0ms | rollback | connection 3| url jdbc:h2:tcp://localhost/~/jpashop
+
+```
 
 ### 이전 소스
 ---------------------
