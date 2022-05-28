@@ -343,6 +343,81 @@ insert into member (city, street, zipcode, name, member_id) values (NULL, NULL, 
 
 ```
 
+> Insert 쿼리가 로그로 찍히게 되고 최종적으로 
+
+````
+insert into member (city, street, zipcode, name, member_id) values (?, ?, ?, ?, ?)
+insert into member (city, street, zipcode, name, member_id) values (NULL, NULL, NULL, 'userA', 1);
+2022-05-27 23:47:07.571  INFO 5664 --- [    Test worker] p6spy                                    : #1653662827571 | took 0ms | rollback | 
+````
+
+> 롤백되게 됩니다. 
+
+> 테스트에서 실행되고 롤백이 되는 이유는 반복적으로 테스트를 해야하기 때문에 테스트 데이터를 롤백으로 지우게 됩니다. 
+
+##### 눈으로 DB에 테스트 데이터를 보고싶을땐
+>  @Rollback(value = false) 를 사용합니다.
+
+
+#### 회원 중복 예외 테스트
+
+> java/jpabook/jpashop/service/MemberServiceTest.java
+
+```
+...
+...
+    @Test
+    public void 중복_회원_예외() throws Exception{
+        //given
+
+        String username = "user";
+        Member member1 = new Member();
+        member1.setName(username);
+
+        Member member2 = new Member();
+        member2.setName(username);
+
+        //when
+        memberService.join(member1);
+
+        //then
+        try {
+            memberService.join(member2); //예외가 발생해야 한다.
+        }catch (IllegalStateException e){
+            return;
+        }
+        fail("예외가 발생해야 한다.");
+    }
+...
+...
+```
+
+> 좀더 코드를 간결하게 수정 
+
+
+```
+    @Test
+    public void 중복_회원_예외() throws Exception{
+        //given
+
+        String username = "user";
+        Member member1 = new Member();
+        member1.setName(username);
+
+        Member member2 = new Member();
+        member2.setName(username);
+
+        //when
+        memberService.join(member1);
+
+        //then
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> memberService.join(member2));
+
+    }
+```
+
+
+
 ### 이전 소스
 ---------------------
 
