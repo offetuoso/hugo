@@ -418,6 +418,9 @@ insert into member (city, street, zipcode, name, member_id) values (NULL, NULL, 
 
 
 
+
+
+
 ### 이전 소스
 ---------------------
 
