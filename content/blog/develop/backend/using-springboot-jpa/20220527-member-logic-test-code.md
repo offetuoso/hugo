@@ -416,9 +416,177 @@ insert into member (city, street, zipcode, name, member_id) values (NULL, NULL, 
     }
 ```
 
+> MemberServiceTest 전체 코드
+
+> MemberServiceTest.java
+
+```
+package jpabook.jpashop.service;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.repository.MemberRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+
+@SpringBootTest
+@Transactional
+class MemberServiceTest {
+
+    // 테스트 케이스에서는 다른곳에서 참조할 곳이 없으므로 @Autowired로 사용
+    @Autowired MemberRepository memberRepository;
+    @Autowired MemberService memberService;
+    @Autowired EntityManager em;
+
+    @Test
+    //@Rollback(value = false)
+    public void 회원가입() throws Exception{
+        //given //given : 이렇게 주어졌을때
+        Member member = new Member();
+        member.setName("userA");
+        
+        //when //when : 이렇게 하면
+        Long savedId = memberService.join(member);
+
+        //then //then : 이렇게 된다.
+        // JPA안에서 하나의 트랜잭션에서 같은 엔티티에서 PK 키가 같으면 같은 영속성 컨텍스트 1차 캐시로 같은 객체로 관리
+        em.flush();
+        assertEquals(member, memberRepository.findOne(savedId));
+    }
 
 
+    @Test
+    public void 중복_회원_예외() throws Exception{
+        //given
 
+        String username = "user";
+        Member member1 = new Member();
+        member1.setName(username);
+
+        Member member2 = new Member();
+        member2.setName(username);
+
+        //when
+        memberService.join(member1);
+
+        //then
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> memberService.join(member2));
+
+    }
+}
+```
+
+
+### 테스트 코드 소스 설명
+------------------------------
+
+#### @SpringBootTest
+> 스프링 부트는 @SpringBootTest 어노테이션을 통해 스프링부트 어플리케이션 테스트에 필요한 거의 모든 의존성을 제공합니다.
+
+> - @SpringBootTest는 통합 테스트를 제공하는 기본적인 스프링 부트 테스트 어노테이션입니다.
+> - 해당 어노테이션을 사용시 Junit 버전에 따라 유의할 사항이 있습니다.
+> - @SpringBootTest가 없으면, @Autowired가 모두 실패합니다
+
+#### @Transational
+> - 기본적으로 테스트 코드에서 @Transational를 사용하면, 테스트 완료 후 rollback 처리 합니다.
+
+### 메모리 DB 사용해서 테스트 하기
+-----------------------------------------------------
+
+> 프로젝트 구조를 보면, main과 test 폴더로 소스가 나뉘게 되는데, main은 실제 소스, test는 테스트코드 소스가 위치합니다. 
+
+![contact](/images/develop/backend/using-springboot-jpa/member-logic-test-code/img-003.png)
+
+> main과 마찬가지로 resources 폴더를 test폴더에도 추가해 줍니다.
+
+#### /src/test/resources
+---------------------------------
+> /src/main/java의 소스들이 /src/main/resources의 설정을 참조 하듯이 /src/test/java의 소스들은 /src/test/resources를 우선적으로 참조합니다. 
+
+> /src/test/resources/application.yml을 복사해 추가합니다. 
+
+
+> build.gradle
+
+```
+dependencies {
+	...
+	runtimeOnly 'com.h2database:h2' 
+	...
+}
+```
+
+> h2가 java로 수행되기 때문에 jvm안에서 띄울수 있습니다. 그렇기 때문에 메모리 모드로 H2를 사용하여 런타임 시에만 테스트용으로 사용할 수 있습니다.
+
+
+#### <a href="https://www.h2database.com/html/features.html#database_url">H2 Database URL Overview</a>
+
+##### Embedded (local) connection
+> - jdbc:h2:[file:][<path>]<databaseName>
+> - jdbc:h2:~/test
+> - jdbc:h2:file:/data/sample
+> - jdbc:h2:file:C:/data/sample (Windows only)
+
+
+##### In-memory (private)
+> - jdbc:h2:mem:
+
+##### In-memory (named)
+> - jdbc:h2:mem:<databaseName>
+> - jdbc:h2:mem:test_mem
+
+##### Server mode (remote connections) using TCP/IP
+> - jdbc:h2:tcp://<server>[:<port>]/[<path>]<databaseName>
+> - jdbc:h2:tcp://localhost/~/test
+> - jdbc:h2:tcp://dbserv:8084/~/sample
+> - jdbc:h2:tcp://localhost/mem:test
+
+##### Server mode (remote connections) using TLS
+> - jdbc:h2:ssl://<server>[:<port>]/[<path>]<databaseName>
+> - jdbc:h2:ssl://localhost:8085/~/sample;
+
+> test/resources/application.yml
+
+```
+spring:
+  datasource:
+    url: jdbc:h2:mem:test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # 애플리케이션 동작 시점에 엔티티 재생성
+      use_sql_comments: true
+    database: h2
+
+  devtools:
+    livereload:
+      enabled: true # livereload 사용시 활성화
+    restart:
+      enabled: false #운영 에서는 제거.
+
+  thymeleaf:
+    cache: false
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace #파라미터 로깅
+    org.hibernate.type.descriptor.sql: trace
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging : true
+      multiline: true
+      logging: slf4j
+```
 
 
 ### 이전 소스
