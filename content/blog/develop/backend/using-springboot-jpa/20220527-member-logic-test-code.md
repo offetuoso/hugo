@@ -8,7 +8,7 @@ date: 2022-05-27
 slug: "member-logic-test-code"
 description: "[스프링부트 JPA 활용] 회원 기능 테스트"
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -502,6 +502,8 @@ class MemberServiceTest {
 
 ![contact](/images/develop/backend/using-springboot-jpa/member-logic-test-code/img-003.png)
 
+![contact](/images/develop/backend/using-springboot-jpa/member-logic-test-code/img-004.png)
+
 > main과 마찬가지로 resources 폴더를 test폴더에도 추가해 줍니다.
 
 #### /src/test/resources
@@ -588,6 +590,70 @@ decorator:
       logging: slf4j
 ```
 
+> 이제 테스트를 돌리면 H2를 메모리 DB로 사용하게 됩니다.
+
+> 확인 방법은 H2 데이터베이스를 종료하고 테스트를 실행해 보면 됩니다.
+
+![contact](/images/develop/backend/using-springboot-jpa/member-logic-test-code/img-005.png)
+
+![contact](/images/develop/backend/using-springboot-jpa/member-logic-test-code/img-006.png)
+
+> p6spy 커넥션 부분을 보면 아까 설정한 url jdbc:h2:mem:test 를 확인 할 수 있습니다. 또한 테스트 2건이 정상으로 테스트된것도 확인 됩니다.
+
+> 또한 스프링 부트에서 놀라운 것은 
+
+> test/resources/application.yml
+
+```
+spring:
+#  datasource:
+#    url: jdbc:h2:mem:test
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
+#  jpa:
+#    hibernate:
+#      ddl-auto: create-drop # 애플리케이션 동작 시점에 엔티티 재생성
+#      use_sql_comments: true
+#    database: h2
+
+  devtools:
+    livereload:
+      enabled: true # livereload 사용시 활성화
+    restart:
+      enabled: false #운영 에서는 제거.
+
+  thymeleaf:
+    cache: false
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace #파라미터 로깅
+    org.hibernate.type.descriptor.sql: trace
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging : true
+      multiline: true
+      logging: slf4j
+```
+
+> 해당 h2 데이터베이스 세팅과 jpa 세팅을 생략해도 테스트를 할 수 있습니다.
+
+> 왜냐하면, 스프링 부트는 기본적으로 설정이 없으면 테스트 코드를 메모리 모드로 수행합니다. 
+
+![contact](/images/develop/backend/using-springboot-jpa/member-logic-test-code/img-007.png)
+
+> url: jdbc:h2:mem:test과 다르게 설정되어 수행되는 것을 볼 수 있습니다. 
+
+> 메모리 모드로 DB는 create-drop으로 동작하여, 테스트 종료후에 모든 DB를 삭제하여 메모리를 정리합니다. 
+물론 서버가 내려가게되면 메모리 DB도 초기화 되기 때문에 신경쓰시지 않아도 됩니다.
+
+#### application.yml
+> 설정은 개발과 운영의 설정은 다르게 가는게 좋습니다. <br>
+> 테스트 코드를 위해서 더 디테일 하게 출력을 할 수 있으며, 운영에 올릴때는 꼭 필요한 로그만 나오게 한다던가 설정을 나눌 필요는 있습니다. 
 
 ### 이전 소스
 ---------------------
@@ -627,14 +693,10 @@ decorator:
 	    private List<Order> orders = new ArrayList<>();
 	
 	}
-
-
 	
 </details>
 
-
 > java/jpabook/jpashop/domain/Address.java
-
 
 <details title="펼치기/숨기기">
  	<summary> Address.java </summary>
