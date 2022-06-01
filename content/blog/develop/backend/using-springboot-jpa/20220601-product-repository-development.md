@@ -1,11 +1,11 @@
 ---
-title: "[스프링부트 JPA 활용] 상품 도메인 개발"
+title: "[스프링부트 JPA 활용] 상품 리포지토리 개발"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2022-05-31
-slug: "product-domain-development"
+date: 2022-06-01
+slug: "product-repository-development"
 description: "[스프링부트 JPA 활용] 상품 도메인 개발"
 keywords: ["ORM"]
 draft: false
@@ -57,210 +57,61 @@ toc: true
 >	- QueryDSL 소개
 >	- 마무리
 
-## 상품 도메인 개발
+## 상품 리포지토리 개발
 ---------------------------
 
-#### 구현기능
-> - 상품등록
-> - 상품 목록 조회
-> - 상품 수정
 
-#### 구현순서
-> - 상품 엔티티 개발(비즈니스 로직 추가)
-> - 상품 리포지토리 개발
-> - 상품 서비스 개발
-> - 상품 기능 테스트
+### 상품 리포지토리
+---------------------------
 
-### 상품 엔티티 개발(비즈니스 로직 추가)
-----------------------------
-
-> Item.java
-
+> java/jpabook/jpashop/repository/ItemRepository.java
 
 ```
-package jpabook.jpashop.domain.item;
+package jpabook.jpashop.repository;
 
-import jpabook.jpashop.domain.Category;
-import lombok.Getter;
-import lombok.Setter;
+import jpabook.jpashop.domain.item.Item;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
-import javax.persistence.*;
-import java.util.ArrayList;
+import javax.persistence.EntityManager;
 import java.util.List;
 
-@Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "dtype")
-@Getter @Setter
-public abstract class Item {
+@Repository
+@RequiredArgsConstructor
+public class ItemRepository {
 
-    @Id @GeneratedValue
-    @Column(name = "item_id")
-    private Long id;
+    private final EntityManager em;
 
-    private String name;
-    private int price;
-    private int stockQuantity;
+    public void save(Item item){
+        if (item.getId() == null){
+            em.persist(item);
+        }else{
+            em.merge(item);
+        }
+    }
 
-    @ManyToMany(mappedBy = "items")
-    private List<Category> categories = new ArrayList<>();
-    
-    //==비즈니스 로직==//
+    public Item findOne(Long id){
+        return em.find(Item.class, id);
+    }
 
-    /**
-     * 재고 증가
-     * @param quantity
-     */
-
-    /**
-     * 재고 감소
-     * @param quantity
-     */
-
+    public List<Item> findAll(){
+        return em.createQuery("select i from Item i", Item.class)
+                .getResultList();
+    }
 }
 
 ```
 
-> 일반적으로 비즈니스 로직에서 수량을 증가하거나 감소시키는 로직을 수행할 때 아이템의 갯수를 가져와 수량을 더한 후 다시 수량을 Set을 통해 변경된 데이터를 적용 시키는 방법으로 했습니다. 
+> 특이한 점은 save 메소드를 구현할때, Id값이 있는지 체크 하여 없으면 persist() 있으면 merge()를 사용하였습니다. 
 
-> 하지만 객체지향적으로 생각해 보면 데이터를 가지고 있는 곳에 개수를 추가하고 감소하는 비즈니스 로직을 가지고 있는것이 응집력이 더 좋습니다.
+> - persist(entity) : DB에 추가하려면 완전히 새로운 엔티티와 함께 ​​사용해야합니다 (엔티티가 이미 DB에 존재하는 경우 EntityExistsException 발생).
 
-> 엔티티 내부에서 해결할 수 있는 비즈니스 로직은 엔티티에서 처리하는 것이 좀더 객체지향적인 개발 방법입니다. 
-
-> Item.java - 재고 증가
-
-```
-/**
-     * 재고 증가
-     * @param quantity
-     */
-    public void addStock(int quantity){
-        this.stockQuantity += quantity; //현재 재고수량에 파라미터로 받은 수량을 더합니다.
-    }
-
-```
+> - merge(entity) : 엔티티가 분리되어 변경된 경우 엔티티를 영속성 컨텍스트로 되돌리려면 사용되어야합니다.
 
 
-> Item.java - 재고 감소
+> merge는 이후 웹 어플리케이션 구현할때 더 자세히 설명하도록 하겠습니다.
 
-```
- /**
-     * 재고 감소
-     * @param quantity
-     */
-    public void removeStock(int quantity){
-        int restStock = this.stockQuantity - quantity; //파라미터를 뺀 변경된 재고수량
-
-        if (restStock < 0) {
-            throw new NotEnoughStockException("need more stock"); //변경된 재고수량이 0보다 작으면 예외를 던짐
-        }
-        this.stockQuantity = restStock;
-    }
-```
-
-
-#### 사용자 정의 예외 생성 (Generate Custom Exception)
-> RuntimeException을 상속받아 메서드들을 오버라이딩 받아 새로 추가한 사용자 정의 예외 생성 NotEnoughStockException를 RuntimeException과 같이 사용
-
-
-> java/jpabook/exception 폴더 생성 후 
-
-
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-001.png)
-
-> NotEnoughStockException.java 생성
-
-
-
-
-> inteliJ Alt + Insert (Generate) - Method Overriding
-
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-002.png)
-
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-003.png)
-
-> java/jpabook/exception/NotEnoughStockException.java
-
-```
-public NotEnoughStockException() {
-        super();
-    }
-
-    public NotEnoughStockException(String message) {
-        super(message);
-    }
-
-    public NotEnoughStockException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public NotEnoughStockException(Throwable cause) {
-        super(cause);
-    }
-
-    protected NotEnoughStockException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-```
-
-
-
-> 
-
-```
-package jpabook.jpashop.domain.item;
-
-import jpabook.exception.NotEnoughStockException;
-import jpabook.jpashop.domain.Category;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-
-@Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "dtype")
-@Getter @Setter
-public abstract class Item {
-
-    @Id @GeneratedValue
-    @Column(name = "item_id")
-    private Long id;
-
-    private String name;
-    private int price;
-    private int stockQuantity;
-
-    @ManyToMany(mappedBy = "items")
-    private List<Category> categories = new ArrayList<>();
-
-    //==비즈니스 로직==//
-
-    /**
-     * 재고 증가
-     * @param quantity
-     */
-    public void addStock(int quantity){
-        this.stockQuantity += quantity;
-    }
-
-    /**
-     * 재고 감소
-     * @param quantity
-     */
-    public void removeStock(int quantity){
-        int restStock = this.stockQuantity - quantity;
-
-        if (restStock < 0) {
-            throw new NotEnoughStockException("need more stock");
-        }
-        this.stockQuantity = restStock;
-    }
-}
-
-```
+> 전반적인 문맥을 이해해야 설명하기 더 명확해지기 때문입니다. 
 
 
 ### 이전 소스
@@ -277,7 +128,6 @@ public abstract class Item {
 	spring.jpa.properties.hibernate.format_sql=true
 	
 </details>
-
 
 > main/resources/application.yml
 
@@ -540,7 +390,8 @@ public abstract class Item {
  	<summary> Item.java </summary>
 
 	package jpabook.jpashop.domain.item;
-
+	
+	import jpabook.exception.NotEnoughStockException;
 	import jpabook.jpashop.domain.Category;
 	import lombok.Getter;
 	import lombok.Setter;
@@ -566,7 +417,30 @@ public abstract class Item {
 	    @ManyToMany(mappedBy = "items")
 	    private List<Category> categories = new ArrayList<>();
 	
+	    //==비즈니스 로직==//
+	
+	    /**
+	     * 재고 증가
+	     * @param quantity
+	     */
+	    public void addStock(int quantity){
+	        this.stockQuantity += quantity;
+	    }
+	
+	    /**
+	     * 재고 감소
+	     * @param quantity
+	     */
+	    public void removeStock(int quantity){
+	        int restStock = this.stockQuantity - quantity;
+	
+	        if (restStock < 0) {
+	            throw new NotEnoughStockException("need more stock");
+	        }
+	        this.stockQuantity = restStock;
+	    }
 	}
+
 
 
 </details> 
@@ -702,9 +576,9 @@ public abstract class Item {
 
 <details title="펼치기/숨기기">
  	<summary> MemberRepository.java </summary>
-
+	 
 	package jpabook.jpashop.repository;
-
+	
 	import jpabook.jpashop.domain.Member;
 	import lombok.RequiredArgsConstructor;
 	import org.springframework.beans.factory.annotation.Autowired;
@@ -757,6 +631,7 @@ public abstract class Item {
 	    }
 	
 	}
+
 
 </details> 
 
@@ -847,9 +722,63 @@ public abstract class Item {
 	
 	}
 
+
 </details> 
 
 
+> test/resources/application.properties
+
+<details title="펼치기/숨기기">
+ 	<summary> application.properties </summary>
+
+	spring.devtools.restart.enabled=true
+	spring.devtools.restart.poll-interval=2s
+	spring.devtools.restart.quiet-period=1s
+	spring.thymeleaf.cache=false
+	spring.jpa.properties.hibernate.format_sql=true
+
+</details> 
+
+> test/resources/application.yml
+
+<details title="펼치기/숨기기">
+ 	<summary> application.yml </summary>
+
+	spring:
+	#  datasource:
+	  #    url: jdbc:h2:mem:test
+	  #    username: sa
+	  #    password:
+	  #    driver-class-name: org.h2.Driver
+	  #  jpa:
+	  #    hibernate:
+	  #      ddl-auto: create-drop # 애플리케이션 동작 시점에 엔티티 재생성
+	  #     use_sql_comments: true
+	  #   database: h2
+	
+	  devtools:
+	    livereload:
+	      enabled: true # livereload 사용시 활성화
+	    restart:
+	      enabled: false #운영 에서는 제거.
+	
+	  thymeleaf:
+	    cache: false
+	
+	logging:
+	  level:
+	    org.hibernate.SQL: debug
+	    org.hibernate.type: trace #파라미터 로깅
+	    org.hibernate.type.descriptor.sql: trace
+	
+	decorator:
+	  datasource:
+	    p6spy:
+	      enable-logging : true
+	      multiline: true
+	      logging: slf4j
+
+</details> 
 
 > test/java/jpabook/jpashop/service/MemberServiceTest.java
 
@@ -914,61 +843,6 @@ public abstract class Item {
 	
 	    }
 	}
-
-</details> 
-
-
-> test/resources/application.properties
-
-<details title="펼치기/숨기기">
- 	<summary> application.properties </summary>
-
-	spring.devtools.restart.enabled=true
-	spring.devtools.restart.poll-interval=2s
-	spring.devtools.restart.quiet-period=1s
-	spring.thymeleaf.cache=false
-	spring.jpa.properties.hibernate.format_sql=true
-
-</details> 
-
-> test/resources/application.yml
-
-<details title="펼치기/숨기기">
- 	<summary> application.yml </summary>
-
-	spring:
-	#  datasource:
-	  #    url: jdbc:h2:mem:test
-	  #    username: sa
-	  #    password:
-	  #    driver-class-name: org.h2.Driver
-	  #  jpa:
-	  #    hibernate:
-	  #      ddl-auto: create-drop # 애플리케이션 동작 시점에 엔티티 재생성
-	  #     use_sql_comments: true
-	  #   database: h2
-	
-	  devtools:
-	    livereload:
-	      enabled: true # livereload 사용시 활성화
-	    restart:
-	      enabled: false #운영 에서는 제거.
-	
-	  thymeleaf:
-	    cache: false
-	
-	logging:
-	  level:
-	    org.hibernate.SQL: debug
-	    org.hibernate.type: trace #파라미터 로깅
-	    org.hibernate.type.descriptor.sql: trace
-	
-	decorator:
-	  datasource:
-	    p6spy:
-	      enable-logging : true
-	      multiline: true
-	      logging: slf4j
 
 </details> 
 
