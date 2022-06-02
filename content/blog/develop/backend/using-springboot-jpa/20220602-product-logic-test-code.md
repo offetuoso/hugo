@@ -57,54 +57,235 @@ toc: true
 >	- QueryDSL 소개
 >	- 마무리
 
-## 상품 서비스 개발
+## 상품 기능 테스트
 ---------------------------
 
 
-### 상품 서비스
+### 테스트 요구사항
 ---------------------------
+> - 상품등록을 성공해야한다.
 
-> java/jpabook/jpashop/service/ItemService.java
+### 테스트 코드 작성
+-----------------------------
+> ItemService에서 Intelij IDEA의 단축키 Ctrl + Shift + T 
+(이클립스 스타일 시 go to Test 단축키 변경)
+
+> 생성된것을 확인 
+
+> 이전에 생성한 tdd + Tab (라이브 템플릿) 사용
+
+> tdd + Tab (라이브 템플릿)
+
+```
+@Test
+    public void 회원가입() throws Exception{
+        //given 
+        
+        //when 
+
+        //then 
+    }
+```
+
+> - given : 이렇게 주어졌을때
+> - when : 이렇게 하면
+> - then : 이렇게 된다.
+
+
+> 아래 링크 참조
+
+> <a href="https://offetuoso.github.io/blog/develop/backend/using-springboot-jpa/jpa-start/#%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%BD%94%EB%93%9C">[스프링부트 JPA 활용] JPA 동작확인</a>
+
+
+
+#### 상품등록 테스트
+> 상품은 Album, Book, Movie 3가지 종류가 있습니다. 이를 각각 저장해 저장된 엔티티객체와 DB에서 읽어온 객체를 비교해 보도록 하겠습니다.
+
+
+> 음반 상품등록
+
+```
+	@Test
+    public void 음반_상품등록() throws Exception{
+        //given
+        Item item = new Album();
+        item.setName("멜론 TOP 100");
+        ((Album) item).setArtist("Various Artists");
+        ((Album) item).setEtc("방탄소년단 외 다수");
+        item.setPrice(20000);
+        item.addStock(50);
+
+        //when
+        Item savedItem = itemService.saveItem(item);
+
+        //then
+        em.flush();
+        assertEquals(item, itemRepository.findOne(savedItem.getId()));
+    }
+```
+
+
+> 책 상품등록
+
+```
+	@Test
+    public void 책_상품등록() throws Exception{
+        //given
+        Item item = new Book();
+        item.setName("JPA BOOK");
+        ((Book) item).setAuthor("김영한");
+        ((Book) item).setIsbn("11111");
+        item.setPrice(15000);
+        item.addStock(100);
+
+        //when
+        Item savedItem = itemService.saveItem(item);
+
+        //then
+        em.flush();
+        assertEquals(item, itemRepository.findOne(savedItem.getId()));
+    }
+```
+
+
+> 영화 상품등록
+
+```
+	@Test
+    public void 영화_상품등록() throws Exception{
+        //given
+        Item item = new Movie();
+        item.setName("쥬라기월드: 도미니언");
+        ((Movie) item).setDirector("콜린 트레보로우");
+        ((Movie) item).setActor("크리스 프랫");
+        item.setPrice(15000);
+        item.addStock(1000);
+
+        //when
+        Item savedItem = itemService.saveItem(item);
+
+        //then
+        em.flush();
+        assertEquals(item, itemRepository.findOne(savedItem.getId()));
+    }
+```
+
+
+> java/jpabook/jpashop/service/ItemServiceTest.java
 
 ```
 package jpabook.jpashop.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import jpabook.jpashop.domain.item.Album;
+import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
+import jpabook.jpashop.domain.item.Movie;
 import jpabook.jpashop.repository.ItemRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import javax.persistence.EntityManager;
 
-@Service
-@Transactional(readOnly = true)
-@RequiredArgsConstructor  // 생성자 주입
-public class ItemService {
+@SpringBootTest
+@Transactional
+class ItemServiceTest {
+    // 테스트 케이스에서는 다른곳에서 참조할 곳이 없으므로 @Autowired로 사용
+    @Autowired ItemRepository itemRepository;
+    @Autowired ItemService itemService;
+    @Autowired EntityManager em;
 
-    private final ItemRepository itemRepository;
+    @Test
+    public void 음반_상품등록() throws Exception{
+        //given
+        Item item = new Album();
+        item.setName("멜론 TOP 100");
+        ((Album) item).setArtist("Various Artists");
+        ((Album) item).setEtc("방탄소년단 외 다수");
+        item.setPrice(20000);
+        item.addStock(50);
 
-    @Transactional
-    public Item saveItem(Item item){
-        itemRepository.save(item);
-        return item; //등록한 엔티티 정보 리턴, api response 리턴 및 test code 검증용
+        //when
+        Item savedItem = itemService.saveItem(item);
+
+        //then
+        em.flush();
+        assertEquals(item, itemRepository.findOne(savedItem.getId()));
     }
+    
+    @Test
+    public void 책_상품등록() throws Exception{
+        //given
+        Item item = new Book();
+        item.setName("JPA BOOK");
+        ((Book) item).setAuthor("김영한");
+        ((Book) item).setIsbn("11111");
+        item.setPrice(15000);
+        item.addStock(100);
 
-    public List<Item> findItems(){
-        return itemRepository.findAll();
+        //when
+        Item savedItem = itemService.saveItem(item);
+
+        //then
+        em.flush();
+        assertEquals(item, itemRepository.findOne(savedItem.getId()));
     }
+    
+    @Test
+    public void 영화_상품등록() throws Exception{
+        //given
+        Item item = new Movie();
+        item.setName("쥬라기월드: 도미니언");
+        ((Movie) item).setDirector("콜린 트레보로우");
+        ((Movie) item).setActor("크리스 프랫");
+        item.setPrice(15000);
+        item.addStock(1000);
 
-    public Item findItem(Long item_id){
-        return itemRepository.findOne(item_id);
+        //when
+        Item savedItem = itemService.saveItem(item);
+
+        //then
+        em.flush();
+        assertEquals(item, itemRepository.findOne(savedItem.getId()));
     }
-
 }
+```
+
+> console
+
+```
+	insert 
+	  into 
+	  	item 
+	  		(name, price, stock_quantity, author, isbn, dtype, item_id) 
+	  	values 
+	  		('JPA BOOK', 15000, 100, '김영한', '11111', 'B', 1);
+2022-06-02 23:39:12.492  INFO 5672 --- [    Test worker] p6spy                                    : #1654180752492 | took 0ms | rollback | connection 4| url jdbc:h2:mem:1b70f279-db65-46bd-a9f3-0b1d472f66ad
+
+
+	insert 
+	  into 
+	  	item 
+	  		(name, price, stock_quantity, artist, etc, dtype, item_id) 
+	  	values 
+	  		('멜론 TOP 100', 20000, 50, 'Various Artists', '방탄소년단 외 다수', 'A', 2);
+2022-06-02 23:39:12.524  INFO 5672 --- [    Test worker] p6spy                                    : #1654180752524 | took 0ms | rollback | connection 5| url jdbc:h2:mem:1b70f279-db65-46bd-a9f3-0b1d472f66ad
+
+
+	insert 
+	  into 
+	  	item 
+	  		(name, price, stock_quantity, actor, director, dtype, item_id) 
+	  	values 
+	  		('쥬라기월드: 도미니언', 15000, 1000, '크리스 프랫', '콜린 트레보로우', 'M', 3);
+2022-06-02 23:39:12.540  INFO 5672 --- [    Test worker] p6spy                                    : #1654180752540 | took 0ms | rollback | connection 6| url jdbc:h2:mem:1b70f279-db65-46bd-a9f3-0b1d472f66ad
 
 ```
 
-> ItemService는 구현한 ItemRepository를 그대로 연결해 주는 것만 있기 때문에 서비스를 생략하고 컨트롤러에서 바로 ItemRepository를 호출해도 됩니다.
-
-
+> 각각 dtype에 맞게 잘 저장된것을 확인 할 수 있습니다. 또한 모든 테스트가 통과된 것을 확인 할 수 있습니다.
 
 ### 이전 소스
 ---------------------
@@ -783,7 +964,7 @@ public class ItemService {
 
 <details title="펼치기/숨기기">
  	<summary> ItemRepository.java </summary>
-
+	
 	package jpabook.jpashop.repository;
 	
 	import jpabook.jpashop.domain.item.Item;
@@ -815,6 +996,48 @@ public class ItemService {
 	        return em.createQuery("select i from Item i", Item.class)
 	                .getResultList();
 	    }
+	}
+
+
+</details> 
+
+
+> java/jpabook/jpashop/service/ItemService.java
+
+<details title="펼치기/숨기기">
+ 	<summary> ItemService.java </summary>
+	
+	package jpabook.jpashop.service;
+	
+	import jpabook.jpashop.domain.item.Item;
+	import jpabook.jpashop.repository.ItemRepository;
+	import lombok.RequiredArgsConstructor;
+	import org.springframework.stereotype.Service;
+	import org.springframework.transaction.annotation.Transactional;
+	
+	import java.util.List;
+	
+	@Service
+	@Transactional(readOnly = true)
+	@RequiredArgsConstructor  // 생성자 주입
+	public class ItemService {
+	
+	    private final ItemRepository itemRepository;
+	
+        @Transactional
+	    public Item saveItem(Item item){
+	        itemRepository.save(item);
+	        return item; //등록한 엔티티 정보 리턴, api response 리턴 및 test code 검증용
+	    }
+	
+	    public List<Item> findItems(){
+	        return itemRepository.findAll();
+	    }
+	
+	    public Item findItem(Long item_id){
+	        return itemRepository.findOne(item_id);
+	    }
+	
 	}
 
 </details> 
