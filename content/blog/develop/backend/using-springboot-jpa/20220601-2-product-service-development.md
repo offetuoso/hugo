@@ -1,14 +1,14 @@
 ---
-title: "[스프링부트 JPA 활용] 상품 리포지토리 개발"
+title: "[스프링부트 JPA 활용] 상품 서비스 개발"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-06-01
-slug: "product-repository-development"
-description: "[스프링부트 JPA 활용] 상품 도메인 개발"
+slug: "2-product-service-development"
+description: "[스프링부트 JPA 활용] 상품 서비스 개발"
 keywords: ["ORM"]
-draft: false
+draft: true
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -57,65 +57,59 @@ toc: true
 >	- QueryDSL 소개
 >	- 마무리
 
-## 상품 리포지토리 개발
+## 상품 서비스 개발
 ---------------------------
 
 
-### 상품 리포지토리
+### 상품 서비스
 ---------------------------
 
-> java/jpabook/jpashop/repository/ItemRepository.java
+> java/jpabook/jpashop/service/ItemService.java
 
 ```
-package jpabook.jpashop.repository;
+package jpabook.jpashop.service;
 
 import jpabook.jpashop.domain.item.Item;
+import jpabook.jpashop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
-@Repository
-@RequiredArgsConstructor
-public class ItemRepository {
+@Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor  // 생성자 주입
+public class ItemService {
 
-    private final EntityManager em;
+    private final ItemRepository itemRepository;
 
-    public void save(Item item){
-        if (item.getId() == null){
-            em.persist(item);
-        }else{
-            em.merge(item);
-        }
+    @Transactional
+    public void saveItem(Item item){
+        itemRepository.save(item);
     }
 
-    public Item findOne(Long id){
-        return em.find(Item.class, id);
+    public List<Item> findItems(){
+        return itemRepository.findAll();
     }
 
-    public List<Item> findAll(){
-        return em.createQuery("select i from Item i", Item.class)
-                .getResultList();
+    public Item findItem(Long item_id){
+        return itemRepository.findOne(item_id);
     }
+
 }
 
 ```
 
-> 특이한 점은 save 메소드를 구현할때, Id값이 있는지 체크 하여 없으면 persist() 있으면 merge()를 사용하였습니다. 
+> ItemService는 구현한 ItemRepository를 그대로 연결해 주는 것만 있기 때문에 서비스를 생략하고 컨트롤러에서 바로 ItemRepository를 호출해도 됩니다.
 
-> - persist(entity) : DB에 추가하려면 완전히 새로운 엔티티와 함께 ​​사용해야합니다 (엔티티가 이미 DB에 존재하는 경우 EntityExistsException 발생).
-
-> - merge(entity) : 엔티티가 분리되어 변경된 경우 엔티티를 영속성 컨텍스트로 되돌리려면 사용되어야합니다.
-
-
-> merge는 이후 웹 어플리케이션 구현할때 더 자세히 설명하도록 하겠습니다.
-
-> 전반적인 문맥을 이해해야 설명하기 더 명확해지기 때문입니다. 
 
 
 ### 이전 소스
 ---------------------
+
+#### 설정
+
 > /main/resources/application.properties
 
 <details title="펼치기/숨기기">
@@ -169,6 +163,62 @@ public class ItemRepository {
 	      logging: slf4j
 	
 </details>
+
+> test/resources/application.properties
+
+<details title="펼치기/숨기기">
+ 	<summary> application.properties </summary>
+
+	spring.devtools.restart.enabled=true
+	spring.devtools.restart.poll-interval=2s
+	spring.devtools.restart.quiet-period=1s
+	spring.thymeleaf.cache=false
+	spring.jpa.properties.hibernate.format_sql=true
+
+</details> 
+
+> test/resources/application.yml
+
+<details title="펼치기/숨기기">
+ 	<summary> application.yml </summary>
+
+	spring:
+	#  datasource:
+	  #    url: jdbc:h2:mem:test
+	  #    username: sa
+	  #    password:
+	  #    driver-class-name: org.h2.Driver
+	  #  jpa:
+	  #    hibernate:
+	  #      ddl-auto: create-drop # 애플리케이션 동작 시점에 엔티티 재생성
+	  #     use_sql_comments: true
+	  #   database: h2
+	
+	  devtools:
+	    livereload:
+	      enabled: true # livereload 사용시 활성화
+	    restart:
+	      enabled: false #운영 에서는 제거.
+	
+	  thymeleaf:
+	    cache: false
+	
+	logging:
+	  level:
+	    org.hibernate.SQL: debug
+	    org.hibernate.type: trace #파라미터 로깅
+	    org.hibernate.type.descriptor.sql: trace
+	
+	decorator:
+	  datasource:
+	    p6spy:
+	      enable-logging : true
+	      multiline: true
+	      logging: slf4j
+
+</details> 
+
+#### 엔티티
 
 > java/jpabook/jpashop/domain/Address.java
 
@@ -572,6 +622,8 @@ public class ItemRepository {
 
 </details> 
 
+#### 도메인
+
 > java/jpabook/jpashop/repository/MemberRepository.java
 
 <details title="펼치기/숨기기">
@@ -725,60 +777,48 @@ public class ItemRepository {
 
 </details> 
 
-
-> test/resources/application.properties
+	
+> java/jpabook/jpashop/repository/ItemRepository.java
 
 <details title="펼치기/숨기기">
- 	<summary> application.properties </summary>
+ 	<summary> ItemRepository.java </summary>
 
-	spring.devtools.restart.enabled=true
-	spring.devtools.restart.poll-interval=2s
-	spring.devtools.restart.quiet-period=1s
-	spring.thymeleaf.cache=false
-	spring.jpa.properties.hibernate.format_sql=true
+	package jpabook.jpashop.repository;
+	
+	import jpabook.jpashop.domain.item.Item;
+	import lombok.RequiredArgsConstructor;
+	import org.springframework.stereotype.Repository;
+	
+	import javax.persistence.EntityManager;
+	import java.util.List;
+	
+	@Repository
+	@RequiredArgsConstructor
+	public class ItemRepository {
+	
+	    private final EntityManager em;
+	
+	    public void save(Item item){
+	        if (item.getId() == null){
+	            em.persist(item);
+	        }else{
+	            em.merge(item);
+	        }
+	    }
+	
+	    public Item findOne(Long id){
+	        return em.find(Item.class, id);
+	    }
+	
+	    public List<Item> findAll(){
+	        return em.createQuery("select i from Item i", Item.class)
+	                .getResultList();
+	    }
+	}
 
 </details> 
 
-> test/resources/application.yml
-
-<details title="펼치기/숨기기">
- 	<summary> application.yml </summary>
-
-	spring:
-	#  datasource:
-	  #    url: jdbc:h2:mem:test
-	  #    username: sa
-	  #    password:
-	  #    driver-class-name: org.h2.Driver
-	  #  jpa:
-	  #    hibernate:
-	  #      ddl-auto: create-drop # 애플리케이션 동작 시점에 엔티티 재생성
-	  #     use_sql_comments: true
-	  #   database: h2
-	
-	  devtools:
-	    livereload:
-	      enabled: true # livereload 사용시 활성화
-	    restart:
-	      enabled: false #운영 에서는 제거.
-	
-	  thymeleaf:
-	    cache: false
-	
-	logging:
-	  level:
-	    org.hibernate.SQL: debug
-	    org.hibernate.type: trace #파라미터 로깅
-	    org.hibernate.type.descriptor.sql: trace
-	
-	decorator:
-	  datasource:
-	    p6spy:
-	      enable-logging : true
-	      multiline: true
-	      logging: slf4j
-
-</details> 
+#### 테스트
 
 > test/java/jpabook/jpashop/service/MemberServiceTest.java
 
