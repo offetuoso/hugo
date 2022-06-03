@@ -8,7 +8,7 @@ date: 2022-06-01
 slug: "2-product-service-development"
 description: "[스프링부트 JPA 활용] 상품 서비스 개발"
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -64,6 +64,8 @@ toc: true
 ### 테스트 요구사항
 ---------------------------
 > - 상품등록을 성공해야한다.
+> - 음반, 책, 영화 각각 저장하여 성공하여야한다.
+
 
 ### 테스트 코드 작성
 -----------------------------
