@@ -1,14 +1,14 @@
 ---
-title: "[스프링부트 JPA 활용] 상품 서비스 개발"
+title: "[스프링부트 JPA 활용] 주문 도메인 개발"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2022-06-02
-slug: "product-logic-test-code"
-description: "[스프링부트 JPA 활용] 상품 서비스 개발"
+date: 2022-06-03
+slug: "order-domain-development"
+description: "[스프링부트 JPA 활용] 주문 도메인 개발"
 keywords: ["ORM"]
-draft: false
+draft: true
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -57,237 +57,215 @@ toc: true
 >	- QueryDSL 소개
 >	- 마무리
 
-## 상품 기능 테스트
+## 주문 도메인 개발
+---------------------------
+> 지금까지 설명했던것 중에 가장 중요한 부분입니다. 비지니스 로직이 서로 얽혀서 돌아가는 것을 JPA와 엔티티를 가지고 
+어떻게 풀어 내는지 아실 수 있습니다. 
+
+## 주문, 주문 상품 엔티티 개발
 ---------------------------
 
+> 또 트랜잭션 스크립트 패턴과 도메인 모델 패턴 중 도메인 모델 패턴을 많이 접해 보지 못했을 텐데 예제를 통해 접해 볼 수 있습니다.  
 
-### 테스트 요구사항
+#### 구현 기능
+> - 상품 주문
+> - 주문 내역 조회
+> - 주문 취소
+
+##### 상품 주문 
+> - 주문서 작성 
+> - 사용자를 선택
+> - 상품종류를 선택
+> - 상품종류를 선택에 따라 상품 콤보박스 변경
+> - 상품 선택
+> - 주문수량 입력 후 저장
+>	* 선택한 상품 입력 주문수량 만큼 감소
+> - 주문 내역 리스트 이동
+
+![contact](/images/develop/backend/using-springboot-jpa/order-domain-development/img-001.png)
+
+##### 주문 내역 조회
+> - 주문 내역 추가 
+> - 주문 내역 검색
+
+![contact](/images/develop/backend/using-springboot-jpa/order-domain-development/img-002.png)
+
+##### 주문 취소 
+> - 주문 상태 변경
+>	* 주문 수량 만큼 해당 취소 상품 갯수 추가
+
+![contact](/images/develop/backend/using-springboot-jpa/order-domain-development/img-003.png)
+
+
+
+
+#### 구현 순서
 ---------------------------
-> - 상품등록을 성공해야한다.
-> - 음반, 책, 영화 각각 저장하여 성공하여야한다.
+> - 주문 엔티티, 주문상품 엔티티 개발
+> - 주문 리포지토리개발
+> - 주문 서비스 개발
+> - 주문 검색 기능 개발
+> - 주문 기능 테스트
+
+### 주문 엔티티, 주문상품 엔티티 개발
+------------------------------------
+> Order뿐만 아니라 OrderItem, Delivery를 생성해야 하기 때문에 생성 메서드를 Order 엔티티에 생성합니다.
+
+> 생성할때 밖에서 set, set, set 으로 각각의 엔티티를 설정하는것이 아니라 static 메서드를 호출해 한번에 생성합니다. 
 
 
-### 테스트 코드 작성
------------------------------
-> ItemService에서 Intelij IDEA의 단축키 Ctrl + Shift + T 
-(이클립스 스타일 시 go to Test 단축키 변경)
 
-> 생성된것을 확인 
+#### 생성 메서드
 
-> 이전에 생성한 tdd + Tab (라이브 템플릿) 사용
-
-> tdd + Tab (라이브 템플릿)
+> Order.java - 생성 메서드
 
 ```
-@Test
-    public void 회원가입() throws Exception{
-        //given 
-        
-        //when 
+    //== 생성 메서드 ==//
+    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems){ // OrderItem...  여러개를 넘길 수 있음
 
-        //then 
+        Order order = new Order();
+        order.setMember(member);
+        order.setDelivery(delivery);
+        for (OrderItem orderItem : orderItems){
+            order.addOrderItem(orderItem);
+        }
+        order.setStatus(OrderStatus.ORDER);
+        order.setOrderDate(LocalDateTime.now());
+
+        return order;
     }
-```
-
-> - given : 이렇게 주어졌을때
-> - when : 이렇게 하면
-> - then : 이렇게 된다.
-
-
-> 아래 링크 참조
-
-> <a href="https://offetuoso.github.io/blog/develop/backend/using-springboot-jpa/jpa-start/#%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%BD%94%EB%93%9C">[스프링부트 JPA 활용] JPA 동작확인</a>
-
-
-
-#### 상품등록 테스트
-> 상품은 Album, Book, Movie 3가지 종류가 있습니다. 이를 각각 저장해 저장된 엔티티객체와 DB에서 읽어온 객체를 비교해 보도록 하겠습니다.
-
-
-> 음반 상품등록
 
 ```
-	@Test
-    public void 음반_상품등록() throws Exception{
-        //given
-        Item item = new Album();
-        item.setName("멜론 TOP 100");
-        ((Album) item).setArtist("Various Artists");
-        ((Album) item).setEtc("방탄소년단 외 다수");
-        item.setPrice(20000);
-        item.addStock(50);
 
-        //when
-        Item savedItem = itemService.saveItem(item);
+> 해당 코드의 스타일이 중요한 점은 주문을 생성할때, 한곳에 기능을 모아 수정시 돌아다니며 수정할 필요가 없습니다.  
 
-        //then
-        em.flush();
-        assertEquals(item, itemRepository.findOne(savedItem.getId()));
+
+> OrderItem.java - 생성 메서드
+> orderPrice를 item의 가격에서 안가져오고, 파라미터로 따로 받는 이유는 구매 당시의 가격을 받기 위함
+
+```
+    //==생성 메서드==//
+    public static OrderItem createOrderItem(Item item, int orderPrice, int count){ 
+        OrderItem orderItem = new OrderItem();
+        orderItem.setItem(item);
+        orderItem.setOrderPrice(orderPrice);
+        orderItem.setCount(count);
+		
+		// 주문 수량만큼 재고를 감소시킴 
+        item.removeStock(count);
+        return orderItem;
     }
 ```
 
 
-> 책 상품등록
+#### 비즈니스 로직
+> 이미 배송완료된 상품은 취소가 불가능하다는 체크로직을 엔티티 안에 넣어 관리합니다.
+
+> Order.java - 비지니스 로직 (주문 취소)
 
 ```
-	@Test
-    public void 책_상품등록() throws Exception{
-        //given
-        Item item = new Book();
-        item.setName("JPA BOOK");
-        ((Book) item).setAuthor("김영한");
-        ((Book) item).setIsbn("11111");
-        item.setPrice(15000);
-        item.addStock(100);
+//==비즈니스 로직==//
+    /**
+     * 주문 취소
+     */
+    public void cancel(){
+        // 배송이 완료된 주문은 취소가 불가
+        if (delivery.getStatus() == DeliveryStatus.COMP){
+            throw new IllegalStateException("이미 배송이 완료된 상품은 취소가 불가능합니다.");
+        }
 
-        //when
-        Item savedItem = itemService.saveItem(item);
+        this.setStatus(OrderStatus.CANCEL);
 
-        //then
-        em.flush();
-        assertEquals(item, itemRepository.findOne(savedItem.getId()));
+        for (OrderItem orderItem : this.orderItems){
+            orderItem.cancel();
+        }
+    }
+
+```
+
+> OrderItem.java - 비지니스 로직 (주문 취소)
+
+```
+    //==비즈니스 로직==//
+    /**
+     * 주문 취소
+     */
+    public void cancel() {
+        getItem().addStock(this.count);
     }
 ```
 
 
-> 영화 상품등록
+#### 조회 로직
+> Order에서 OrderItem에 가서 주문 수량과 주문 가격을 계산해주는 getTotalPrice()를 생성하고 
+Order에서 orderItems의 각각의 getTotalPrice()의 합계를 반환합니다.
+
+> OrderItem.java - 조회 로직 (주문 금액 가져오기)
 
 ```
-	@Test
-    public void 영화_상품등록() throws Exception{
-        //given
-        Item item = new Movie();
-        item.setName("쥬라기월드: 도미니언");
-        ((Movie) item).setDirector("콜린 트레보로우");
-        ((Movie) item).setActor("크리스 프랫");
-        item.setPrice(15000);
-        item.addStock(1000);
+    /**
+     * 주문상품 전체 가격 조회
+     */
+    public int getTotalPrice() {
+        return getOrderPrice() * getOrderPrice();
+    }
+```
 
-        //when
-        Item savedItem = itemService.saveItem(item);
+> Order.java - 조회 로직 (전체 주문 가격 조회)
 
-        //then
-        em.flush();
-        assertEquals(item, itemRepository.findOne(savedItem.getId()));
+```
+  //==조회 로직==//
+    /**
+     * 전체 주문 가격 조회
+     */
+    public int getTotalPrice(){
+        int totalPrice = 0;
+
+        for (OrderItem orderItem : this.orderItems) {
+            totalPrice += orderItem.getTotalPrice();
+        }
+
+        return totalPrice;
+    }
+```
+
+> 위의 코드를 좀더 심플하게 변경할 수 있습니다. 
+
+#### sum()으로 바꾸기 (Replace with sum())
+> InteliJ 기능을 이용해서 자바 스트림을 이용해 간결하게 변경합니다.
+
+##### Alt + Enter - 현재 컨텍스트에 대한 액션을 표시
+
+![contact](/images/develop/backend/using-springboot-jpa/order-domain-development/img-004.png)
+
+
+```
+    //==조회 로직==//
+    /**
+     * 전체 주문 가격 조회
+     */
+    public int getTotalPrice(){
+        int totalPrice = this.orderItems.stream().mapToInt(OrderItem::getTotalPrice).sum();
+        return totalPrice;
+    }
+```
+
+##### Ctrl + Alt + N - 인라인화 
+> 인라인화는 return의 변수와 속성 변수의 이름이 같은경우 return에 속성 변수에 세팅한 코드를 세팅해 간결하게 변경합니다.
+
+```
+    //==조회 로직==//
+    /**
+     * 전체 주문 가격 조회
+     */
+    public int getTotalPrice(){
+        return this.orderItems.stream()
+                .mapToInt(OrderItem::getTotalPrice)
+                .sum();
     }
 ```
 
 
-> test/java/jpabook/jpashop/service/ItemServiceTest.java
-
-```
-package jpabook.jpashop.service;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-import jpabook.jpashop.domain.item.Album;
-import jpabook.jpashop.domain.item.Book;
-import jpabook.jpashop.domain.item.Item;
-import jpabook.jpashop.domain.item.Movie;
-import jpabook.jpashop.repository.ItemRepository;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-
-@SpringBootTest
-@Transactional
-class ItemServiceTest {
-    // 테스트 케이스에서는 다른곳에서 참조할 곳이 없으므로 @Autowired로 사용
-    @Autowired ItemRepository itemRepository;
-    @Autowired ItemService itemService;
-    @Autowired EntityManager em;
-
-    @Test
-    public void 음반_상품등록() throws Exception{
-        //given
-        Item item = new Album();
-        item.setName("멜론 TOP 100");
-        ((Album) item).setArtist("Various Artists");
-        ((Album) item).setEtc("방탄소년단 외 다수");
-        item.setPrice(20000);
-        item.addStock(50);
-
-        //when
-        Item savedItem = itemService.saveItem(item);
-
-        //then
-        em.flush();
-        assertEquals(item, itemRepository.findOne(savedItem.getId()));
-    }
-    
-    @Test
-    public void 책_상품등록() throws Exception{
-        //given
-        Item item = new Book();
-        item.setName("JPA BOOK");
-        ((Book) item).setAuthor("김영한");
-        ((Book) item).setIsbn("11111");
-        item.setPrice(15000);
-        item.addStock(100);
-
-        //when
-        Item savedItem = itemService.saveItem(item);
-
-        //then
-        em.flush();
-        assertEquals(item, itemRepository.findOne(savedItem.getId()));
-    }
-    
-    @Test
-    public void 영화_상품등록() throws Exception{
-        //given
-        Item item = new Movie();
-        item.setName("쥬라기월드: 도미니언");
-        ((Movie) item).setDirector("콜린 트레보로우");
-        ((Movie) item).setActor("크리스 프랫");
-        item.setPrice(15000);
-        item.addStock(1000);
-
-        //when
-        Item savedItem = itemService.saveItem(item);
-
-        //then
-        em.flush();
-        assertEquals(item, itemRepository.findOne(savedItem.getId()));
-    }
-}
-```
-
-> console
-
-```
-	insert 
-	  into 
-	  	item 
-	  		(name, price, stock_quantity, author, isbn, dtype, item_id) 
-	  	values 
-	  		('JPA BOOK', 15000, 100, '김영한', '11111', 'B', 1);
-2022-06-02 23:39:12.492  INFO 5672 --- [    Test worker] p6spy                                    : #1654180752492 | took 0ms | rollback | connection 4| url jdbc:h2:mem:1b70f279-db65-46bd-a9f3-0b1d472f66ad
-
-
-	insert 
-	  into 
-	  	item 
-	  		(name, price, stock_quantity, artist, etc, dtype, item_id) 
-	  	values 
-	  		('멜론 TOP 100', 20000, 50, 'Various Artists', '방탄소년단 외 다수', 'A', 2);
-2022-06-02 23:39:12.524  INFO 5672 --- [    Test worker] p6spy                                    : #1654180752524 | took 0ms | rollback | connection 5| url jdbc:h2:mem:1b70f279-db65-46bd-a9f3-0b1d472f66ad
-
-
-	insert 
-	  into 
-	  	item 
-	  		(name, price, stock_quantity, actor, director, dtype, item_id) 
-	  	values 
-	  		('쥬라기월드: 도미니언', 15000, 1000, '크리스 프랫', '콜린 트레보로우', 'M', 3);
-2022-06-02 23:39:12.540  INFO 5672 --- [    Test worker] p6spy                                    : #1654180752540 | took 0ms | rollback | connection 6| url jdbc:h2:mem:1b70f279-db65-46bd-a9f3-0b1d472f66ad
-
-```
-
-> 각각 dtype에 맞게 잘 저장된것을 확인 할 수 있습니다. 또한 모든 테스트가 통과된 것을 확인 할 수 있습니다.
 
 ### 이전 소스
 ---------------------
@@ -498,11 +476,8 @@ class ItemServiceTest {
 	        this.delivery = delivery;
 	        delivery.setOrder(this);
 	    }
-	
-	
 	}
 
- 	
 </details> 
 
 
@@ -1113,7 +1088,90 @@ class ItemServiceTest {
 </details> 
 
 
+> test/java/jpabook/jpashop/service/ItemServiceTest.java
 
+<details title="펼치기/숨기기">
+ 	<summary> ItemServiceTest.java </summary>
+ 	
+	package jpabook.jpashop.service;
+	
+	import static org.junit.jupiter.api.Assertions.*;
+	
+	import jpabook.jpashop.domain.item.Album;
+	import jpabook.jpashop.domain.item.Book;
+	import jpabook.jpashop.domain.item.Item;
+	import jpabook.jpashop.domain.item.Movie;
+	import jpabook.jpashop.repository.ItemRepository;
+	import org.junit.jupiter.api.Test;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.context.SpringBootTest;
+	import org.springframework.transaction.annotation.Transactional;
+	
+	import javax.persistence.EntityManager;
+	
+	@SpringBootTest
+	@Transactional
+	class ItemServiceTest {
+	    // 테스트 케이스에서는 다른곳에서 참조할 곳이 없으므로 @Autowired로 사용
+	    @Autowired ItemRepository itemRepository;
+	    @Autowired ItemService itemService;
+	    @Autowired EntityManager em;
+	
+	    @Test
+	    public void 음반_상품등록() throws Exception{
+	        //given
+	        Item item = new Album();
+	        item.setName("멜론 TOP 100");
+	        ((Album) item).setArtist("Various Artists");
+	        ((Album) item).setEtc("방탄소년단 외 다수");
+	        item.setPrice(20000);
+	        item.addStock(50);
+	
+	        //when
+	        Item savedItem = itemService.saveItem(item);
+	
+	        //then
+	        em.flush();
+	        assertEquals(item, itemRepository.findOne(savedItem.getId()));
+	    }
+	    
+	    @Test
+	    public void 책_상품등록() throws Exception{
+	        //given
+	        Item item = new Book();
+	        item.setName("JPA BOOK");
+	        ((Book) item).setAuthor("김영한");
+	        ((Book) item).setIsbn("11111");
+	        item.setPrice(15000);
+	        item.addStock(100);
+	
+	        //when
+	        Item savedItem = itemService.saveItem(item);
+	
+	        //then
+	        em.flush();
+	        assertEquals(item, itemRepository.findOne(savedItem.getId()));
+	    }
+	    
+	    @Test
+	    public void 영화_상품등록() throws Exception{
+	        //given
+	        Item item = new Movie();
+	        item.setName("쥬라기월드: 도미니언");
+	        ((Movie) item).setDirector("콜린 트레보로우");
+	        ((Movie) item).setActor("크리스 프랫");
+	        item.setPrice(15000);
+	        item.addStock(1000);
+	
+	        //when
+	        Item savedItem = itemService.saveItem(item);
+	
+	        //then
+	        em.flush();
+	        assertEquals(item, itemRepository.findOne(savedItem.getId()));
+	    }
+	}
+</details>
 
 #### 참고 
 > - <a href="https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-JPA-%ED%99%9C%EC%9A%A9-1">실전! 스프링 부트와 JPA 활용1 - 웹 애플리케이션 개발 - 김영한</a>
