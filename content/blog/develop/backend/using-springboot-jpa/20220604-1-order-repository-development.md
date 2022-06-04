@@ -1,14 +1,14 @@
 ---
-title: "[스프링부트 JPA 활용] 주문 도메인 개발"
+title: "[스프링부트 JPA 활용] 주문 리포지토리 개발"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2022-06-03
-slug: "order-domain-development"
+date: 2022-06-04
+slug: "1-order-repository-development"
 description: "[스프링부트 JPA 활용] 주문 도메인 개발"
 keywords: ["ORM"]
-draft: false
+draft: true
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -57,431 +57,42 @@ toc: true
 >	- QueryDSL 소개
 >	- 마무리
 
-## 주문 도메인 개발
----------------------------
-> 지금까지 설명했던것 중에 가장 중요한 부분입니다. 비지니스 로직이 서로 얽혀서 돌아가는 것을 JPA와 엔티티를 가지고 
-어떻게 풀어 내는지 아실 수 있습니다. 
-
-## 주문, 주문 상품 엔티티 개발
+## 주문 리포지토리 개발
 ---------------------------
 
-> 또 트랜잭션 스크립트 패턴과 도메인 모델 패턴 중 도메인 모델 패턴을 많이 접해 보지 못했을 텐데 예제를 통해 접해 볼 수 있습니다.  
-
-#### 구현 기능
-> - 상품 주문
-> - 주문 내역 조회
-> - 주문 취소
-
-##### 상품 주문 
-> - 주문서 작성 
-> - 사용자를 선택
-> - 상품종류를 선택
-> - 상품종류를 선택에 따라 상품 콤보박스 변경
-> - 상품 선택
-> - 주문수량 입력 후 저장
->	* 선택한 상품 입력 주문수량 만큼 감소
-> - 주문 내역 리스트 이동
-
-![contact](/images/develop/backend/using-springboot-jpa/order-domain-development/img-001.png)
-
-##### 주문 내역 조회
-> - 주문 내역 추가 
-> - 주문 내역 검색
-
-![contact](/images/develop/backend/using-springboot-jpa/order-domain-development/img-002.png)
-
-##### 주문 취소 
-> - 주문 상태 변경
->	* 주문 수량 만큼 해당 취소 상품 갯수 추가
-
-![contact](/images/develop/backend/using-springboot-jpa/order-domain-development/img-003.png)
-
-
-
-
-#### 구현 순서
----------------------------
-> - 주문 엔티티, 주문상품 엔티티 개발
-> - 주문 리포지토리개발
-> - 주문 서비스 개발
-> - 주문 검색 기능 개발
-> - 주문 기능 테스트
-
-### 주문 엔티티, 주문상품 엔티티 개발
-------------------------------------
-> Order뿐만 아니라 OrderItem, Delivery를 생성해야 하기 때문에 생성 메서드를 Order 엔티티에 생성합니다.
-
-> 생성할때 밖에서 set, set, set 으로 각각의 엔티티를 설정하는것이 아니라 static 메서드를 호출해 한번에 생성합니다. 
-
-
-
-#### 생성 메서드
-
-> Order.java - 생성 메서드
+> java/jpabook/jpashop/repository/OrderRepository.java
 
 ```
-    //== 생성 메서드 ==//
-    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems){ // OrderItem...  여러개를 넘길 수 있음
+package jpabook.jpashop.repository;
 
-        Order order = new Order();
-        order.setMember(member);
-        order.setDelivery(delivery);
-        for (OrderItem orderItem : orderItems){
-            order.addOrderItem(orderItem);
-        }
-        order.setStatus(OrderStatus.ORDER);
-        order.setOrderDate(LocalDateTime.now());
+import jpabook.jpashop.domain.Order;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
-        return order;
-    }
-
-```
-
-> 해당 코드의 스타일이 중요한 점은 주문을 생성할때, 한곳에 기능을 모아 수정시 돌아다니며 수정할 필요가 없습니다.  
-
-
-> OrderItem.java - 생성 메서드
-> orderPrice를 item의 가격에서 안가져오고, 파라미터로 따로 받는 이유는 구매 당시의 가격을 받기 위함
-
-```
-    //==생성 메서드==//
-    public static OrderItem createOrderItem(Item item, int orderPrice, int count){ 
-        OrderItem orderItem = new OrderItem();
-        orderItem.setItem(item);
-        orderItem.setOrderPrice(orderPrice);
-        orderItem.setCount(count);
-		
-		// 주문 수량만큼 재고를 감소시킴 
-        item.removeStock(count);
-        return orderItem;
-    }
-```
-
-
-#### 비즈니스 로직
-> 이미 배송완료된 상품은 취소가 불가능하다는 체크로직을 엔티티 안에 넣어 관리합니다.
-
-> Order.java - 비지니스 로직 (주문 취소)
-
-```
-//==비즈니스 로직==//
-    /**
-     * 주문 취소
-     */
-    public void cancel(){
-        // 배송이 완료된 주문은 취소가 불가
-        if (delivery.getStatus() == DeliveryStatus.COMP){
-            throw new IllegalStateException("이미 배송이 완료된 상품은 취소가 불가능합니다.");
-        }
-
-        this.setStatus(OrderStatus.CANCEL);
-
-        for (OrderItem orderItem : this.orderItems){
-            orderItem.cancel();
-        }
-    }
-
-```
-
-> OrderItem.java - 비지니스 로직 (주문 취소)
-
-```
-    //==비즈니스 로직==//
-    /**
-     * 주문 취소
-     */
-    public void cancel() {
-        getItem().addStock(this.count);
-    }
-```
-
-
-#### 조회 로직
-> Order에서 OrderItem에 가서 주문 수량과 주문 가격을 계산해주는 getTotalPrice()를 생성하고 
-Order에서 orderItems의 각각의 getTotalPrice()의 합계를 반환합니다.
-
-> OrderItem.java - 조회 로직 (주문 금액 가져오기)
-
-```
-    /**
-     * 주문상품 전체 가격 조회
-     */
-    public int getTotalPrice() {
-        return getOrderPrice() * getOrderPrice();
-    }
-```
-
-> Order.java - 조회 로직 (전체 주문 가격 조회)
-
-```
-  //==조회 로직==//
-    /**
-     * 전체 주문 가격 조회
-     */
-    public int getTotalPrice(){
-        int totalPrice = 0;
-
-        for (OrderItem orderItem : this.orderItems) {
-            totalPrice += orderItem.getTotalPrice();
-        }
-
-        return totalPrice;
-    }
-```
-
-> 위의 코드를 좀더 심플하게 변경할 수 있습니다. 
-
-#### sum()으로 바꾸기 (Replace with sum())
-> InteliJ 기능을 이용해서 자바 스트림을 이용해 간결하게 변경합니다.
-
-##### Alt + Enter - 현재 컨텍스트에 대한 액션을 표시
-
-![contact](/images/develop/backend/using-springboot-jpa/order-domain-development/img-004.png)
-
-
-```
-    //==조회 로직==//
-    /**
-     * 전체 주문 가격 조회
-     */
-    public int getTotalPrice(){
-        int totalPrice = this.orderItems.stream().mapToInt(OrderItem::getTotalPrice).sum();
-        return totalPrice;
-    }
-```
-
-##### Ctrl + Alt + N - 인라인화 
-> 인라인화는 return의 변수와 속성 변수의 이름이 같은경우 return에 속성 변수에 세팅한 코드를 세팅해 간결하게 변경합니다.
-
-```
-    //==조회 로직==//
-    /**
-     * 전체 주문 가격 조회
-     */
-    public int getTotalPrice(){
-        return this.orderItems.stream()
-                .mapToInt(OrderItem::getTotalPrice)
-                .sum();
-    }
-```
-
-
-> Order.java
-
-```
-package jpabook.jpashop.domain;
-
-import jpabook.jpashop.domain.item.Item;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import javax.persistence.EntityManager;
 import java.util.List;
 
-@Entity
-@Getter @Setter
-@Table(name = "orders")
-public class Order {
+@Repository
+@RequiredArgsConstructor
+public class OrderRepository {
 
-    @Id @GeneratedValue
-    @Column(name="order_id")
-    private Long id;
+    private final EntityManager em;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
-    @JoinColumn(name = "member_id") // Order의 member가 수정되면 Order의 외래키 값이 변경됩니다.
-    private Member member;
-
-
-    // mappedBy 연관관계의 주인인 OrderItem의 order로 매핑 되어있다는 뜻
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems = new ArrayList<>();
-
-
-    // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "delivery_id")
-    private Delivery delivery;
-
-    private LocalDateTime orderDate; //주문시간
-
-    @Enumerated(EnumType.STRING) // EnumType.ORDINAL(숫자라 순서바뀌면 큰일)이 기본이지만 무조건 EnumType.STRING(문자 코드)
-    private OrderStatus status; // 주문상태 [ORDER, CANCEL]
-
-
-    //==연관관계 메서드 (양방향 연관관계시 추가)==//
-    public void setMember(Member member){
-        this.member = member;
-        member.getOrders().add(this);
+    public void save(Order order){
+        em.persist(order);
     }
 
-    public void addOrderItem(OrderItem orderItem){
-        this.orderItems.add(orderItem);
-        orderItem.setOrder(this);
+    public Order findOne(Long orderId){
+        return em.find(Order.class, orderId);
     }
 
-    public void setDelivery(Delivery delivery){
-        this.delivery = delivery;
-        delivery.setOrder(this);
-    }
-
-    //== 생성 메서드==//
-    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems){ // OrderItem...  여러개를 넘길 수 있음
-
-        Order order = new Order();
-        order.setMember(member);
-        order.setDelivery(delivery);
-        for (OrderItem orderItem : orderItems){
-            order.addOrderItem(orderItem);
-        }
-        order.setStatus(OrderStatus.ORDER);
-        order.setOrderDate(LocalDateTime.now());
-
-        return order;
-    }
-
-    //==비즈니스 로직==//
-    /**
-     * 주문 취소
-     */
-    public void cancel(){
-        // 배송이 완료된 주문은 취소가 불가
-        if (delivery.getStatus() == DeliveryStatus.COMP){
-            throw new IllegalStateException("이미 배송이 완료된 상품은 취소가 불가능합니다.");
-        }
-
-        this.setStatus(OrderStatus.CANCEL);
-
-        for (OrderItem orderItem : this.orderItems){
-            orderItem.cancel();
-        }
-    }
-
-
-    //==조회 로직==//
-    /**
-     * 전체 주문 가격 조회
-     */
-    public int getTotalPrice(){
-
-        /*
-        int totalPrice = 0;
-
-        for (OrderItem orderItem : this.orderItems) {
-            totalPrice += orderItem.getTotalPrice();
-        }
-
-        return totalPrice;
-        */
-
-
-        return this.orderItems.stream()
-                .mapToInt(OrderItem::getTotalPrice)
-                .sum();
-    }
+    //public List<Order> findAll(OrderSearch orderSearch){}
 }
 
 ```
 
-> OrderItem.java
+> 검색은 뒤에서 좀더 자세하게 다루도록 하고 다음엔 OrderService에 대해 알아보도록 하겠습니다.
 
-```
-package jpabook.jpashop.domain;
-
-import jpabook.jpashop.domain.item.Item;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.*;
-
-@Entity
-@Getter @Setter
-public class OrderItem {
-
-    @Id @GeneratedValue
-    @Column(name = "order_item_id")
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY) // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
-    @JoinColumn(name = "item_id")
-    private Item item;
-
-    @ManyToOne(fetch = FetchType.LAZY) // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
-    @JoinColumn(name = "order_id")
-    private Order order;
-
-    private int orderPrice; //주문 당시의 가격
-    private int count; //주문 수량
-
-
-    //==생성 메서드==//
-    public static OrderItem createOrderItem(Item item, int orderPrice, int count){ //orderPrice는 구매 당시의 가격을 받기 위함
-        OrderItem orderItem = new OrderItem();
-        orderItem.setItem(item);
-        orderItem.setOrderPrice(orderPrice);
-        orderItem.setCount(count);
-
-        item.removeStock(count);
-        return orderItem;
-    }
-
-
-    //==비즈니스 로직==//
-    /**
-     * 주문 취소
-     */
-    public void cancel() {
-        getItem().addStock(this.count);
-    }
-
-
-    //==조회 로직==//
-    /**
-     * 주문상품 전체 가격 조회
-     */
-    public int getTotalPrice() {
-        return getOrderPrice() * getOrderPrice();
-    }
-}
-
-```
-
-### 생성 메서드 사용 시 생성자 사용 제약
-------------------
-> 생성 메서드를 사용하게 되면, new를 이용해 엔티티 객체를 생성하는 것을 막아야합니다. <br>
-> 왜냐하면, 다른 코드 스타일로 개발하면 유지보수가 불편할 뿐만 아니라 추가로 컬럼의 변경이 있을때 각각의 코드에서 수정이 필요하기 때문입니다. 
-
-> Order.java
-
-```
-@Entity
-@Getter @Setter
-@Table(name = "orders")
-public class Order {
-
-    protected Order() {} //생성자를 사용 불가로 하고 CteateOrder 사용 유도
-```
-
-> OrderItem.java
-
-```
-@Entity
-@Getter @Setter
-public class OrderItem {
-
-    protected OrderItem() {} //생성자를 사용 불가로 하고 CteateOrderItem 사용 유도
-```
-
-> 해당 생성자를 protected로 적용하는 것을 Lombok을 통해 더 편리하게 사용 할 수 있습니다.
-
-```
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-```
-
-![contact](/images/develop/backend/using-springboot-jpa/order-domain-development/img-005.png)
-
-> 만일 누군가 생성자를 통해 Order나 OrderItem을 생성하려 하면, 빨간줄로 오류를 뱉어 내기 때문에, 해당 소스에 가서 확인 후 @NoArgsConstructor(access = AccessLevel.PROTECTED)를 보고 다른 생성 방법을 찾아 개발을 할 수 있을 것 입니다.
 
 
 ### 이전 소스
@@ -640,6 +251,7 @@ public class OrderItem {
  	
 	package jpabook.jpashop.domain;
 
+	import jpabook.jpashop.domain.item.Item;
 	import lombok.Getter;
 	import lombok.Setter;
 	
@@ -693,7 +305,67 @@ public class OrderItem {
 	        this.delivery = delivery;
 	        delivery.setOrder(this);
 	    }
+	
+	    //== 생성 메서드==//
+	    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems){ // OrderItem...  여러개를 넘길 수 있음
+	
+	        Order order = new Order();
+	        order.setMember(member);
+	        order.setDelivery(delivery);
+	        for (OrderItem orderItem : orderItems){
+	            order.addOrderItem(orderItem);
+	        }
+	        order.setStatus(OrderStatus.ORDER);
+	        order.setOrderDate(LocalDateTime.now());
+	
+	        return order;
+	    }
+	
+	    //==비즈니스 로직==//
+	    /**
+	     * 주문 취소
+	     */
+	    public void cancel(){
+	        // 배송이 완료된 주문은 취소가 불가
+	        if (delivery.getStatus() == DeliveryStatus.COMP){
+	            throw new IllegalStateException("이미 배송이 완료된 상품은 취소가 불가능합니다.");
+	        }
+	
+	        this.setStatus(OrderStatus.CANCEL);
+	
+	        for (OrderItem orderItem : this.orderItems){
+	            orderItem.cancel();
+	        }
+	    }
+	
+	
+	    //==조회 로직==//
+	    /**
+	     * 전체 주문 가격 조회
+	     */
+	    public int getTotalPrice(){
+	
+	        /*
+	        int totalPrice = 0;
+	
+	        for (OrderItem orderItem : this.orderItems) {
+	            totalPrice += orderItem.getTotalPrice();
+	        }
+	
+	        return totalPrice;
+	        */
+	
+	
+	        return this.orderItems.stream()
+	                .mapToInt(OrderItem::getTotalPrice)
+	                .sum();
+	    }
+	
+	
+	
+	
 	}
+
 
 </details> 
 
@@ -729,7 +401,38 @@ public class OrderItem {
 	
 	    private int orderPrice; //주문 당시의 가격
 	    private int count; //주문 수량
+	
+	
+	    //==생성 메서드==//
+	    public static OrderItem createOrderItem(Item item, int orderPrice, int count){ //orderPrice는 구매 당시의 가격을 받기 위함
+	        OrderItem orderItem = new OrderItem();
+	        orderItem.setItem(item);
+	        orderItem.setOrderPrice(orderPrice);
+	        orderItem.setCount(count);
+	
+	        item.removeStock(count);
+	        return orderItem;
+	    }
+	
+	
+	    //==비즈니스 로직==//
+	    /**
+	     * 주문 취소
+	     */
+	    public void cancel() {
+	        getItem().addStock(this.count);
+	    }
+	
+	
+	    //==조회 로직==//
+	    /**
+	     * 주문상품 전체 가격 조회
+	     */
+	    public int getTotalPrice() {
+	        return getOrderPrice() * getOrderPrice();
+	    }
 	}
+
 
 </details> 
 
