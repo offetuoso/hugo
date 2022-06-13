@@ -57,169 +57,9 @@ toc: true
 >	- QueryDSL 소개
 >	- 마무리
 
-## 주문 서비스 개발
+## 주문 기능 테스트
 ---------------------------
 > java/jpabook/jpashop/service/OrderService.java 생성
-
-### 주문
----------------------
-> 예제를 간략하게 하기 위해서 Order를 할때 한번에 한개를 주문 하도록 개발을 하였습니다. <br>
-> 여러 물품을 한번에 주문하게 하려면, 화면에서 멀티로 선택하게 되고 각 Order들을 전달받아 주문을 생성해야합니다. 
-
-
-> OrderService.java - 주문
-
-```
-@Service
-@Transactional(readOnly = true)
-@RequiredArgsConstructor
-public class OrderService {
-
-    private final OrderRepository orderRepository;
-    private final MemberRepository memberRepository;
-    private final ItemRepository itemRepository;
-	/**
-     * 주문
-     */
-    @Transactional
-    public Long order(Long memberId, Long itemId, int count){
-
-        // 엔티티 조회
-        Member member = memberRepository.findOne(memberId);
-        Item item = itemRepository.findOne(itemId);
-
-        // 배송정보 생성
-        Delivery delivery = new Delivery();
-        delivery.setAddress(member.getAddress());
-        delivery.setStatus(DeliveryStatus.READY);
-
-        // 주문상품 생성
-        OrderItem orderItem = OrderItem.createOrderItem(item, item.getPrice(), count);
-
-        // 주문생성
-        Order order = Order.createOrder(member, delivery , orderItem);
-
-        // 주문 저장
-        orderRepository.save(order);
-
-        return order.getId();
-    }
-```
-
-
-![contact](/images/develop/backend/using-springboot-jpa/order-domain-development/img-001.png)
-
-> 주문 화면을 보면, 사용자를 선택하여 memberId, 아이템을 선택해 ItemId 그리고 개수를 입력 받습니다. <br>
-
-> 입력받은 내역을 id들을 가지고 Member, Item을 조회하고 배송정보를 생성합니다.  
-
-> 또한 주문 상품을 생성하고 
-
-> 주문을 생성하여 저장합니다. 
-
-> Order만 저장하고 다른 OrderItem과 Delivery는 따로 저장을 하지 않는데요.
-
-> 이는 Order.java에서 cascade = CascadeType.ALL를 orderItems와 delivery에 추가해 두었기 때문입니다.
-
-#### CASCADE 
-> Order.java에 보면 orderItems, delivery에 cascade = CascadeType.ALL 옵션이 적용되어있습니다.
-
-```
-    // mappedBy 연관관계의 주인인 OrderItem의 order로 매핑 되어있다는 뜻
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems = new ArrayList<>();
-
-
-    // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "delivery_id")
-    private Delivery delivery;
-```
-
-> 어디까지 CASCADE를 적용해야 하느냐에 많이들 고민 하지만, 
-
-> Order와 OrderItem, Delivery 정도의 관계에만 사용합니다. OrderItem과 Delivery는 Order에만 사용하며, 동일한 라이프 사이클에서 관리를 해야할 떄 CASCADE를 이용하면 됩니다.
-
-> 즉 다른곳에서 참조하지 않는 프라이빗한 경우 쓰면 도움을 받을 수 있습니다.
-
-> 최초에 개념이 헤깔리는 경우 이러한 기능을 넣지 않고 개발하다가. 리펙토링을 통해 추가하는 방법도 있습니다.
-
-
-### 취소 
------------------
-
-```
-    /**
-     * 취소
-     */
-    public void cancelOrder(Long orderId){
-        // 주문 엔티티 조회
-        Order order = orderRepository.findOne(orderId);
-        // 주문 취소
-        order.cancel();
-    }
-
-```
-
-> 취소는 매우 간결하게 작성되었습니다. 비지니스로직을 Order.java에서 구현해 두었기 때문입니다. 
-
-> Order.java
-
-```
-    /**
-     * 주문 취소
-     */
-    public void cancel(){
-        // 배송이 완료된 주문은 취소가 불가
-        if (delivery.getStatus() == DeliveryStatus.COMP){
-            throw new IllegalStateException("이미 배송이 완료된 상품은 취소가 불가능합니다.");
-        }
-
-        this.setStatus(OrderStatus.CANCEL);
-
-        for (OrderItem orderItem : this.orderItems){
-            orderItem.cancel();
-        }
-    }
-```
-
-> 또 JPA의 장점 중 하나로 Order에서 cancel()을 사용하게 되면 따로 값으 변경이 있지만, 따로 Update를 코드로 작성하지는 않습니다. 
-
-> JPA는 Duty Checking(변경감지)을 통해 수정된 엔티티의 값들을 자동으로 Update 쿼리를 날려줍니다. 
-
-> 그렇기 때문에 OrderService에서 각각 조회해서 변경하고, 업데이트를 쿼리를 날려 수정하는 일련의 작업들을 줄일 수 있습니다. 
-
-
-
-
-### 검색
------------------
-> 검색은 나중에 설명하기 때문에 껍데기만 만들어 둡니다. 
-
-```
-    /**
-     * 검색
-     */
-    /*public List<Order> findOrders(OrderSearch orderSearch){
-        return orderRepository.notifyAll(orderSearch);
-    }*/
-
-```
-
-### 도메인 모델 패턴과 트랜잭션 스크립트 패턴
-------------------------------------
-
-> 주문 서비스의 주문과 주문 취소 메서드를 보면 비지니스 로직 대부분이 엔티티에 있습니다. 
-
-> 서비스 계층은 단순히 엔티티에 필요한 요청을 위임하는 역할을 합니다. 
-
-> 이처럼 엔티티가 비지니스 로직을 가지고 객체 지향의 특성을 적극 활용하는 것을 도메인 모델 패턴(<a href="http://martinfowler.com/eaaCatalog/domainModel.html">http://martinfowler.com/eaaCatalog/domainModel.html</a>)이라 합니다. 
-
-> 반대로 엔티티에는 비지니스 로직이 거의 없고 서비스 계층에서 대부분의 비지니스 로직을 처리하는 것을 트랜잭션 스크립트 패턴(<a href="https://martinfowler.com/eaaCatalog/transactionScript.html">https://martinfowler.com/eaaCatalog/transactionScript.html</a>)이라 합니다
-
-> 도메인 패턴 모델은 ORM을 사용하는 프로젝트에 좀더 객체 지향 프로그램을 할 수 있게 도와주며, 꼭 트랜잭션 스크립트 모델이 나쁘다 잘못되었다는 내용이 아닙니다. 
-
-> 하나의 프로젝트에서 양립을 하여 사용하는 경우도 있기 때문에 현재 개발하는 문맥에 따라 선택하면 됩니다. 
 
 
 
@@ -491,10 +331,6 @@ public class OrderService {
 	                .mapToInt(OrderItem::getTotalPrice)
 	                .sum();
 	    }
-	
-	
-	
-	
 	}
 
 
@@ -1103,6 +939,87 @@ public class OrderService {
 	
 	    //public List<Order> findAll(OrderSearch orderSearch){}
 	}
+</details> 
+
+
+> java/jpabook/jpashop/service/OrderService.java
+
+<details title="펼치기/숨기기">
+ 	<summary> OrderService.java </summary>
+	
+	package jpabook.jpashop.service;
+
+	import jpabook.jpashop.domain.*;
+	import jpabook.jpashop.domain.item.Item;
+	import jpabook.jpashop.repository.ItemRepository;
+	import jpabook.jpashop.repository.MemberRepository;
+	import jpabook.jpashop.repository.OrderRepository;
+	import lombok.RequiredArgsConstructor;
+	import org.springframework.stereotype.Service;
+	import org.springframework.transaction.annotation.Transactional;
+	
+	import java.util.List;
+	
+	@Service
+	@Transactional(readOnly = true)
+	@RequiredArgsConstructor
+	public class OrderService {
+	
+	    private final OrderRepository orderRepository;
+	    private final MemberRepository memberRepository;
+	    private final ItemRepository itemRepository;
+	
+	    /**
+	     * 주문
+	     */
+	    @Transactional
+	    public Long order(Long memberId, Long itemId, int count){
+	
+	        // 엔티티 조회
+	        Member member = memberRepository.findOne(memberId);
+	        Item item = itemRepository.findOne(itemId);
+	
+	        // 배송정보 생성
+	        Delivery delivery = new Delivery();
+	        delivery.setAddress(member.getAddress());
+	        delivery.setStatus(DeliveryStatus.READY);
+	
+	        // 주문상품 생성
+	        OrderItem orderItem = OrderItem.createOrderItem(item, item.getPrice(), count);
+	
+	        // 주문생성
+	        Order order = Order.createOrder(member, delivery , orderItem);
+	
+	        // 주문 저장
+	        orderRepository.save(order);
+	
+	        return order.getId();
+	    }
+	
+	
+	
+	    /**
+	     * 취소
+	     */
+	    public void cancelOrder(Long orderId){
+	        // 주문 엔티티 조회
+	        Order order = orderRepository.findOne(orderId);
+	        // 주문 취소
+	        order.cancel();
+	
+	    }
+	
+	
+	    /**
+	     * 검색
+	     */
+	    /*public List<Order> findOrders(OrderSearch orderSearch){
+	        return orderRepository.notifyAll(orderSearch);
+	    }*/
+	
+	}
+
+
 </details> 
 
 
