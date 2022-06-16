@@ -207,7 +207,7 @@ Order에서 orderItems의 각각의 getTotalPrice()의 합계를 반환합니다
      * 주문상품 전체 가격 조회
      */
     public int getTotalPrice() {
-        return getOrderPrice() * getOrderPrice();
+        return getOrderPrice() * getCount();
     }
 ```
 
@@ -441,7 +441,7 @@ public class OrderItem {
      * 주문상품 전체 가격 조회
      */
     public int getTotalPrice() {
-        return getOrderPrice() * getOrderPrice();
+        return getOrderPrice() * getCount();
     }
 }
 

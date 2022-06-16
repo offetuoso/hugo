@@ -59,7 +59,25 @@ toc: true
 
 ## 주문 기능 테스트
 ---------------------------
-> java/jpabook/jpashop/service/OrderService.java 생성
+> 테스트 할때는 스프링 기능 없이 메소드 하나 하나 단위 테스트 하는 것이 바람직하나 스프링과 JPA가 잘 엮여서 동작하는 것을 테스트 하기 때문에 통합테스트로 작성합니다.
+
+### 테스트 요구사항
+----------------------------
+> - 상품 주문이 성공해야 한다.
+> - 상품을 주문할 때 재고 수량을 초과하면 안 된다.
+> - 주문 취소가 성공해야한다.
+
+### 테스트 코드 작성
+-----------------------------
+> ItemService에서 Intelij IDEA의 단축키 Ctrl + Shift + T 
+(이클립스 스타일 시 go to Test 단축키 변경)
+
+> 생성된것을 확인 
+
+> 이전에 생성한 tdd + Tab (라이브 템플릿) 사용
+
+> tdd + Tab (라이브 템플릿)
+
 
 
 
@@ -399,7 +417,7 @@ toc: true
 	     * 주문상품 전체 가격 조회
 	     */
 	    public int getTotalPrice() {
-	        return getOrderPrice() * getOrderPrice();
+	        return getOrderPrice() * getCount();;
 	    }
 	}
 
