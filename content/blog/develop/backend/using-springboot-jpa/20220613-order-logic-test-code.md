@@ -79,6 +79,134 @@ toc: true
 > tdd + Tab (라이브 템플릿)
 
 
+#### 상품주문 테스트
+
+> 상품주문의 테스트 시나리오는 아래와 같습니다.
+
+> - given
+>	 1. 회원 생성
+>	 2. 북 아이템 생성
+
+> - when
+> 	3. 주문 생성
+
+> - then
+> 	4. 상품 주문시 상태는 ORDER
+> 	5. 주문한 상품 종류 수가 일치해야한다.
+> 	6. 주문 가격은 가격 * 수량이다.
+> 	7. 주문 수량만큼 재고가 줄어야 한다.
+
+```
+package jpabook.jpashop.service;
+
+import jpabook.jpashop.domain.Address;
+import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.domain.Order;
+import jpabook.jpashop.domain.OrderStatus;
+import jpabook.jpashop.domain.item.Book;
+import jpabook.jpashop.domain.item.Item;
+import jpabook.jpashop.repository.ItemRepository;
+import jpabook.jpashop.repository.MemberRepository;
+import jpabook.jpashop.repository.OrderRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+@Transactional
+class OrderServiceTest {
+
+    @Autowired ItemRepository itemRepository;
+    @Autowired MemberRepository memberRepository;
+    @Autowired OrderRepository orderRepository;
+    @Autowired OrderService orderService;
+    @Autowired EntityManager em;
+
+    @Test
+    public void 상품주문() throws Exception{
+        //given
+        Member member = new Member();
+        member.setName("회원1");
+        member.setAddress(new Address("서울", "강변로","123-123"));
+        em.persist(member);
+
+        int stockQuantity = 10;
+        Book book = new Book();
+        book.setName("JPA 기본서");
+        book.setPrice(100000);
+        book.setStockQuantity(stockQuantity);
+        em.persist(book);
+
+        int orderCount = 2;
+
+
+        //when
+        Long orderId = orderService.order(member.getId(), book.getId(), orderCount);
+
+        //then
+        Order getOrder = orderRepository.findOne(orderId);
+
+        assertEquals( OrderStatus.ORDER, getOrder.getStatus(), "상품 주문시 상태는 ORDER");
+        assertEquals( 1, getOrder.getOrderItems().size(), "주문한 상품 종류 수가 일치해야한다.");
+        assertEquals( 100000 * orderCount, getOrder.getTotalPrice(), "주문 가격은 가격 * 수량이다.");
+        assertEquals( stockQuantity-orderCount, book.getStockQuantity(), "주문 수량만큼 재고가 줄어야 한다.");
+
+    }
+
+}
+
+```
+
+
+
+
+#### 상품주문 테스트
+
+> 회원과 아이템 생성은 동일하게 사용되므로 함수로 추출하여 사용
+
+![contact](/images/develop/backend/using-springboot-jpa/order-logic-test/img-001.png)
+
+> Intellij IDEA 단축키 함수추출 (ctrl + alt + M)
+
+
+```
+     Member member = createMember(); //회원1 생성
+
+     int stockQuantity = 10;
+     Book book = createBook("JPA 기본서",100000,stockQuantity);
+     
+     
+     private Member createMember() {
+        Member member = new Member();
+        member.setName("회원1");
+        member.setAddress(new Address("서울", "강변로", "123-123"));
+        em.persist(member);
+        return member;
+     }
+        
+     private Book createBook(String name, int price, int stockQuantity) {
+        Book book = new Book();
+        book.setName(name);
+        book.setPrice(price);
+        book.setStockQuantity(stockQuantity);
+        em.persist(book);
+        return book;
+    }
+```
+
+
+```
+ Member member = createMember();
+
+ Book book = createBook("JPA 기본서",100000,10);
+```
+
+10:19
 
 
 ### 이전 소스
