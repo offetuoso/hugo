@@ -8,7 +8,7 @@ date: 2022-06-13
 slug: "order-logic-test-code"
 description: "[스프링부트 JPA 활용] 주문 기능 테스트"
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
