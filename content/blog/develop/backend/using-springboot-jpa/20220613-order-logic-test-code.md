@@ -199,6 +199,7 @@ class OrderServiceTest {
     }
 ```
 
+##### 테스트 코드에서 Member와 Book 생성 함수로 생성
 
 ```
  Member member = createMember();
@@ -206,7 +207,145 @@ class OrderServiceTest {
  Book book = createBook("JPA 기본서",100000,10);
 ```
 
-10:19
+
+#### 상품주문_재고수량초과 테스트
+> 상품주문_재고수량초과 테스트 시나리오는 아래와 같습니다.
+
+> - given
+>	 1. 회원 생성
+>	 2. 북 아이템 생성 (재고 수량 10개)
+
+> - when
+> 	3. 주문 생성 (주문 수량 11개)
+
+> - then
+> 	4. 재고 수량 부족 예외가 발생해야 한다. (성공)
+> 	5. 재고 수량 부족 예외가 발생 안하면 실패
+
+
+> 강의에서는 Junit4로 테스트 코드가 작성되어있지만, 내가 테스트 코드를 작성한 버전은 Junit5다 보니 예외에 대한 테스트 코드 작성 방법이 달랐다. 
+
+> JUnit4 Exception Test
+
+```
+@Test(expected = NotEnoughStockException.class)
+    public void 상품주문_재고수량초과() throws Exception{
+        //given
+        Member member = createMember(); //회원1 생성
+
+        int stockQuantity = 10;
+        Item item = createBook("JPA 기본서",100000,stockQuantity);
+        int orderCount = 11;
+        
+        //when
+	   orderService.order(member.getId(), item.getId(), orderCount);
+
+        //then
+        //fail("재고 수량 부족 예외가 발생해야 한다.");
+
+    }
+```
+
+> JUnit5 Exception Test
+
+##### 만약 테스트시 예상과 다른 Exception이 발생되었을때
+
+```
+    @Test
+    public void 상품주문_재고수량초과() throws Exception{
+        //given
+        Member member = createMember(); //회원1 생성
+
+        int stockQuantity = 10;
+        Item item = createBook("JPA 기본서",100000,stockQuantity);
+        int orderCount = 11;
+
+        //when
+        assertThrows(IllegalStateException.class, () -> {
+            orderService.order(member.getId(), item.getId(), orderCount);
+        });
+
+        //then
+        //fail("재고 수량 부족 예외가 발생해야 한다.");
+
+    }
+```
+
+> console
+
+```
+Unexpected exception type thrown ==> expected: <java.lang.IllegalStateException> but was: <jpabook.exception.NotEnoughStockException>
+필요   :java.lang.IllegalStateException
+실제   :jpabook.exception.NotEnoughStockException
+<클릭하여 차이점 확인>
+```
+
+
+##### 예상된 NotEnoughStockException이 발생되었을때
+
+```
+    @Test
+    public void 상품주문_재고수량초과() throws Exception{
+        //given
+        Member member = createMember(); //회원1 생성
+
+        int stockQuantity = 10;
+        Item item = createBook("JPA 기본서",100000,stockQuantity);
+        int orderCount = 11;
+
+        //when
+        assertThrows(NotEnoughStockException.class, () -> {
+            orderService.order(member.getId(), item.getId(), orderCount);
+        });
+
+        //then
+        //fail("재고 수량 부족 예외가 발생해야 한다.");
+
+    }
+```
+
+> 테스트 통과
+
+#### 주문취소 테스트
+> 상품주문_재고수량초과 테스트 시나리오는 아래와 같습니다.
+
+> - given
+>	 1. 회원 생성
+>	 2. 북 아이템 생성 (재고 수량 10개)
+> 	 3. 주문 생성 (주문 수량 2개)
+
+> - when
+> 	 4. 주문 취소 
+
+> - then
+> 	 5. 주문 취소 상태가 CANCEL인지 검증
+> 	 6. 주문 취소 후 주문한 Item의 수량이 다시 10개가 되었는지 검증
+
+
+
+````
+@Test
+    public void 주문취소() throws Exception{
+        //given
+        Member member = createMember(); //회원1 생성
+
+        int stockQuantity = 10;
+        Item item = createBook("JPA 기본서",100000,stockQuantity);
+
+        int orderCount = 2;
+
+        Long orderId = orderService.order(member.getId(), item.getId(), orderCount);
+
+        //when
+        orderService.cancelOrder(orderId);
+
+        //then
+        Order getOrder = orderRepository.findOne(orderId);
+        assertEquals( OrderStatus.CANCEL, getOrder.getStatus(), "상품 주문 취소시 상태는 CANCEL");
+        assertEquals( 10, item.getStockQuantity(), "주문이 취소된 상품은 그만큼 재고가 증가해야한다.");
+
+    }
+`````
 
 
 ### 이전 소스
@@ -477,6 +616,10 @@ class OrderServiceTest {
 	                .mapToInt(OrderItem::getTotalPrice)
 	                .sum();
 	    }
+	
+	
+	
+	
 	}
 
 
@@ -1092,9 +1235,9 @@ class OrderServiceTest {
 
 <details title="펼치기/숨기기">
  	<summary> OrderService.java </summary>
-	
-	package jpabook.jpashop.service;
 
+	package jpabook.jpashop.service;
+	
 	import jpabook.jpashop.domain.*;
 	import jpabook.jpashop.domain.item.Item;
 	import jpabook.jpashop.repository.ItemRepository;
@@ -1164,7 +1307,6 @@ class OrderServiceTest {
 	    }*/
 	
 	}
-
 
 </details> 
 
