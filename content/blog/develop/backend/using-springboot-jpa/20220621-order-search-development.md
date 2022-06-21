@@ -178,6 +178,9 @@ public List<Order> findAll(OrderSearch orderSearch){
 > OrderRepository.java
 
 ```
+     /**
+     *  String
+     * */
     public List<Order> findAllByString(OrderSearch orderSearch){
 
         String jpql = "select o from Order o left join o.member m";
@@ -227,7 +230,55 @@ public List<Order> findAll(OrderSearch orderSearch){
 > 마이바티스, 아이바티스를 사용하는 이유가 이런 동적 쿼리를 편리하게 사용할 수 있기 때문입니다. 
 
 
+### 2. Criteria (JPA 표준) 동적 쿼리 적용
+--------------------
+> JPA에서 동적 쿼리를 위해 표준으로 만들었지만 실무에서 사용하기 힘든 부분이 있어 이번에도 간략하게 보고 넘어가겠습니다.
 
+> OrderRepository.java
+
+```
+     /**
+     *  JPA Criteria
+     * */
+    public List<Order> findAllByCriteria(OrderSearch orderSearch){
+
+        CriteriaBuilder cb = em.getCriteriaBuilder(); //엔티티 매니저에서 CriteriaBuilder를 가져옴
+
+        CriteriaQuery<Order> cq = cb.createQuery(Order.class); //CriteriaQuery 생성
+
+        Root<Order> o = cq.from(Order.class); // o를 Alias로 Root 생성
+
+        Join<Object, Object> m = o.join("member", JoinType.INNER); // m을 Alias로 join 한 Member 생성
+
+        List<Predicate> criteria = new ArrayList<>(); // 동적 쿼리에 대한 컨디션 조합을 배열을 통해 만들 수 있습니다.
+
+        //주문 상태 검색
+        if(orderSearch.getOrderStatus() != null){
+            Predicate status = cb.equal(o.get("status"), orderSearch.getOrderStatus());
+            criteria.add(status);
+        }
+
+        //회원 이름 검색
+        if(StringUtils.hasText(orderSearch.getMemberName())){
+            Predicate name = cb.like(m.<String>get("name"), "%"+orderSearch.getMemberName()+"%");
+            criteria.add(name);
+        }
+
+        cq.where(cb.and(criteria.toArray(new Predicate[criteria.size()])));
+
+        TypedQuery<Order> query = em.createQuery(cq).setMaxResults(1000);
+        return query.getResultList();
+
+    }
+```
+
+> 이전의 문자열로 만든 것보다 동적쿼리를 훨씬 좋은 방식으로 만들 수 있지만, 치명적인 단점을 가지고 있습니다.
+
+> 작성된 Criteria 코드를 봐도 어떤 쿼리가 만들어지는지 한번에 알 수 없기 때문에 유지보수성에 큰 고통을 겪을 것입니다.
+
+> 실무에서 운영 서비스에서 오류가 빵빵 나는데 쿼리를 열어 봤더니 저런 코드로 되어있다... 과연 빠르게 캐치하고 수정할 수 있을 것인가 고민해 보셔도 될것 같습니다. 
+
+17:18
 
 
 ### 이전 소스
