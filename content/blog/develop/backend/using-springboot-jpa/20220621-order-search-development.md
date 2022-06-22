@@ -278,6 +278,8 @@ public List<Order> findAll(OrderSearch orderSearch){
 
 > 실무에서 운영 서비스에서 오류가 빵빵 나는데 쿼리를 열어 봤더니 저런 코드로 되어있다... 과연 빠르게 캐치하고 수정할 수 있을 것인가 고민해 보셔도 될것 같습니다. 
 
+
+
 17:18
 
 
