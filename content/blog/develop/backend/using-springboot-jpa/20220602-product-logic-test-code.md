@@ -625,7 +625,7 @@ class ItemServiceTest {
 
 	package jpabook.jpashop.domain.item;
 	
-	import jpabook.exception.NotEnoughStockException;
+	import jpabook.jpashop.exception.NotEnoughStockException;
 	import jpabook.jpashop.domain.Category;
 	import lombok.Getter;
 	import lombok.Setter;

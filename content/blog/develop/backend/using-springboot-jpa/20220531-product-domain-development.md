@@ -163,7 +163,7 @@ public abstract class Item {
 > RuntimeException을 상속받아 메서드들을 오버라이딩 받아 새로 추가한 사용자 정의 예외 생성 NotEnoughStockException를 RuntimeException과 같이 사용
 
 
-> java/jpabook/exception 폴더 생성 후 
+> java/jpabook/jpashop/exception 폴더 생성 후 
 
 
 ![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-001.png)

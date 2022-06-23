@@ -1,14 +1,14 @@
 ---
-title: "[스프링부트 JPA 활용] 주문 검색 기능 개발"
+title: "[스프링부트 JPA 활용] 웹 계층 개발"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2022-06-21
-slug: "order-search-development"
-description: "[스프링부트 JPA 활용] JPA에서 동적 쿼리를 어떻게 해결하는가?"
+date: 2022-06-23
+slug: "web-layer-development"
+description: "[스프링부트 JPA 활용] 웹 계층 개발"
 keywords: ["ORM"]
-draft: false
+draft: true
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -57,265 +57,163 @@ toc: true
 >	- QueryDSL 소개
 >	- 마무리
 
-## 주문 검색 기능 개발 
+## 웹 계층 개발
 ---------------------------
 
-### JPA에서 동적 쿼리를 어떻게 해결해야 하는가
+### 홈 화면과 레이아웃
 ----------------------------
 
-![contact](/images/develop/backend/using-springboot-jpa/order-search-development/img-001.png)
+![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-001.png)
 
-> 화면을 보시면 회원명과 주문상태를 검색조건으로 필터링 할 수 있는 기능인 것을 확인 할 수 있습니다.<br>
-> 회원명이 있으면 회원에 대한 조건을, 상태를 선택하면 선택한 상태 조건을 동적으로 추가하고 제거해야 하기 때문에, 동적쿼리가 필요하게 됩니다. 
-
-> 이전에 OrderRepository에 틀을 만들었던 것을 채워보도록 하겠습니다. 
-
-#### 검색 기능 
-> 검색에 필요한 
-
-> java/jpabook/jpashop/repository/OrderSearch.java
+> java/jpabook/jpashop/controller/HomeController.java
 
 ```
-package jpabook.jpashop.repository;
+package jpabook.jpashop.controller;
 
-import jpabook.jpashop.domain.OrderStatus;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
-@Getter @Setter
-public class OrderSearch {
+@Controller
+@Slf4j
+public class HomeController {
 
-    private String memberName; // 회원 이름
-    private OrderStatus orderStatus; //주문 상태 [ORDER, CANCEL]
+    //@Slf4j 사용
+    //Logger log = LoggerFactory.getLogger(getClass());
 
+    @RequestMapping("/")
+    public String Home(){
+        log.info("home controller");
+        return "home";
+    }
 }
 
 ```
 
-> 만약 항상 파라미터가 있다면, 아래와 같은 코드로 검색은 끝나게 됩니다. 
+> Logger는 org.slf4j 사용
 
-> OrderRepository.java
+![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-002.png)
 
-```
-public List<Order> findAll(OrderSearch orderSearch){
+### 홈 뷰 화면 작성
+----------------------------
 
-        List<Order> findOrders = em.createQuery("select o from Order o left join o.member m" +
-                        " where o.status = :status" +
-                        " and m.name like :memberName" +
-                        "", Order.class)
-                .setParameter("status", orderSearch.getOrderStatus())
-                .setParameter("memberName", orderSearch.getMemberName())
-                .getResultList();
+![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-003.png)
 
-        return findOrders;
-    }
-```
-
-##### 검색 결과 수 제한
-
-> OrderRepository.java
+> resources/templates/home.html
 
 ```
-public List<Order> findAll(OrderSearch orderSearch){
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"> <!-- JSP의 include 와 비슷한 기능 -->
+    <title>Hello</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
 
-        return em.createQuery("select o from Order o left join o.member m" +
-                        " where o.status = :status" +
-                        " and m.name like :name" +
-                        "", Order.class)
-                .setParameter("status", orderSearch.getOrderStatus())
-                .setParameter("name", orderSearch.getMemberName())
-                .setMaxResults(1000)  // 최대 1000건 조회
-                .getResultList();
-    }
+<body>
+
+<div class="container">
+
+    <div th:replace="fragments/bodyHeader :: bodyHeader" />
+
+    <div class="jumbotron">
+        <h1>HELLO SHOP</h1>
+        <p class="lead">회원 기능</p>
+        <p>
+            <a class="btn btn-lg btn-secondary" href="/members/new">회원 가입</a>
+            <a class="btn btn-lg btn-secondary" href="/members">회원 목록</a>
+        </p>
+        <p class="lead">상품 기능</p>
+        <p>
+            <a class="btn btn-lg btn-dark" href="/items/new">상품 등록</a>
+            <a class="btn btn-lg btn-dark" href="/items">상품 목록</a>
+        </p>
+        <p class="lead">주문 기능</p>
+        <p>
+            <a class="btn btn-lg btn-info" href="/order">상품 주문</a>
+            <a class="btn btn-lg btn-info" href="/orders">주문 내역</a>
+        </p>
+    </div>
+
+    <div th:replace="fragments/footer :: footer" />
+
+</div> <!-- /container -->
+
+</body>
+</html>
 ```
 
-##### 페이징 처리
+> home view를 생성 하였으니 실행 시켜 봅시다. 
 
-> OrderRepository.java
-
-```
-public List<Order> findAll(OrderSearch orderSearch){
-
-        return em.createQuery("select o from Order o left join o.member m" +
-                        " where o.status = :status" +
-                        " and m.name like :name" +
-                        "", Order.class)
-                .setParameter("status", orderSearch.getOrderStatus())
-                .setParameter("name", orderSearch.getMemberName())
-                .setFirstResult(10)  // 10페이지 부터 
-                .setMaxResults(1000) // 최대 1000건 조회
-                .getResultList();
-    }
-```
-
-> 만약 검색 파라미터가 없다고 한다면 
-
-> OrderRepository.java
+> java/jpabook/jpashop/JpashopApplication.java 에서 ctrl + shift + F10
 
 ```
- public List<Order> findAll(OrderSearch orderSearch){
+2022-06-23 23:54:21.514  INFO 25552 --- [nio-8080-exec-1] j.jpashop.controller.HomeController      : home controller // controller 호출 
+2022-06-23 23:54:21.759 ERROR 25552 --- [nio-8080-exec-1] org.thymeleaf.TemplateEngine             : [THYMELEAF][http-nio-8080-exec-1] Exception processing template "home": An error happened during template parsing (template: "class path resource [templates/home.html]")
 
-        return em.createQuery("select o from Order o left join o.member m" +
-                 //       " where o.status = :status" +
-                 //       " and m.name like :name" +
-                        "", Order.class)
-                //.setParameter("status", orderSearch.getOrderStatus())
-                //.setParameter("name", orderSearch.getMemberName())
-                .setFirstResult(10)
-                .setMaxResults(1000)
-                .getResultList();
-    }
-```
-
-> 해당 소스 처럼 JPQL과 setParameter가 없으면 전체 조회가 될것 같습니다. 
-
-> JPA가 아닌 마이바티스나 아이바티스는 동적쿼리에 대해 비교적 간편히 적용 할 수 있지만, JPA에서 동적쿼리를 어떻게 해야할지 고민에 빠지게 됩니다. 
-
-### 1. JPQL을 문자로 동적 쿼리 적용
---------------------
-> 무식한 방법이지만, 동적 쿼리를 문자열로 만들어 조건에 따라 넣고 빼고 할 수 있지만 너무 복잡하고 조건이 많아진다면 유지보수는 불가능에 가까워지므로 이런 방법이 있다는 것만 확인 하고 넘어가겠습니니다. 
-
-> OrderRepository.java
-
-```
-     /**
-     *  String
-     * */
-    public List<Order> findAllByString(OrderSearch orderSearch){
-
-        String jpql = "select o from Order o left join o.member m";
-
-        boolean isFirstCondition = true;
-
-        //주문 상태 검색
-        if(orderSearch.getOrderStatus() != null){
-            if(isFirstCondition){
-                jpql += " where";
-                isFirstCondition = false;
-            }else{
-                jpql += " and";
-            }
-            jpql += "o.status = :status";
-        }
-
-        //회원 이름 검색
-        if(StringUtils.hasText(orderSearch.getMemberName())){
-            if(isFirstCondition){
-                jpql += " where";
-                isFirstCondition = false;
-            }else{
-                jpql += " and";
-            }
-            jpql += "m.name like :name";
-        }
-
-
-        TypedQuery<Order> query = em.createQuery(jpql, Order.class)
-                .setMaxResults(1000);
-
-        //주문 상태 검색 setParameter
-        if(orderSearch.getOrderStatus() != null){
-            query.setParameter("status", orderSearch.getOrderStatus());
-        }
-
-        //회원 이름 검색 setParameter
-        if(StringUtils.hasText(orderSearch.getMemberName())){
-            query.setParameter("name", orderSearch.getMemberName());
-        }
-
-        return query.getResultList();
-    }
-```
-
-> 마이바티스, 아이바티스를 사용하는 이유가 이런 동적 쿼리를 편리하게 사용할 수 있기 때문입니다. 
-
-
-### 2. Criteria (JPA 표준) 동적 쿼리 적용
---------------------
-> JPA에서 동적 쿼리를 위해 표준으로 만들었지만 실무에서 사용하기 힘든 부분이 있어 이번에도 간략하게 보고 넘어가겠습니다.
-
-> OrderRepository.java
+org.thymeleaf.exceptions.TemplateInputException: An error happened during template parsing (template: "class path resource [templates/home.html]")
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:241) ~[thymeleaf-3.0.15.RELEASE.jar:3.0.15.RELEASE]
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parseStandalone(AbstractMarkupTemplateParser.java:100) ~[thymeleaf-3.0.15.RELEASE.jar:3.0.15.RELEASE]
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:666) ~[thymeleaf-3.0.15.RELEASE.jar:3.0.15.RELEASE]
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1098) ~[thymeleaf-3.0.15.RELEASE.jar:3.0.15.RELEASE]
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1072) ~[thymeleaf-3.0.15.RELEASE.jar:3.0.15.RELEASE]
+	at org.thymeleaf.spring5.view.ThymeleafView.renderFragment(ThymeleafView.java:366) ~[thymeleaf-spring5-3.0.15.RELEASE.jar:3.0.15.RELEASE]
+	at org.thymeleaf.spring5.view.ThymeleafView.render(ThymeleafView.java:190) ~[thymeleaf-spring5-3.0.15.RELEASE.jar:3.0.15.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1401) ~[spring-webmvc-5.3.18.jar:5.3.18]
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1145) ~[spring-webmvc-5.3.18.jar:5.3.18]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1084) ~[spring-webmvc-5.3.18.jar:5.3.18]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963) ~[spring-webmvc-5.3.18.jar:5.3.18]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006) ~[spring-webmvc-5.3.18.jar:5.3.18]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898) ~[spring-webmvc-5.3.18.jar:5.3.18]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655) ~[tomcat-embed-core-9.0.60.jar:4.0.FR]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883) ~[spring-webmvc-5.3.18.jar:5.3.18]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764) ~[tomcat-embed-core-9.0.60.jar:4.0.FR]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53) ~[tomcat-embed-websocket-9.0.60.jar:9.0.60]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-5.3.18.jar:5.3.18]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117) ~[spring-web-5.3.18.jar:5.3.18]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-5.3.18.jar:5.3.18]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117) ~[spring-web-5.3.18.jar:5.3.18]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-5.3.18.jar:5.3.18]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117) ~[spring-web-5.3.18.jar:5.3.18]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:197) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:541) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:135) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:360) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:889) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
+	at java.base/java.lang.Thread.run(Thread.java:834) ~[na:na]
+Caused by: org.attoparser.ParseException: Error resolving template [fragments/header], template might not exist or might not be accessible by any of the configured Template Resolvers (template: "home" - line 3, col 7)
+	at org.attoparser.MarkupParser.parseDocument(MarkupParser.java:393) ~[attoparser-2.0.5.RELEASE.jar:2.0.5.RELEASE]
+	at org.attoparser.MarkupParser.parse(MarkupParser.java:257) ~[attoparser-2.0.5.RELEASE.jar:2.0.5.RELEASE]
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:230) ~[thymeleaf-3.0.15.RELEASE.jar:3.0.15.RELEASE]
+	... 48 common frames omitted
+Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving template [fragments/header], template might not exist or might not be accessible by any of the configured Template Resolvers (template: "home" - line 3, col 7) // fragments/header를 해결할 수 없다고 오류 
+...
 
 ```
-     /**
-     *  JPA Criteria
-     * */
-    public List<Order> findAllByCriteria(OrderSearch orderSearch){
 
-        CriteriaBuilder cb = em.getCriteriaBuilder(); //엔티티 매니저에서 CriteriaBuilder를 가져옴
-
-        CriteriaQuery<Order> cq = cb.createQuery(Order.class); //CriteriaQuery 생성
-
-        Root<Order> o = cq.from(Order.class); // o를 Alias로 Root 생성
-
-        Join<Object, Object> m = o.join("member", JoinType.INNER); // m을 Alias로 join 한 Member 생성
-
-        List<Predicate> criteria = new ArrayList<>(); // 동적 쿼리에 대한 컨디션 조합을 배열을 통해 만들 수 있습니다.
-
-        //주문 상태 검색
-        if(orderSearch.getOrderStatus() != null){
-            Predicate status = cb.equal(o.get("status"), orderSearch.getOrderStatus());
-            criteria.add(status);
-        }
-
-        //회원 이름 검색
-        if(StringUtils.hasText(orderSearch.getMemberName())){
-            Predicate name = cb.like(m.<String>get("name"), "%"+orderSearch.getMemberName()+"%");
-            criteria.add(name);
-        }
-
-        cq.where(cb.and(criteria.toArray(new Predicate[criteria.size()])));
-
-        TypedQuery<Order> query = em.createQuery(cq).setMaxResults(1000);
-        return query.getResultList();
-
-    }
-```
-
-> 이전의 문자열로 만든 것보다 동적쿼리를 훨씬 좋은 방식으로 만들 수 있지만, 치명적인 단점을 가지고 있습니다.
-
-> 작성된 Criteria 코드를 봐도 어떤 쿼리가 만들어지는지 한번에 알 수 없기 때문에 유지보수성에 큰 고통을 겪을 것입니다.
-
-> 실무에서 운영 서비스에서 오류가 빵빵 나는데 쿼리를 열어 봤더니 저런 코드로 되어있다... 과연 빠르게 캐치하고 수정할 수 있을 것인가 고민해 보셔도 될것 같습니다. 
-
-
-### 3. Querydsl 동적 쿼리 적용
---------------------
-> 이러한 불편한점들을 해결하기 위해 많은 개발자들이 고심한 끝에 Querydsl을 만들었습니다. 이후 더 자세히 다루도록 하겠습니다.
-
-```
-     /**
-     *  Querydsl
-     * */
-    public List<Order> findAll(OrderSearch orderSearch){
-
-        QOrder order = QOrder.order;
-        QMember member = QMember.member;
-        
-        return query
-        			.select(order)
-        			.from(order)
-        			.join(order.member, member)
-        			.where(statusEq(orderSearch.getOrderStatus()),
-        					nameLike(orderSearch.getMemberName()))
-        			.limit(1000)
-        			.fetch();
-    }
-    
-    private BooleanExpression statusEq(OrderStatus statusCond){
-    		if(statusCond == null){
-    			return null;
-    		}
-    		return order.status.eq(statusCond);
-    }
-    
-    private BooleanExpression nameLike(String nameCond){
-    		if(!StringUtils.hasText(nameCond)){
-    			return null;
-    		}
-    		return member.name.like(nameCond);
-    }
-```
+> <div th:replace="fragments/bodyHeader :: bodyHeader" /> JSP와 같이 인클루드를 하여 랜더링 하다 해당 파일이 없어 오류를 발생합니다. 
 
 
 ### 이전 소스
@@ -1178,8 +1076,12 @@ public List<Order> findAll(OrderSearch orderSearch){
 	import jpabook.jpashop.domain.Order;
 	import lombok.RequiredArgsConstructor;
 	import org.springframework.stereotype.Repository;
+	import org.springframework.util.StringUtils;
 	
 	import javax.persistence.EntityManager;
+	import javax.persistence.TypedQuery;
+	import javax.persistence.criteria.*;
+	import java.util.ArrayList;
 	import java.util.List;
 	
 	@Repository
@@ -1196,8 +1098,91 @@ public List<Order> findAll(OrderSearch orderSearch){
 	        return em.find(Order.class, orderId);
 	    }
 	
-	    //public List<Order> findAll(OrderSearch orderSearch){}
+	    public List<Order> findAllByString(OrderSearch orderSearch){
+	
+	        String jpql = "select o from Order o left join o.member m";
+	
+	        boolean isFirstCondition = true;
+	
+	        //주문 상태 검색
+	        if(orderSearch.getOrderStatus() != null){
+	            if(isFirstCondition){
+	                jpql += " where";
+	                isFirstCondition = false;
+	            }else{
+	                jpql += " and";
+	            }
+	            jpql += "o.status = :status";
+	        }
+	
+	        //회원 이름 검색
+	        if(StringUtils.hasText(orderSearch.getMemberName())){
+	            if(isFirstCondition){
+	                jpql += " where";
+	                isFirstCondition = false;
+	            }else{
+	                jpql += " and";
+	            }
+	            jpql += "m.name like :name";
+	        }
+	
+	
+	        TypedQuery<Order> query = em.createQuery(jpql, Order.class)
+	                .setMaxResults(1000);
+	
+	        //주문 상태 검색 setParameter
+	        if(orderSearch.getOrderStatus() != null){
+	            query.setParameter("status", orderSearch.getOrderStatus());
+	        }
+	
+	        //회원 이름 검색 setParameter
+	        if(StringUtils.hasText(orderSearch.getMemberName())){
+	            query.setParameter("name", orderSearch.getMemberName());
+	        }
+	
+	        return query.getResultList();
+	    }
+	
+	    /**
+	     *  JPA Criteria
+	     * */
+	    public List<Order> findAllByCriteria(OrderSearch orderSearch){
+	
+	        CriteriaBuilder cb = em.getCriteriaBuilder(); //엔티티 매니저에서 CriteriaBuilder를 가져옴
+	
+	        CriteriaQuery<Order> cq = cb.createQuery(Order.class); //CriteriaQuery 생성
+	
+	        Root<Order> o = cq.from(Order.class); // o를 Alias로 Root 생성
+	
+	        Join<Object, Object> m = o.join("member", JoinType.INNER); // m을 Alias로 join 한 Member 생성
+	
+	        List<Predicate> criteria = new ArrayList<>(); // 동적 쿼리에 대한 컨디션 조합을 배열을 통해 만들 수 있습니다.
+	
+	        //주문 상태 검색
+	        if(orderSearch.getOrderStatus() != null){
+	            Predicate status = cb.equal(o.get("status"), orderSearch.getOrderStatus());
+	            criteria.add(status);
+	        }
+	
+	        //회원 이름 검색
+	        if(StringUtils.hasText(orderSearch.getMemberName())){
+	            Predicate name = cb.like(m.<String>get("name"), "%"+orderSearch.getMemberName()+"%");
+	            criteria.add(name);
+	        }
+	
+	        cq.where(cb.and(criteria.toArray(new Predicate[criteria.size()])));
+	
+	        TypedQuery<Order> query = em.createQuery(cq).setMaxResults(1000);
+	        return query.getResultList();
+	
+	    }
+	
+	    /**
+	     *  Querydsl
+	     * */
+	    // public List<Order> findAll(OrderSearch orderSearch){}
 	}
+
 </details> 
 
 
@@ -1442,8 +1427,6 @@ public List<Order> findAll(OrderSearch orderSearch){
  	<summary> OrderServiceTest.java </summary>
  	
 	package jpabook.jpashop.service;
-
-	import jpabook.jpashop.exception.NotEnoughStockException;
 	import jpabook.jpashop.domain.Address;
 	import jpabook.jpashop.domain.Member;
 	import jpabook.jpashop.domain.Order;
