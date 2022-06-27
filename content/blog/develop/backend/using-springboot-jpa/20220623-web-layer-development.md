@@ -99,6 +99,8 @@ public class HomeController {
 
 ### 홈 뷰 화면 작성
 ----------------------------
+> 해당 강의의 핵심은 JPA를 사용한 애플리케이션이기 때문에 Front 부분은 예제로 사용해 
+빠르게 진행하도록 하겠습니다.
 
 ![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-003.png)
 
@@ -214,6 +216,63 @@ Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving temp
 ```
 
 > <div th:replace="fragments/bodyHeader :: bodyHeader" /> JSP와 같이 인클루드를 하여 랜더링 하다 해당 파일이 없어 오류를 발생합니다. 
+
+
+
+> resources/templates/fragments/header.html
+
+```
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Custom styles for this template -->
+    <link href="/css/jumbotron-narrow.css" rel="stylesheet">
+
+    <title>Hello, world!</title>
+</head>
+
+```
+
+> resources/templates/fragments/bodyHeader.html
+
+```
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="header" th:fragment="bodyHeader">
+    <ul class="nav nav-pills pull-right">
+        <li><a href="/">Home</a></li>
+    </ul>
+    <a href="/"><h3 class="text-muted">HELLO SHOP</h3></a>
+</div>
+
+```
+
+> resources/templates/fragments/footer.html
+
+```
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="footer" th:fragment="footer">
+    <p>&copy; Hello Shop V2</p>
+</div>
+```
+
+
+> 다시 에플리케이션을 재기동 해 보면 
+
+![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-004.png)
+
+> 화면이 뜬것이 보입니다. 
+
+
+
+
 
 
 ### 이전 소스
@@ -1540,6 +1599,7 @@ Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving temp
 	    }
 	}
 </details>
+
 
 
 
