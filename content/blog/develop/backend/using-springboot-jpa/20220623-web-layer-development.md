@@ -271,8 +271,43 @@ Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving temp
 > 화면이 뜬것이 보입니다. 
 
 
+### 뷰 리소스 등록
+----------------------------
+
+> <a href="https://getbootstrap.com/">https://getbootstrap.com/</a>
+
+![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-005.png)
+
+> 부트스트랩 홈페이지에 접속해 
+
+![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-006.png)
+
+> 부트스트랩 최신 버전을 받습니다.
+
+![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-007.png)
+
+> 다운받은 부트스트랩을 resources/static에 넣어줍니다.
+
+![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-008.png)
+
+> 최신의 부트스트랩 버전과 예제의 스타일이 달라 문제가 있어서 강좌의 버전의 부트스트랩을 첨부 하였습니다.
 
 
+<a href="https://drive.google.com/file/d/1-ZXtQaaeVmqKKquXKHrp_F3-se4O-R2k/view?usp=sharing">bootstrap-4.3.1-dist.zip</a>
+
+> 폴더에 추가후 
+
+![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-009.png)
+
+> 파일을 IntelliJ에서 읽을 수 있게 디스크에서 다시 로드를 하고 
+
+![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-010.png)
+
+> 프로젝트를 재빌드 합니다.
+
+> 이후 새로고침을 하면 스타일이 아래와 같이 적용된 것을 볼 수 있습니다.
+
+![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-011.png)
 
 
 ### 이전 소스
@@ -543,13 +578,7 @@ Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving temp
 	                .mapToInt(OrderItem::getTotalPrice)
 	                .sum();
 	    }
-	
-	
-	
-	
 	}
-
-
 </details> 
 
 
