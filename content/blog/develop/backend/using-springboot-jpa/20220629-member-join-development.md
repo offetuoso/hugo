@@ -1,12 +1,12 @@
 ---
-title: "[스프링부트 JPA 활용] 웹 계층 개발"
+title: "[스프링부트 JPA 활용] 회원 등록 개발"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-06-23
-slug: "web-layer-development"
-description: "[스프링부트 JPA 활용] 웹 계층 개발"
+slug: "member-join-development"
+description: "[스프링부트 JPA 활용] 회원 등록 개발"
 keywords: ["ORM"]
 draft: true
 categories: ["Java"]
@@ -57,258 +57,108 @@ toc: true
 >	- QueryDSL 소개
 >	- 마무리
 
-## 웹 계층 개발
----------------------------
+## 홈 화면과 레이아웃 
 
-### 홈 화면과 레이아웃
-----------------------------
+### 회원 등록
+----------------------
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-001.png)
+> 
 
-> java/jpabook/jpashop/controller/HomeController.java
+스프링 부트에서 유효성 검사를 위해 사용하는 어노테이션
+
+ 
+
+> @NotEmpty 를 사용하려는데, IntelliJ 에서 자동완성으로 뜨지 않고 오류를 뱉는다. 
+
+> 스프링 부트 2.2 이하는 javax.validation.constraints 패키지를 포함하고 있지만 스프링 부트 2.3 이상은 따로 의존성을 추가해주어야 한다.
+	
+```
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+```
+
+> java/jpabook/jpashop/dto 
+> 데이터를 전송할 객체를 관리할 패키지를 생성
+
+> 기존에 OrderSearch도 java/jpabook/jpashop/dto 로 위치 변경
+
+
+
+
+> java/jpabook/jpashop/dto/MemberForm.java
 
 ```
-package jpabook.jpashop.controller;
+package jpabook.jpashop.dto;
 
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
-@Controller
-@Slf4j
-public class HomeController {
+import lombok.Getter;
+import lombok.Setter;
 
-    //@Slf4j 사용
-    //Logger log = LoggerFactory.getLogger(getClass());
+import javax.validation.constraints.NotEmpty;
 
-    @RequestMapping("/")
-    public String Home(){
-        log.info("home controller");
-        return "home";
-    }
+
+@Getter @Setter
+public class MemberForm {
+
+    @NotEmpty(message = "회원 이름은 필수 입니다.")
+    private String name;
+
+    private String city;
+    private String street;
+    private String zipcode;
+
 }
 
 ```
 
-> Logger는 org.slf4j 사용
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-002.png)
-
-### 홈 뷰 화면 작성
-----------------------------
-> 해당 강의의 핵심은 JPA를 사용한 애플리케이션이기 때문에 Front 부분은 예제로 사용해 
-빠르게 진행하도록 하겠습니다.
-
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-003.png)
-
-> resources/templates/home.html
+> resources/templates/members/newMembersForm.html
 
 ```
+
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: header"> <!-- JSP의 include 와 비슷한 기능 -->
-    <title>Hello</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
-
+<head th:replace="fragments/header :: header" />
+<style>
+  .fieldError {
+    border-color: #bd2130;
+  }
+</style>
 <body>
 
 <div class="container">
+  <div th:replace="fragments/bodyHeader :: bodyHeader"/>
 
-    <div th:replace="fragments/bodyHeader :: bodyHeader" />
+  <form role="form" action="/members/new" th:object="${memberForm}" method="post">
+    <div class="form-group">
+      <label th:for="name">이름</label>
 
-    <div class="jumbotron">
-        <h1>HELLO SHOP</h1>
-        <p class="lead">회원 기능</p>
-        <p>
-            <a class="btn btn-lg btn-secondary" href="/members/new">회원 가입</a>
-            <a class="btn btn-lg btn-secondary" href="/members">회원 목록</a>
-        </p>
-        <p class="lead">상품 기능</p>
-        <p>
-            <a class="btn btn-lg btn-dark" href="/items/new">상품 등록</a>
-            <a class="btn btn-lg btn-dark" href="/items">상품 목록</a>
-        </p>
-        <p class="lead">주문 기능</p>
-        <p>
-            <a class="btn btn-lg btn-info" href="/order">상품 주문</a>
-            <a class="btn btn-lg btn-info" href="/orders">주문 내역</a>
-        </p>
+      <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요"
+             th:class="${#fields.hasErrors('name')}? 'form-control fieldError' : 'form-control'">
+      <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Incorrect date</p>
+
     </div>
-
-    <div th:replace="fragments/footer :: footer" />
-
+    <div class="form-group">
+      <label th:for="city">도시</label>
+      <input type="text" th:field="*{city}" class="form-control" placeholder="도시를 입력하세요">
+    </div>
+    <div class="form-group">
+      <label th:for="street">거리</label>
+      <input type="text" th:field="*{street}" class="form-control" placeholder="거리를 입력하세요">
+    </div>
+    <div class="form-group">
+      <label th:for="zipcode">우편번호</label>
+      <input type="text" th:field="*{zipcode}" class="form-control" placeholder="우편번호를 입력하세요">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+  <br/>
+  <div th:replace="fragments/footer :: footer" />
 </div> <!-- /container -->
 
 </body>
 </html>
-```
-
-> home view를 생성 하였으니 실행 시켜 봅시다. 
-
-> java/jpabook/jpashop/JpashopApplication.java 에서 ctrl + shift + F10
 
 ```
-2022-06-23 23:54:21.514  INFO 25552 --- [nio-8080-exec-1] j.jpashop.controller.HomeController      : home controller // controller 호출 
-2022-06-23 23:54:21.759 ERROR 25552 --- [nio-8080-exec-1] org.thymeleaf.TemplateEngine             : [THYMELEAF][http-nio-8080-exec-1] Exception processing template "home": An error happened during template parsing (template: "class path resource [templates/home.html]")
-
-org.thymeleaf.exceptions.TemplateInputException: An error happened during template parsing (template: "class path resource [templates/home.html]")
-	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:241) ~[thymeleaf-3.0.15.RELEASE.jar:3.0.15.RELEASE]
-	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parseStandalone(AbstractMarkupTemplateParser.java:100) ~[thymeleaf-3.0.15.RELEASE.jar:3.0.15.RELEASE]
-	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:666) ~[thymeleaf-3.0.15.RELEASE.jar:3.0.15.RELEASE]
-	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1098) ~[thymeleaf-3.0.15.RELEASE.jar:3.0.15.RELEASE]
-	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1072) ~[thymeleaf-3.0.15.RELEASE.jar:3.0.15.RELEASE]
-	at org.thymeleaf.spring5.view.ThymeleafView.renderFragment(ThymeleafView.java:366) ~[thymeleaf-spring5-3.0.15.RELEASE.jar:3.0.15.RELEASE]
-	at org.thymeleaf.spring5.view.ThymeleafView.render(ThymeleafView.java:190) ~[thymeleaf-spring5-3.0.15.RELEASE.jar:3.0.15.RELEASE]
-	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1401) ~[spring-webmvc-5.3.18.jar:5.3.18]
-	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1145) ~[spring-webmvc-5.3.18.jar:5.3.18]
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1084) ~[spring-webmvc-5.3.18.jar:5.3.18]
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963) ~[spring-webmvc-5.3.18.jar:5.3.18]
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006) ~[spring-webmvc-5.3.18.jar:5.3.18]
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898) ~[spring-webmvc-5.3.18.jar:5.3.18]
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655) ~[tomcat-embed-core-9.0.60.jar:4.0.FR]
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883) ~[spring-webmvc-5.3.18.jar:5.3.18]
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764) ~[tomcat-embed-core-9.0.60.jar:4.0.FR]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53) ~[tomcat-embed-websocket-9.0.60.jar:9.0.60]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-5.3.18.jar:5.3.18]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117) ~[spring-web-5.3.18.jar:5.3.18]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-5.3.18.jar:5.3.18]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117) ~[spring-web-5.3.18.jar:5.3.18]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-5.3.18.jar:5.3.18]
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117) ~[spring-web-5.3.18.jar:5.3.18]
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:197) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:541) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:135) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:360) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:889) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) ~[tomcat-embed-core-9.0.60.jar:9.0.60]
-	at java.base/java.lang.Thread.run(Thread.java:834) ~[na:na]
-Caused by: org.attoparser.ParseException: Error resolving template [fragments/header], template might not exist or might not be accessible by any of the configured Template Resolvers (template: "home" - line 3, col 7)
-	at org.attoparser.MarkupParser.parseDocument(MarkupParser.java:393) ~[attoparser-2.0.5.RELEASE.jar:2.0.5.RELEASE]
-	at org.attoparser.MarkupParser.parse(MarkupParser.java:257) ~[attoparser-2.0.5.RELEASE.jar:2.0.5.RELEASE]
-	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:230) ~[thymeleaf-3.0.15.RELEASE.jar:3.0.15.RELEASE]
-	... 48 common frames omitted
-Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving template [fragments/header], template might not exist or might not be accessible by any of the configured Template Resolvers (template: "home" - line 3, col 7) // fragments/header를 해결할 수 없다고 오류 
-...
-
-```
-
-> <div th:replace="fragments/bodyHeader :: bodyHeader" /> JSP와 같이 인클루드를 하여 랜더링 하다 해당 파일이 없어 오류를 발생합니다. 
-
-
-
-> resources/templates/fragments/header.html
-
-```
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="header">
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- Custom styles for this template -->
-    <link href="/css/jumbotron-narrow.css" rel="stylesheet">
-
-    <title>Hello, world!</title>
-</head>
-
-```
-
-> resources/templates/fragments/bodyHeader.html
-
-```
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<div class="header" th:fragment="bodyHeader">
-    <ul class="nav nav-pills pull-right">
-        <li><a href="/">Home</a></li>
-    </ul>
-    <a href="/"><h3 class="text-muted">HELLO SHOP</h3></a>
-</div>
-
-```
-
-> resources/templates/fragments/footer.html
-
-```
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<div class="footer" th:fragment="footer">
-    <p>&copy; Hello Shop V2</p>
-</div>
-```
-
-
-> 다시 에플리케이션을 재기동 해 보면 
-
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-004.png)
-
-> 화면이 뜬것이 보입니다. 
-
-
-### 뷰 리소스 등록
-----------------------------
-
-> <a href="https://getbootstrap.com/">https://getbootstrap.com/</a>
-
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-005.png)
-
-> 부트스트랩 홈페이지에 접속해 
-
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-006.png)
-
-> 부트스트랩 최신 버전을 받습니다.
-
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-007.png)
-
-> 다운받은 부트스트랩을 resources/static에 넣어줍니다.
-
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-008.png)
-
-> 최신의 부트스트랩 버전과 예제의 스타일이 달라 문제가 있어서 강좌의 버전의 부트스트랩을 첨부 하였습니다.
-
-
-<a href="https://drive.google.com/file/d/1-ZXtQaaeVmqKKquXKHrp_F3-se4O-R2k/view?usp=sharing">bootstrap-4.3.1-dist.zip</a>
-
-> 폴더에 추가후 
-
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-009.png)
-
-> 파일을 IntelliJ에서 읽을 수 있게 디스크에서 다시 로드를 하고 
-
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-010.png)
-
-> 프로젝트를 재빌드 합니다.
-
-> 이후 새로고침을 하면 스타일이 아래와 같이 적용된 것을 볼 수 있습니다.
-
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-011.png)
-
 
 ### 이전 소스
 ---------------------
@@ -1162,6 +1012,7 @@ Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving temp
 	package jpabook.jpashop.repository;
 	
 	import jpabook.jpashop.domain.Order;
+	import jpabook.jpashop.dto.OrderSearch;
 	import lombok.RequiredArgsConstructor;
 	import org.springframework.stereotype.Repository;
 	import org.springframework.util.StringUtils;
@@ -1278,7 +1129,7 @@ Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving temp
 
 <details title="펼치기/숨기기">
  	<summary> OrderService.java </summary>
-
+	
 	package jpabook.jpashop.service;
 	
 	import jpabook.jpashop.domain.*;
@@ -1351,8 +1202,8 @@ Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving temp
 	
 	}
 
-</details> 
 
+</details> 
 
 
 > java/jpabook/jpashop/dto/OrderSearch.java
@@ -1377,6 +1228,148 @@ Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving temp
 </details> 
 
 
+#### 컨트롤러
+
+
+> java/jpabook/jpashop/HelloController.java
+
+<details title="펼치기/숨기기">
+ 	<summary> HelloController.java </summary>
+
+	package jpabook.jpashop;
+	
+	import org.springframework.stereotype.Controller;
+	import org.springframework.ui.Model;
+	import org.springframework.web.bind.annotation.GetMapping;
+	
+	@Controller
+	public class HelloController {
+	
+	    @GetMapping("hello") // hello 라는 응답을 받으면
+	    public String hello(Model model){
+	
+	        model.addAttribute("data", "hello !!"); // addAttribute data의 값에 "hello !!" 를 넣어서
+	        System.out.println(1121);
+	
+	        return "hello"; /* view 라는 페이지를 오픈*/
+	    }
+	}
+
+
+</details> 
+
+
+#### 뷰
+
+> resources/templates/fragments/bodyHeader.html
+
+<details title="펼치기/숨기기">
+ 	<summary> bodyHeader.html </summary>
+
+	<!DOCTYPE html>
+	<html xmlns:th="http://www.thymeleaf.org">
+	<div class="header" th:fragment="bodyHeader">
+	    <ul class="nav nav-pills pull-right">
+	        <li><a href="/">Home</a></li>
+	    </ul>
+	    <a href="/"><h3 class="text-muted">HELLO SHOP</h3></a>
+	</div>
+
+</details> 
+
+
+> resources/templates/fragments/footer.html
+
+<details title="펼치기/숨기기">
+ 	<summary> footer.html </summary>
+
+	<!DOCTYPE html>
+	<html xmlns:th="http://www.thymeleaf.org">
+	<div class="footer" th:fragment="footer">
+	    <p>&copy; Hello Shop V2</p>
+	</div>
+
+</details> 
+
+
+
+> resources/templates/fragments/header.html
+
+<details title="펼치기/숨기기">
+ 	<summary> header.html </summary>
+
+	<!DOCTYPE html>
+	<html xmlns:th="http://www.thymeleaf.org">
+	<head th:fragment="header">
+	    <!-- Required meta tags -->
+	    <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	
+	    <!-- Bootstrap CSS -->
+	    <link rel="stylesheet" href="/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	    <!-- Custom styles for this template -->
+	    <link href="/css/jumbotron-narrow.css" rel="stylesheet">
+	
+	    <title>Hello, world!</title>
+	</head>
+
+
+</details> 
+
+
+> resources/templates/home.html
+
+<details title="펼치기/숨기기">
+ 	<summary> home.html </summary>
+
+	<!DOCTYPE HTML>
+	<html xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="fragments/header :: header">
+	    <title>Hello</title>
+	    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	</head>
+	
+	<body>
+	
+	<div class="container">
+	
+	    <div th:replace="fragments/bodyHeader :: bodyHeader" />
+	
+	    <div class="jumbotron">
+	        <h1>HELLO SHOP</h1>
+	        <p class="lead">회원 기능</p>
+	        <p>
+	            <a class="btn btn-lg btn-secondary" href="/members/new">회원 가입</a>
+	            <a class="btn btn-lg btn-secondary" href="/members">회원 목록</a>
+	        </p>
+	        <p class="lead">상품 기능</p>
+	        <p>
+	            <a class="btn btn-lg btn-dark" href="/items/new">상품 등록</a>
+	            <a class="btn btn-lg btn-dark" href="/items">상품 목록</a>
+	        </p>
+	        <p class="lead">주문 기능</p>
+	        <p>
+	            <a class="btn btn-lg btn-info" href="/order">상품 주문</a>
+	            <a class="btn btn-lg btn-info" href="/orders">주문 내역</a>
+	        </p>
+	    </div>
+	
+	    <div th:replace="fragments/footer :: footer" />
+	
+	</div> <!-- /container -->
+	
+	</body>
+	</html>
+
+
+
+</details> 
+
+
+
+#### 리소스
+
+> <a href="https://drive.google.com/file/d/1-ZXtQaaeVmqKKquXKHrp_F3-se4O-R2k/view?usp=sharing">bootstrap-4.3.1-dist.zip</a>
 
 #### 테스트
 
