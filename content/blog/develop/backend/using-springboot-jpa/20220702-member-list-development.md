@@ -8,7 +8,7 @@ date: 2022-07-02
 slug: "member-list-development"
 description: "[스프링부트 JPA 활용] 회원 목록 화면 개발"
 keywords: ["ORM"]
-draft: false
+draft: true
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
