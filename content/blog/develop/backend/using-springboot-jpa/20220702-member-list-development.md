@@ -1,12 +1,12 @@
 ---
-title: "[스프링부트 JPA 활용] 회원 등록 화면 개발"
+title: "[스프링부트 JPA 활용] 회원 목록 화면 개발"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2022-06-29
-slug: "member-join-view-development"
-description: "[스프링부트 JPA 활용] 회원 등록 화면 개발"
+date: 2022-07-02
+slug: "member-list-development"
+description: "[스프링부트 JPA 활용] 회원 목록 화면 개발"
 keywords: ["ORM"]
 draft: false
 categories: ["Java"]
@@ -351,20 +351,20 @@ public class MemberForm {
 
 ##### 회원등록 성공
 
-![contact](/images/develop/backend/using-springboot-jpa/member-join-view-development/img-001.png)
+![contact](/images/develop/backend/using-springboot-jpa/member-join-development/img-001.png)
 
-![contact](/images/develop/backend/using-springboot-jpa/member-join-view-development/img-002.png)
+![contact](/images/develop/backend/using-springboot-jpa/member-join-development/img-002.png)
 
 > 데이터베이스에서 조회 시 회원이 잘 등록된 것을 확인 할 수 있습니다.
 
 
 ##### 회원등록 실패
 
-![contact](/images/develop/backend/using-springboot-jpa/member-join-view-development/img-003.png)
+![contact](/images/develop/backend/using-springboot-jpa/member-join-development/img-003.png)
 
 > 회원의 이름을 공백으로 하여 회원 등록을 해 봅니다.
 
-![contact](/images/develop/backend/using-springboot-jpa/member-join-view-development/img-004.png)
+![contact](/images/develop/backend/using-springboot-jpa/member-join-development/img-004.png)
 
 > Spring에서 기본적으로 제공하는 Whitelabel Error Page가 뜨고, 
 
@@ -393,12 +393,12 @@ public class MemberForm {
     }
 ```
 
-![contact](/images/develop/backend/using-springboot-jpa/member-join-view-development/img-003.png)
+![contact](/images/develop/backend/using-springboot-jpa/member-join-development/img-003.png)
 
 > BindingResult를 적용하고 난 후 다시 오류를 발생시켜 봅니다.
 
 
-![contact](/images/develop/backend/using-springboot-jpa/member-join-view-development/img-005.png)
+![contact](/images/develop/backend/using-springboot-jpa/member-join-development/img-005.png)
 
 > 아까 Whitelabel Error Page 터트리던 것보다 세련되게 화면에서 오류가 나지 않게 처리를 할 수 있습니다.
 
