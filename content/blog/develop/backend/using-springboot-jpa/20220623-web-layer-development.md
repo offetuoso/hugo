@@ -8,7 +8,7 @@ date: 2022-06-23
 slug: "web-layer-development"
 description: "[스프링부트 JPA 활용] 웹 계층 개발"
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -63,7 +63,7 @@ toc: true
 ### 홈 화면과 레이아웃
 ----------------------------
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-001.png)
+![contact](/images/develop/backend/using-springboot-jpa/web-layer-development/img-001.png)
 
 > java/jpabook/jpashop/controller/HomeController.java
 
@@ -95,14 +95,14 @@ public class HomeController {
 
 > Logger는 org.slf4j 사용
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-002.png)
+![contact](/images/develop/backend/using-springboot-jpa/web-layer-development/img-002.png)
 
 ### 홈 뷰 화면 작성
 ----------------------------
 > 해당 강의의 핵심은 JPA를 사용한 애플리케이션이기 때문에 Front 부분은 예제로 사용해 
 빠르게 진행하도록 하겠습니다.
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-003.png)
+![contact](/images/develop/backend/using-springboot-jpa/web-layer-development/img-003.png)
 
 > resources/templates/home.html
 
@@ -266,7 +266,7 @@ Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving temp
 
 > 다시 에플리케이션을 재기동 해 보면 
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-004.png)
+![contact](/images/develop/backend/using-springboot-jpa/web-layer-development/img-004.png)
 
 > 화면이 뜬것이 보입니다. 
 
@@ -276,19 +276,19 @@ Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving temp
 
 > <a href="https://getbootstrap.com/">https://getbootstrap.com/</a>
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-005.png)
+![contact](/images/develop/backend/using-springboot-jpa/web-layer-development/img-005.png)
 
 > 부트스트랩 홈페이지에 접속해 
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-006.png)
+![contact](/images/develop/backend/using-springboot-jpa/web-layer-development/img-006.png)
 
 > 부트스트랩 최신 버전을 받습니다.
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-007.png)
+![contact](/images/develop/backend/using-springboot-jpa/web-layer-development/img-007.png)
 
 > 다운받은 부트스트랩을 resources/static에 넣어줍니다.
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-008.png)
+![contact](/images/develop/backend/using-springboot-jpa/web-layer-development/img-008.png)
 
 > 최신의 부트스트랩 버전과 예제의 스타일이 달라 문제가 있어서 강좌의 버전의 부트스트랩을 첨부 하였습니다.
 
@@ -297,17 +297,17 @@ Caused by: org.thymeleaf.exceptions.TemplateInputException: Error resolving temp
 
 > 폴더에 추가후 
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-009.png)
+![contact](/images/develop/backend/using-springboot-jpa/web-layer-development/img-009.png)
 
 > 파일을 IntelliJ에서 읽을 수 있게 디스크에서 다시 로드를 하고 
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-010.png)
+![contact](/images/develop/backend/using-springboot-jpa/web-layer-development/img-010.png)
 
 > 프로젝트를 재빌드 합니다.
 
 > 이후 새로고침을 하면 스타일이 아래와 같이 적용된 것을 볼 수 있습니다.
 
-![contact](/images/develop/backend/using-springboot-jpa/product-domain-development/img-011.png)
+![contact](/images/develop/backend/using-springboot-jpa/web-layer-development/img-011.png)
 
 
 ### 이전 소스
