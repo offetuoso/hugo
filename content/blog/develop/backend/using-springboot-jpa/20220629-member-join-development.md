@@ -441,13 +441,6 @@ public class MemberForm {
 > fields.hasErrors에 'name'을 체크하여 박스의 아웃라인 색상을 빨강으로 변경하고, 
 > P 태그에 @NotEmpty(message = "벨리데이션 메시지")에 정의된 벨리데이션 메시지를 InnerHtml에 추가 합니다.
 
-### 추가
--------------------------------
-
->  public String newMembers(@Valid Member member, BindingResult result){ 이런 식으로 바로 Member 엔티티로 받지 않는 이유는 Order와 같은 추가가 필요한 데이터들이나 
-
-> 벨리데이션을 엔티티에서 하게되면, 소스가 지저분해 지고 화면에서의 벨리데이션과 엔티티에서의 벨리데이션을 분리 하지 못하기 때문에 추후 확장을 위해 분리하는 것을 권장드립니다.
-
 
 ### 이전 소스
 ---------------------
@@ -1545,6 +1538,38 @@ public class MemberForm {
 
 
 </details> 
+
+> java/jpabook/jpashop/controller/HomeController.java
+
+<details title="펼치기/숨기기">
+ 	<summary> HomeController.java </summary>
+	
+	package jpabook.jpashop.controller;
+	
+	import lombok.extern.slf4j.Slf4j;
+	import org.slf4j.Logger;
+	import org.slf4j.LoggerFactory;
+	import org.springframework.stereotype.Controller;
+	import org.springframework.web.bind.annotation.RequestMapping;
+	import org.springframework.web.servlet.ModelAndView;
+	
+	@Controller
+	@Slf4j
+	public class HomeController {
+	
+	    //@Slf4j 사용
+	    //Logger log = LoggerFactory.getLogger(getClass());
+	
+	    @RequestMapping("/")
+	    public String Home(){
+	        log.info("home controller");
+	        return "home";
+	    }
+	}
+
+
+</details> 
+
 
 
 #### 뷰
