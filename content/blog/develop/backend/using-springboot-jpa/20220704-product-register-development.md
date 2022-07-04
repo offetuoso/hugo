@@ -1,14 +1,14 @@
 ---
-title: "[스프링부트 JPA 활용] 회원 목록 화면 개발"
+title: "[스프링부트 JPA 활용] 상품 등록 화면 개발"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-07-02
-slug: "member-list-development"
-description: "[스프링부트 JPA 활용] 회원 목록 화면 개발"
+slug: "product-register-development"
+description: "[스프링부트 JPA 활용] 상품 등록 화면 개발"
 keywords: ["ORM"]
-draft: false
+draft: true
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -59,92 +59,35 @@ toc: true
 
 ## 홈 화면과 레이아웃 
 
-### 회원 리스트
+### 상품 등록 화면 개발
 ----------------------
 
-> MemberController.java - /members Mapping 추가
-
-````
-    @GetMapping("/members")
-    public String memberList(Model modal){
-        log.info("call get members");
-
-        List<Member> members = memberService.findMembers();
-        modal.addAttribute("members", members);
-
-        return "members/memberList";
-    }
-
-````
-
-> resources/templates/members/memberList.html
+> java/jpabook/jpashop/dto/ItemForm.java
 
 ```
+package jpabook.jpashop.dto;
 
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: header" />
-<body>
+import lombok.Getter;
+import lombok.Setter;
 
-<div class="container">
-    <div th:replace="fragments/bodyHeader :: bodyHeader" />
-    <div>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>이름</th>
-                <th>도시</th>
-                <th>주소</th>
-                <th>우편번호</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="member : ${members}">
-                <td th:text="${member.id}"></td>
-                <td th:text="${member.name}"></td>
-                <td th:text="${member.address?.city}"></td>
-                <td th:text="${member.address?.street}"></td>
-                <td th:text="${member.address?.zipcode}"></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+@Getter @Setter
+public class ItemForm {
+    private long id; //수정을 위한 id도 추가 
 
-    <div th:replace="fragments/footer :: footer" />
+    private String name;
+    private int price; 
+    private int stockQuantity;
 
-</div> <!-- /container -->
-
-</body>
-</html>
+    private String dtype; //아이템 타입 (A, B, M)
+    private String artist;
+    private String etc;
+    private String author;
+    private String isbn;
+    private String director;
+    private String actor;
+}
 
 ```
-
-> <td th:text="${member.address<mark>?</mark>.city}"></td> 
-
-> 소스를 보시면 타임리프 문법중 address 하고 ?가 있는데, 이것은 타임리프의 기능으로 
-> city가 null 이면 출력을 하지 않는 것입니다. null인 경우 nullPointException이 나오는데 이것을 if로 있는지 없는지 체크 하고 있는경우 없는경우 작성하다 보면 지저분해지는 것을 간편하게 사용할 수 있습니다.
-
-
-### 추가
--------------------------------
-
->  public String newMembers(@Valid Member member, BindingResult result){ 이런 식으로 바로 Member 엔티티로 받지 않는 이유는 Order와 같은 추가가 필요한 데이터들이나 
-
-> 벨리데이션을 엔티티에서 하게되면, 소스가 지저분해 지고 화면에서의 벨리데이션과 엔티티에서의 벨리데이션을 분리 하지 못하기 때문에 추후 확장을 위해 분리하는 것을 권장드립니다.
-
-> 엔티티에 불필요한 화면에 대한 로직이 섞일 경우 화면을 수정했는데, 핵심 비즈니스 로직이 안돌거나 핵심 비즈니스 로직을 수정했는데 화면이 깨지는 눈물나는 사태가 발생할 수 있습니다. 
-
-> 또한 현재 예제에서 회원 리스트를 조회후 Member엔티티로 바로 전달하였는데, 이또한 Member엔티티가 아니라 DTO 객체를 통해 전달 하는게 좋습니다. 
-
-#### API를 만들때 절대로 엔티티(Entity)를 반환하면 안되는 이유
-
-> <mark>API를 만들때 절대로 엔티티(Entity)를 반환하면 안되는 이유</mark>는 Member 엔티티에 Password를 추가하게 되면 Password가 그대로 노출되는 문제가 있습니다. 
-
-> 엔티티의 로직을 변경하게 되면 API Spec이 변경되어 기존과 전혀 다른 동작을 할 수도 있습니다.
-
-
-
 ### 이전 소스
 ---------------------
 
@@ -1323,7 +1266,7 @@ toc: true
  	<summary> MemberController.java </summary>
 
 	package jpabook.jpashop.controller;
-	
+
 	import jpabook.jpashop.domain.Address;
 	import jpabook.jpashop.domain.Member;
 	import jpabook.jpashop.dto.MemberForm;
@@ -1338,6 +1281,7 @@ toc: true
 	import org.springframework.ui.Model;
 	
 	import javax.validation.Valid;
+	import java.util.List;
 	
 	@Controller
 	@RequiredArgsConstructor
@@ -1349,16 +1293,16 @@ toc: true
 	
 	    @GetMapping("/members/new")
 	    public String newMembersForm(Model modal){
-	        log.info("/members/new");
+	        log.info("call get members/new");
 	
 	        modal.addAttribute("memberForm", new MemberForm());
 	        return "members/newMembersForm";
 	
-	
 	    }
 	
 	    @PostMapping("/members/new")
-	    public String newMembers(@Valid MemberForm memberForm, BindingResult result){
+	    public String newMembers(@Valid MemberForm memberForm, BindingResult result, Model modal){
+	        log.info("call post members/new");
 	
 	        if(result.hasErrors()){
 	            return "members/newMembersForm";
@@ -1370,14 +1314,25 @@ toc: true
 	
 	        memberService.join(newMember);
 	
+	
 	        return "redirect:/"; //첫번째 화면으로 이동
+	    }
+	
+	    @GetMapping("/members")
+	    public String memberList(Model modal){
+	        log.info("call get members");
+	
+	        List<Member> members = memberService.findMembers();
+	        modal.addAttribute("members", members);
+	
+	        return "members/memberList";
+	
+	
 	    }
 	}
 
+
 </details> 
-
-
-
 
 
 #### 뷰
@@ -1535,7 +1490,49 @@ toc: true
 	</body>
 	</html>
 
+</details> 
 
+> resources/templates/members/memberList.html
+
+<details title="펼치기/숨기기">
+ 	<summary> memberList.html </summary>
+		
+	<!DOCTYPE HTML>
+	<html xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="fragments/header :: header" />
+	<body>
+	
+	<div class="container">
+	    <div th:replace="fragments/bodyHeader :: bodyHeader" />
+	    <div>
+	        <table class="table table-striped">
+	            <thead>
+	            <tr>
+	                <th>#</th>
+	                <th>이름</th>
+	                <th>도시</th>
+	                <th>주소</th>
+	                <th>우편번호</th>
+	            </tr>
+	            </thead>
+	            <tbody>
+	            <tr th:each="member : ${members}">
+	                <td th:text="${member.id}"></td>
+	                <td th:text="${member.name}"></td>
+	                <td th:text="${member.address?.city}"></td>
+	                <td th:text="${member.address?.street}"></td>
+	                <td th:text="${member.address?.zipcode}"></td>
+	            </tr>
+	            </tbody>
+	        </table>
+	    </div>
+	
+	    <div th:replace="fragments/footer :: footer" />
+	
+	</div> <!-- /container -->
+	
+	</body>
+	</html>
 
 
 </details> 
