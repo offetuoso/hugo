@@ -61,6 +61,8 @@ toc: true
 
 ### 상품 등록 화면 개발
 ----------------------
+> 강좌와 다르게 Item의 상속관계에 맞게 아이템들을 등록해 보려 합니다. <br>
+> 화면에서 셀렉트 박스로 dtype로 입력받고 컨트롤러에서 입력받은 dtype에 따라 Album, Book, Movie 엔티티를 Item 객체로 생성하여 저장을 할 것입니다.
 
 > java/jpabook/jpashop/dto/ItemForm.java
 
@@ -86,8 +88,132 @@ public class ItemForm {
     private String director;
     private String actor;
 }
+```
+
+> ItemController.java
 
 ```
+
+package jpabook.jpashop.controller;
+
+import jpabook.jpashop.domain.item.Album;
+import jpabook.jpashop.domain.item.Book;
+import jpabook.jpashop.domain.item.Item;
+import jpabook.jpashop.domain.item.Movie;
+import jpabook.jpashop.dto.ItemForm;
+import jpabook.jpashop.exception.NotHasDiscriminator;
+import jpabook.jpashop.service.ItemService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import javax.validation.Valid;
+
+@Controller
+@RequiredArgsConstructor
+@Slf4j
+public class ItemController {
+
+    private final ItemService itemService;
+
+    @GetMapping("/items/new")
+    public String newItemsForm(Model modal){
+        log.info("call get /items/new");
+
+        modal.addAttribute("itemForm", new ItemForm());
+        return "items/newItemForm";
+    }
+
+    @PostMapping("/items/new")
+    public String newItems(@Valid ItemForm itemForm, BindingResult result, Model modal){
+        log.info("call post members/new");
+
+        if(result.hasErrors()){
+            return "items/newItemForm";
+        }
+
+        Item item = null;
+        if("A".equals(itemForm.getDtype())){
+            item = new Album().createItem(itemForm); // 앨범 생성
+        }else if("B".equals(itemForm.getDtype())){
+            item = new Book().createItem(itemForm); // 책 생성
+        }else if("M".equals(itemForm.getDtype())){
+            item = new Movie().createItem(itemForm);  // 영화 생성
+        }else{
+            throw new NotHasDiscriminator("Not Has Discriminator");
+        }
+
+        itemService.saveItem(item); // Item을 persist()
+
+        return  "redirect:/items";
+    }
+}
+
+```
+
+#### createItem()
+> Item에 abstract 메서드를 생성하고, 자식 엔티티인 Album, Book, Movie에서 @override 하여 사용
+
+> Item.java
+
+```
+ public abstract Item createItem(ItemForm itemForm);
+```
+
+> Album.java
+
+```
+    @Override
+    public Item createItem(ItemForm itemForm) {
+        this.setName(itemForm.getName());
+        this.setPrice(itemForm.getPrice());
+        this.setStockQuantity(itemForm.getStockQuantity());
+        this.setArtist(itemForm.getArtist());
+        this.setEtc(itemForm.getEtc());
+        return this;
+    }
+```
+
+> Book.java
+
+```
+    @Override
+    public Item createItem(ItemForm itemForm) {
+        super.name = itemForm.getName();
+        super.price = itemForm.getPrice();
+        super.stockQuantity = itemForm.getStockQuantity();
+        this.isbn = itemForm.getIsbn();
+        this.author = itemForm.getAuthor();
+        return this;
+    }
+```
+
+> Movie.java
+
+```
+    @Override
+    public Item createItem(ItemForm itemForm) {
+        super.name = itemForm.getName();
+        super.price = itemForm.getPrice();
+        super.stockQuantity = itemForm.getStockQuantity();
+        this.director = itemForm.getDirector();
+        this.actor = itemForm.getActor();
+        return this;
+    }
+```
+
+> 
+
+```
+
+```
+
+
+
 ### 이전 소스
 ---------------------
 
@@ -1816,7 +1942,7 @@ public class ItemForm {
 	        return book;
 	    }
 	}
-</details>
+</details>	
 
 
 #### 참고 
