@@ -305,6 +305,8 @@ public class ItemController {
 
     let fn_change_dtype = function() {
         let dtype = $("#dtype").val();
+        $("#itemForm")[0].reset();
+        $("#dtype").val(dtype);
 
         //초기화
         $(".hidden").css("display","none");
