@@ -206,9 +206,197 @@ public class ItemController {
     }
 ```
 
-> 
+#### 상품등록 화면
+> 강의에서는 책에 대한 데이터를 집어 넣기 때문에, 등록 화면이 간략했는데 <br>
+> dtype에 따라 다른 엔티티로 객체가 생성되어 들어가는 것을 테스트 해보고 싶었습니다. <br>
+> dtype에 따라 화면과 벨리데이션할 필드가 동적으로 나뉘게 되어 @Valid가 아니라 화면에서 체크를 하였습니다.
+
+> resources/templates/items/newItemForm.html
 
 ```
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<style>
+    .hidden{
+        display: none;
+        width : inherit;
+        height : 400px;
+    }
+     .fieldError {
+         border-color: #bd2130;
+     }
+</style>
+<script>
+    $(document).ready(function(){
+        fn_change_dtype();
+    });
+
+    let fn_submit = function() {
+        let dtype = $("#dtype").val();
+        $(".fieldError").removeClass("fieldError");
+        $(".errorMsg").remove();
+
+        if(dtype == ''){
+            //alert("상품구분을 선택하세요.");
+            $("#dtype").addClass("fieldError");
+            $("#dtype").parent().append("<p class='errorMsg'>상품 구분을 선택해 주세요.</p>");
+            return false;
+        }
+        if($.trim($("#name").val()) == ""){
+            //alert("이름을 입력하세요.");
+            $("#name").addClass("fieldError");
+            $("#name").parent().append("<p class='errorMsg'>상품 이름을 입력하세요.</p>");
+            return false;
+        }
+        if($.trim($("#stockQuantity").val()) == "" || $("#stockQuantity").val() == 0){
+            //alert("수량을 1이상 입력하세요.");
+            $("#stockQuantity").addClass("fieldError");
+            $("#stockQuantity").parent().append("<p class='errorMsg'>수량을 1이상 입력하세요.</p>");
+            return false;
+        }
+
+        if(dtype == 'A'){
+            if($.trim($("#artist").val()) == ""){
+                //alert("아티스트를 입력하세요.");
+                $("#artist").addClass("fieldError");
+                $("#artist").parent().append("<p class='errorMsg'>아티스트를 입력하세요.</p>");
+                return false;
+            }
+            if($.trim($("#etc").val()) == ""){
+                //alert("ETC를 입력하세요.");
+                $("#etc").addClass("fieldError");
+                $("#etc").parent().append("<p class='errorMsg'>ETC를 입력하세요.</p>");
+                return false;
+            }
+        }else if(dtype == 'B'){
+            if($.trim($("#author").val()) == ""){
+                //alert("저자를 입력하세요.");
+                $("#author").addClass("fieldError");
+                $("#author").parent().append("<p class='errorMsg'>저자를 입력하세요.</p>");
+                return false;
+            }
+            if($.trim($("#isbn").val()) == ""){
+                //alert("ISBN을 입력하세요.");
+                $("#isbn").addClass("fieldError");
+                $("#isbn").parent().append("<p class='errorMsg'>ISBN을 입력하세요.</p>");
+                return false;
+            }
+
+        }else if(dtype == 'M'){
+            if($.trim($("#director").val()) == ""){
+                //alert("감독을 입력하세요.");
+                $("#director").addClass("fieldError");
+                $("#director").parent().append("<p class='errorMsg'>감독을 입력하세요.</p>");
+                return false;
+            }
+            if($.trim($("#actor").val()) == ""){
+                //alert("배우를 입력하세요.");
+                $("#actor").addClass("fieldError");
+                $("#actor").parent().append("<p class='errorMsg'>배우를 입력하세요.</p>");
+                return false;
+            }
+        }
+
+        $("#itemForm").submit();
+
+    };
+
+    let fn_change_dtype = function() {
+        let dtype = $("#dtype").val();
+
+        //초기화
+        $(".hidden").css("display","none");
+
+        if(dtype == ''){
+            return false;
+        }else if(dtype == 'A'){
+            $("#sub-form-A").css("display","inline");
+        }else if(dtype == 'B'){
+            $("#sub-form-B").css("display","inline");
+        }else if(dtype == 'M'){
+            $("#sub-form-M").css("display","inline");
+        }
+
+
+    };
+</script>
+<body>
+
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+
+    <form id="itemForm" th:action="@{/items/new}" th:object="${itemForm}" method="post">
+        <div class="form-group">
+            <label th:for="dtype">상품구분</label>
+            <select th:field="*{dtype}" class="form-control" onchange="fn_change_dtype()">
+                <option value="">상품구분</option>
+                <option value="A">앨범</option>
+                <option value="B">책</option>
+                <option value="M">영화</option>
+            </select>
+        </div>
+        <!--<p class="fieldError" th:if="${#fields.hasErrors('dtype')}" th:errors="*{dtype}">Incorrect date</p>-->
+
+        <div class="form-group">
+            <label th:for="name">상품명</label>
+            <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요">
+        </div>
+        <!--<p class="fieldError" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Incorrect date</p>-->
+
+        <div class="form-group">
+            <label th:for="price">가격</label>
+            <input type="number" th:field="*{price}" class="form-control" placeholder="가격을 입력하세요">
+        </div>
+        <div class="form-group">
+            <label th:for="stockQuantity">수량</label>
+            <input type="number" th:field="*{stockQuantity}" class="form-control" placeholder="수량을 입력하세요">
+        </div>
+
+        <div id="sub-form-A" class="sub-form hidden">
+            <div class="form-group">
+                <label th:for="artist">아티스트</label>
+                <input type="text" th:field="*{artist}" class="form-control" placeholder="아티스트를 입력하세요">
+            </div>
+            <div class="form-group">
+                <label th:for="etc">ETC</label>
+                <input type="text" th:field="*{etc}" class="form-control" placeholder="ETC를 입력하세요">
+            </div>
+        </div>
+
+        <div id="sub-form-B" class="sub-form hidden">
+            <div class="form-group">
+                <label th:for="author">저자</label>
+                <input type="text" th:field="*{author}" class="form-control" placeholder="저자를 입력하세요">
+            </div>
+            <div class="form-group">
+                <label th:for="isbn">ISBN</label>
+                <input type="text" th:field="*{isbn}" class="form-control" placeholder="ISBN을 입력하세요">
+            </div>
+        </div>
+
+        <div id="sub-form-M" class="sub-form hidden">
+            <div class="form-group">
+                <label th:for="director">감독</label>
+                <input type="text" th:field="*{director}" class="form-control" placeholder="감독을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label th:for="actor">배우</label>
+                <input type="text" th:field="*{actor}" class="form-control" placeholder="배우를 입력하세요">
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="fn_submit();">Submit</button>
+    </form>
+    <br/>
+    <div th:replace="fragments/footer :: footer" />
+
+</div> <!-- /container -->
+
+
+</body>
+</html>
 
 ```
 
@@ -1943,6 +2131,24 @@ public class ItemController {
 	    }
 	}
 </details>	
+
+##### 상품구분을 선택하기 전 초기화면
+
+![contact](/images/develop/backend/using-springboot-jpa/product-register-development/img-001.png)
+
+##### 상품구분을 앨범 선택
+
+![contact](/images/develop/backend/using-springboot-jpa/product-register-development/img-002.png)
+
+
+##### 상품구분을 책 선택
+
+![contact](/images/develop/backend/using-springboot-jpa/product-register-development/img-003.png)
+
+
+##### 상품구분을 영화 선택
+
+![contact](/images/develop/backend/using-springboot-jpa/product-register-development/img-004.png)
 
 
 #### 참고 
