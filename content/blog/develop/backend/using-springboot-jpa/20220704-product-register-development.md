@@ -320,8 +320,6 @@ public class ItemController {
         }else if(dtype == 'M'){
             $("#sub-form-M").css("display","inline");
         }
-
-
     };
 </script>
 <body>
