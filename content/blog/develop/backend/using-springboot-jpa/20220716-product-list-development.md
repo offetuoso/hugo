@@ -1,14 +1,14 @@
 ---
-title: "[스프링부트 JPA 활용] 상품 등록 화면 개발"
+title: "[스프링부트 JPA 활용] 상품 목록 화면 개발"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2022-07-02
-slug: "product-register-development"
-description: "[스프링부트 JPA 활용] 상품 등록 화면 개발"
+date: 2022-07-16
+slug: "product-list-development"
+description: "[스프링부트 JPA 활용] 상품 목록 화면 개발"
 keywords: ["ORM"]
-draft: false
+draft: true
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -59,367 +59,8 @@ toc: true
 
 ## 홈 화면과 레이아웃 
 
-### 상품 등록 화면 개발
+### 상품 목록 화면 개발
 ----------------------
-> 강좌와 다르게 Item의 상속관계에 맞게 아이템들을 등록해 보려 합니다. <br>
-> 화면에서 셀렉트 박스로 dtype로 입력받고 컨트롤러에서 입력받은 dtype에 따라 Album, Book, Movie 엔티티를 Item 객체로 생성하여 저장을 할 것입니다.
-
-> java/jpabook/jpashop/dto/ItemForm.java
-
-```
-package jpabook.jpashop.dto;
-
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter @Setter
-public class ItemForm {
-    private long id; //수정을 위한 id도 추가 
-
-    private String name;
-    private int price; 
-    private int stockQuantity;
-
-    private String dtype; //아이템 타입 (A, B, M)
-    private String artist;
-    private String etc;
-    private String author;
-    private String isbn;
-    private String director;
-    private String actor;
-}
-```
-
-> ItemController.java
-
-```
-
-package jpabook.jpashop.controller;
-
-import jpabook.jpashop.domain.item.Album;
-import jpabook.jpashop.domain.item.Book;
-import jpabook.jpashop.domain.item.Item;
-import jpabook.jpashop.domain.item.Movie;
-import jpabook.jpashop.dto.ItemForm;
-import jpabook.jpashop.exception.NotHasDiscriminator;
-import jpabook.jpashop.service.ItemService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import javax.validation.Valid;
-
-@Controller
-@RequiredArgsConstructor
-@Slf4j
-public class ItemController {
-
-    private final ItemService itemService;
-
-    @GetMapping("/items/new")
-    public String newItemsForm(Model modal){
-        log.info("call get /items/new");
-
-        modal.addAttribute("itemForm", new ItemForm());
-        return "items/newItemForm";
-    }
-
-    @PostMapping("/items/new")
-    public String newItems(@Valid ItemForm itemForm, BindingResult result, Model modal){
-        log.info("call post members/new");
-
-        if(result.hasErrors()){
-            return "items/newItemForm";
-        }
-
-        Item item = null;
-        if("A".equals(itemForm.getDtype())){
-            item = new Album().createItem(itemForm); // 앨범 생성
-        }else if("B".equals(itemForm.getDtype())){
-            item = new Book().createItem(itemForm); // 책 생성
-        }else if("M".equals(itemForm.getDtype())){
-            item = new Movie().createItem(itemForm);  // 영화 생성
-        }else{
-            throw new NotHasDiscriminator("Not Has Discriminator");
-        }
-
-        itemService.saveItem(item); // Item을 persist()
-
-        return  "redirect:/items";
-    }
-}
-
-```
-
-#### createItem()
-> Item에 abstract 메서드를 생성하고, 자식 엔티티인 Album, Book, Movie에서 @override 하여 사용
-
-> Item.java
-
-```
- public abstract Item createItem(ItemForm itemForm);
-```
-
-> Album.java
-
-```
-    @Override
-    public Item createItem(ItemForm itemForm) {
-        this.setName(itemForm.getName());
-        this.setPrice(itemForm.getPrice());
-        this.setStockQuantity(itemForm.getStockQuantity());
-        this.setArtist(itemForm.getArtist());
-        this.setEtc(itemForm.getEtc());
-        return this;
-    }
-```
-
-> Book.java
-
-```
-    @Override
-    public Item createItem(ItemForm itemForm) {
-        super.name = itemForm.getName();
-        super.price = itemForm.getPrice();
-        super.stockQuantity = itemForm.getStockQuantity();
-        this.isbn = itemForm.getIsbn();
-        this.author = itemForm.getAuthor();
-        return this;
-    }
-```
-
-> Movie.java
-
-```
-    @Override
-    public Item createItem(ItemForm itemForm) {
-        super.name = itemForm.getName();
-        super.price = itemForm.getPrice();
-        super.stockQuantity = itemForm.getStockQuantity();
-        this.director = itemForm.getDirector();
-        this.actor = itemForm.getActor();
-        return this;
-    }
-```
-
-#### 상품등록 화면
-> 강의에서는 책에 대한 데이터를 집어 넣기 때문에, 등록 화면이 간략했는데 <br>
-> dtype에 따라 다른 엔티티로 객체가 생성되어 들어가는 것을 테스트 해보고 싶었습니다. <br>
-> dtype에 따라 화면과 벨리데이션할 필드가 동적으로 나뉘게 되어 @Valid가 아니라 화면에서 체크를 하였습니다.
-
-> resources/templates/items/newItemForm.html
-
-```
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: header" />
-<script src="https://code.jquery.com/jquery-latest.min.js"></script>
-<style>
-    .hidden{
-        display: none;
-        width : inherit;
-        height : 400px;
-    }
-     .fieldError {
-         border-color: #bd2130;
-     }
-</style>
-<script>
-    $(document).ready(function(){
-        fn_change_dtype();
-    });
-
-    let fn_submit = function() {
-        let dtype = $("#dtype").val();
-        $(".fieldError").removeClass("fieldError");
-        $(".errorMsg").remove();
-
-        if(dtype == ''){
-            //alert("상품구분을 선택하세요.");
-            $("#dtype").addClass("fieldError");
-            $("#dtype").parent().append("<p class='errorMsg'>상품 구분을 선택해 주세요.</p>");
-            return false;
-        }
-        if($.trim($("#name").val()) == ""){
-            //alert("이름을 입력하세요.");
-            $("#name").addClass("fieldError");
-            $("#name").parent().append("<p class='errorMsg'>상품 이름을 입력하세요.</p>");
-            return false;
-        }
-        if($.trim($("#stockQuantity").val()) == "" || $("#stockQuantity").val() == 0){
-            //alert("수량을 1이상 입력하세요.");
-            $("#stockQuantity").addClass("fieldError");
-            $("#stockQuantity").parent().append("<p class='errorMsg'>수량을 1이상 입력하세요.</p>");
-            return false;
-        }
-
-        if(dtype == 'A'){
-            if($.trim($("#artist").val()) == ""){
-                //alert("아티스트를 입력하세요.");
-                $("#artist").addClass("fieldError");
-                $("#artist").parent().append("<p class='errorMsg'>아티스트를 입력하세요.</p>");
-                return false;
-            }
-            if($.trim($("#etc").val()) == ""){
-                //alert("ETC를 입력하세요.");
-                $("#etc").addClass("fieldError");
-                $("#etc").parent().append("<p class='errorMsg'>ETC를 입력하세요.</p>");
-                return false;
-            }
-        }else if(dtype == 'B'){
-            if($.trim($("#author").val()) == ""){
-                //alert("저자를 입력하세요.");
-                $("#author").addClass("fieldError");
-                $("#author").parent().append("<p class='errorMsg'>저자를 입력하세요.</p>");
-                return false;
-            }
-            if($.trim($("#isbn").val()) == ""){
-                //alert("ISBN을 입력하세요.");
-                $("#isbn").addClass("fieldError");
-                $("#isbn").parent().append("<p class='errorMsg'>ISBN을 입력하세요.</p>");
-                return false;
-            }
-
-        }else if(dtype == 'M'){
-            if($.trim($("#director").val()) == ""){
-                //alert("감독을 입력하세요.");
-                $("#director").addClass("fieldError");
-                $("#director").parent().append("<p class='errorMsg'>감독을 입력하세요.</p>");
-                return false;
-            }
-            if($.trim($("#actor").val()) == ""){
-                //alert("배우를 입력하세요.");
-                $("#actor").addClass("fieldError");
-                $("#actor").parent().append("<p class='errorMsg'>배우를 입력하세요.</p>");
-                return false;
-            }
-        }
-
-        $("#itemForm").submit();
-
-    };
-
-    let fn_change_dtype = function() {
-        let dtype = $("#dtype").val();
-        $("#itemForm")[0].reset();
-        $("#dtype").val(dtype);
-
-        //초기화
-        $(".hidden").css("display","none");
-
-        if(dtype == ''){
-            return false;
-        }else if(dtype == 'A'){
-            $("#sub-form-A").css("display","inline");
-        }else if(dtype == 'B'){
-            $("#sub-form-B").css("display","inline");
-        }else if(dtype == 'M'){
-            $("#sub-form-M").css("display","inline");
-        }
-    };
-</script>
-<body>
-
-<div class="container">
-    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
-
-    <form id="itemForm" th:action="@{/items/new}" th:object="${itemForm}" method="post">
-        <div class="form-group">
-            <label th:for="dtype">상품구분</label>
-            <select th:field="*{dtype}" class="form-control" onchange="fn_change_dtype()">
-                <option value="">상품구분</option>
-                <option value="A">앨범</option>
-                <option value="B">책</option>
-                <option value="M">영화</option>
-            </select>
-        </div>
-        <!--<p class="fieldError" th:if="${#fields.hasErrors('dtype')}" th:errors="*{dtype}">Incorrect date</p>-->
-
-        <div class="form-group">
-            <label th:for="name">상품명</label>
-            <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요">
-        </div>
-        <!--<p class="fieldError" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Incorrect date</p>-->
-
-        <div class="form-group">
-            <label th:for="price">가격</label>
-            <input type="number" th:field="*{price}" class="form-control" placeholder="가격을 입력하세요">
-        </div>
-        <div class="form-group">
-            <label th:for="stockQuantity">수량</label>
-            <input type="number" th:field="*{stockQuantity}" class="form-control" placeholder="수량을 입력하세요">
-        </div>
-
-        <div id="sub-form-A" class="sub-form hidden">
-            <div class="form-group">
-                <label th:for="artist">아티스트</label>
-                <input type="text" th:field="*{artist}" class="form-control" placeholder="아티스트를 입력하세요">
-            </div>
-            <div class="form-group">
-                <label th:for="etc">ETC</label>
-                <input type="text" th:field="*{etc}" class="form-control" placeholder="ETC를 입력하세요">
-            </div>
-        </div>
-
-        <div id="sub-form-B" class="sub-form hidden">
-            <div class="form-group">
-                <label th:for="author">저자</label>
-                <input type="text" th:field="*{author}" class="form-control" placeholder="저자를 입력하세요">
-            </div>
-            <div class="form-group">
-                <label th:for="isbn">ISBN</label>
-                <input type="text" th:field="*{isbn}" class="form-control" placeholder="ISBN을 입력하세요">
-            </div>
-        </div>
-
-        <div id="sub-form-M" class="sub-form hidden">
-            <div class="form-group">
-                <label th:for="director">감독</label>
-                <input type="text" th:field="*{director}" class="form-control" placeholder="감독을 입력하세요">
-            </div>
-            <div class="form-group">
-                <label th:for="actor">배우</label>
-                <input type="text" th:field="*{actor}" class="form-control" placeholder="배우를 입력하세요">
-            </div>
-        </div>
-
-        <button type="button" class="btn btn-primary" onclick="fn_submit();">Submit</button>
-    </form>
-    <br/>
-    <div th:replace="fragments/footer :: footer" />
-
-</div> <!-- /container -->
-
-
-</body>
-</html>
-
-```
-
-
-
-##### 상품구분을 선택하기 전 초기화면
-
-![contact](/images/develop/backend/using-springboot-jpa/product-register-development/img-001.png)
-
-##### 상품구분을 앨범 선택
-
-![contact](/images/develop/backend/using-springboot-jpa/product-register-development/img-002.png)
-
-
-##### 상품구분을 책 선택
-
-![contact](/images/develop/backend/using-springboot-jpa/product-register-development/img-003.png)
-
-
-##### 상품구분을 영화 선택
-
-![contact](/images/develop/backend/using-springboot-jpa/product-register-development/img-004.png)
-
 
 
 
@@ -806,36 +447,64 @@ public class ItemController {
 
 <details title="펼치기/숨기기">
  	<summary> Delivery.java </summary>
-
-	package jpabook.jpashop.domain;
-
+	
+	package jpabook.jpashop.domain.item;
+	
+	import jpabook.jpashop.dto.ItemForm;
+	import jpabook.jpashop.exception.NotEnoughStockException;
+	import jpabook.jpashop.domain.Category;
 	import lombok.Getter;
 	import lombok.Setter;
 	
 	import javax.persistence.*;
+	import java.util.ArrayList;
+	import java.util.List;
 	
 	@Entity
+	@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+	//@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+	@DiscriminatorColumn(name = "dtype")
 	@Getter @Setter
-	public class Delivery {
-	
-	    public Delivery() {
-	    }
+	public abstract class Item {
 	
 	    @Id @GeneratedValue
-	    @Column(name = "delivery_id")
+	    @Column(name = "item_id")
 	    private Long id;
 	
-	    @OneToOne(fetch = FetchType.LAZY  // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
-	            , mappedBy = "delivery")
-	    private Order order;
+	    protected String name;
+	    protected int price;
+	    protected int stockQuantity;
 	
-	    @Embedded
-	    private Address address;
+	    @ManyToMany(mappedBy = "items")
+	    private List<Category> categories = new ArrayList<>();
 	
-	    @Enumerated(EnumType.STRING)
-	    private DeliveryStatus status; //READY, COMP
+	    //==비즈니스 로직==//
+	
+	    /**
+	     * 재고 증가
+	     * @param quantity
+	     */
+	    public void addStock(int quantity){
+	        this.stockQuantity += quantity;
+	    }
+	
+	    /**
+	     * 재고 감소
+	     * @param quantity
+	     */
+	    public void removeStock(int quantity){
+	        int restStock = this.stockQuantity - quantity;
+	
+	        if (restStock < 0) {
+	            throw new NotEnoughStockException("need more stock");
+	        }
+	        this.stockQuantity = restStock;
+	    }
+	
+	    public abstract Item createItem(ItemForm itemForm);
 	
 	}
+
 
 </details> 
 
@@ -906,9 +575,10 @@ public class ItemController {
 
 <details title="펼치기/숨기기">
  	<summary> Album.java </summary>
-
+	
 	package jpabook.jpashop.domain.item;
 	
+	import jpabook.jpashop.dto.ItemForm;
 	import lombok.Getter;
 	import lombok.Setter;
 	
@@ -921,6 +591,16 @@ public class ItemController {
 	public class Album extends Item{
 	    private String artist;
 	    private String etc;
+	
+	    @Override
+	    public Item createItem(ItemForm itemForm) {
+	        this.setName(itemForm.getName());
+	        this.setPrice(itemForm.getPrice());
+	        this.setStockQuantity(itemForm.getStockQuantity());
+	        this.setArtist(itemForm.getArtist());
+	        this.setEtc(itemForm.getEtc());
+	        return this;
+	    }
 	}
 
 
@@ -935,6 +615,7 @@ public class ItemController {
 
 	package jpabook.jpashop.domain.item;
 	
+	import jpabook.jpashop.dto.ItemForm;
 	import lombok.Getter;
 	import lombok.Setter;
 	
@@ -943,10 +624,20 @@ public class ItemController {
 	
 	@Entity
 	@DiscriminatorValue("B") //구분값 B
-	@Getter @Setter
+	@Getter
 	public class Book extends Item{
 	    private String author;
 	    private String isbn;
+	
+	    @Override
+	    public Item createItem(ItemForm itemForm) {
+	        super.name = itemForm.getName();
+	        super.price = itemForm.getPrice();
+	        super.stockQuantity = itemForm.getStockQuantity();
+	        this.isbn = itemForm.getIsbn();
+	        this.author = itemForm.getAuthor();
+	        return this;
+	    }
 	}
 
 
@@ -959,19 +650,29 @@ public class ItemController {
  	<summary> Movie.java </summary>
 
 	package jpabook.jpashop.domain.item;
-
+	
+	import jpabook.jpashop.dto.ItemForm;
 	import lombok.Getter;
-	import lombok.Setter;
 	
 	import javax.persistence.DiscriminatorValue;
 	import javax.persistence.Entity;
 	
 	@Entity
 	@DiscriminatorValue("M") //구분값 M
-	@Getter @Setter
+	@Getter
 	public class Movie extends Item{
 	    private String director;
 	    private String actor;
+	
+	    @Override
+	    public Item createItem(ItemForm itemForm) {
+	        super.name = itemForm.getName();
+	        super.price = itemForm.getPrice();
+	        super.stockQuantity = itemForm.getStockQuantity();
+	        this.director = itemForm.getDirector();
+	        this.actor = itemForm.getActor();
+	        return this;
+	    }
 	}
 
 
@@ -1666,6 +1367,73 @@ public class ItemController {
 	    }
 	}
 
+</details> 
+
+> java/jpabook/jpashop/controller/ItemController.java
+
+<details title="펼치기/숨기기">
+ 	<summary> ItemController.java </summary>
+
+	package jpabook.jpashop.controller;
+	
+	import jpabook.jpashop.domain.item.Album;
+	import jpabook.jpashop.domain.item.Book;
+	import jpabook.jpashop.domain.item.Item;
+	import jpabook.jpashop.domain.item.Movie;
+	import jpabook.jpashop.dto.ItemForm;
+	import jpabook.jpashop.exception.NotHasDiscriminator;
+	import jpabook.jpashop.service.ItemService;
+	import lombok.RequiredArgsConstructor;
+	import lombok.extern.slf4j.Slf4j;
+	import org.springframework.stereotype.Controller;
+	import org.springframework.ui.Model;
+	import org.springframework.validation.BindingResult;
+	import org.springframework.web.bind.annotation.GetMapping;
+	import org.springframework.web.bind.annotation.PostMapping;
+	
+	import javax.validation.Valid;
+	
+	@Controller
+	@RequiredArgsConstructor
+	@Slf4j
+	public class ItemController {
+	
+	    private final ItemService itemService;
+	
+	    @GetMapping("/items/new")
+	    public String newItemsForm(Model modal){
+	        log.info("call get /items/new");
+	
+	        modal.addAttribute("itemForm", new ItemForm());
+	        return "items/newItemForm";
+	    }
+	
+	    @PostMapping("/items/new")
+	    public String newItems(@Valid ItemForm itemForm, BindingResult result, Model modal){
+	        log.info("call post members/new");
+	
+	        if(result.hasErrors()){
+	            return "items/newItemForm";
+	        }
+	
+	        Item item = null;
+	        if("A".equals(itemForm.getDtype())){
+	            item = new Album().createItem(itemForm); // 앨범 생성
+	        }else if("B".equals(itemForm.getDtype())){
+	            item = new Book().createItem(itemForm); // 책 생성
+	        }else if("M".equals(itemForm.getDtype())){
+	            item = new Movie().createItem(itemForm);  // 영화 생성
+	        }else{
+	            throw new NotHasDiscriminator("Not Has Discriminator");
+	        }
+	
+	        itemService.saveItem(item);
+	
+	        return  "redirect:/items";
+	
+	    }
+	}
+
 
 </details> 
 
@@ -1871,6 +1639,204 @@ public class ItemController {
 
 
 </details> 
+
+> resources/templates/items/newItemForm.html
+
+<details title="펼치기/숨기기">
+ 	<summary> newItemForm.html </summary>
+		
+	<!DOCTYPE HTML>
+	<html xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="fragments/header :: header" />
+	<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+	<style>
+	    .hidden{
+	        display: none;
+	        width : inherit;
+	        height : 400px;
+	    }
+	     .fieldError {
+	         border-color: #bd2130;
+	     }
+	</style>
+	<script>
+	    $(document).ready(function(){
+	        fn_change_dtype();
+	    });
+	
+	    let fn_submit = function() {
+	        let dtype = $("#dtype").val();
+	        $(".fieldError").removeClass("fieldError");
+	        $(".errorMsg").remove();
+	
+	        if(dtype == ''){
+	            //alert("상품구분을 선택하세요.");
+	            $("#dtype").addClass("fieldError");
+	            $("#dtype").parent().append("<p class='errorMsg'>상품 구분을 선택해 주세요.</p>");
+	            return false;
+	        }
+	        if($.trim($("#name").val()) == ""){
+	            //alert("이름을 입력하세요.");
+	            $("#name").addClass("fieldError");
+	            $("#name").parent().append("<p class='errorMsg'>상품 이름을 입력하세요.</p>");
+	            return false;
+	        }
+	        if($.trim($("#stockQuantity").val()) == "" || $("#stockQuantity").val() == 0){
+	            //alert("수량을 1이상 입력하세요.");
+	            $("#stockQuantity").addClass("fieldError");
+	            $("#stockQuantity").parent().append("<p class='errorMsg'>수량을 1이상 입력하세요.</p>");
+	            return false;
+	        }
+	
+	        if(dtype == 'A'){
+	            if($.trim($("#artist").val()) == ""){
+	                //alert("아티스트를 입력하세요.");
+	                $("#artist").addClass("fieldError");
+	                $("#artist").parent().append("<p class='errorMsg'>아티스트를 입력하세요.</p>");
+	                return false;
+	            }
+	            if($.trim($("#etc").val()) == ""){
+	                //alert("ETC를 입력하세요.");
+	                $("#etc").addClass("fieldError");
+	                $("#etc").parent().append("<p class='errorMsg'>ETC를 입력하세요.</p>");
+	                return false;
+	            }
+	        }else if(dtype == 'B'){
+	            if($.trim($("#author").val()) == ""){
+	                //alert("저자를 입력하세요.");
+	                $("#author").addClass("fieldError");
+	                $("#author").parent().append("<p class='errorMsg'>저자를 입력하세요.</p>");
+	                return false;
+	            }
+	            if($.trim($("#isbn").val()) == ""){
+	                //alert("ISBN을 입력하세요.");
+	                $("#isbn").addClass("fieldError");
+	                $("#isbn").parent().append("<p class='errorMsg'>ISBN을 입력하세요.</p>");
+	                return false;
+	            }
+	
+	        }else if(dtype == 'M'){
+	            if($.trim($("#director").val()) == ""){
+	                //alert("감독을 입력하세요.");
+	                $("#director").addClass("fieldError");
+	                $("#director").parent().append("<p class='errorMsg'>감독을 입력하세요.</p>");
+	                return false;
+	            }
+	            if($.trim($("#actor").val()) == ""){
+	                //alert("배우를 입력하세요.");
+	                $("#actor").addClass("fieldError");
+	                $("#actor").parent().append("<p class='errorMsg'>배우를 입력하세요.</p>");
+	                return false;
+	            }
+	        }
+	
+	        $("#itemForm").submit();
+	
+	    };
+	
+	    let fn_change_dtype = function() {
+	        let dtype = $("#dtype").val();
+	        $("#itemForm")[0].reset();
+	        $("#dtype").val(dtype);
+	
+	        //초기화
+	        $(".hidden").css("display","none");
+	
+	        if(dtype == ''){
+	            return false;
+	        }else if(dtype == 'A'){
+	            $("#sub-form-A").css("display","inline");
+	        }else if(dtype == 'B'){
+	            $("#sub-form-B").css("display","inline");
+	        }else if(dtype == 'M'){
+	            $("#sub-form-M").css("display","inline");
+	        }
+	
+	
+	    };
+	</script>
+	<body>
+	
+	<div class="container">
+	    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+	
+	    <form id="itemForm" th:action="@{/items/new}" th:object="${itemForm}" method="post">
+	        <div class="form-group">
+	            <label th:for="dtype">상품구분</label>
+	            <select th:field="*{dtype}" class="form-control" onchange="fn_change_dtype()">
+	                <option value="">상품구분</option>
+	                <option value="A">앨범</option>
+	                <option value="B">책</option>
+	                <option value="M">영화</option>
+	            </select>
+	        </div>
+	        <!--<p class="fieldError" th:if="${#fields.hasErrors('dtype')}" th:errors="*{dtype}">Incorrect date</p>-->
+	
+	        <div class="form-group">
+	            <label th:for="name">상품명</label>
+	            <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요">
+	        </div>
+	        <!--<p class="fieldError" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Incorrect date</p>-->
+	
+	        <div class="form-group">
+	            <label th:for="price">가격</label>
+	            <input type="number" th:field="*{price}" class="form-control" placeholder="가격을 입력하세요">
+	        </div>
+	        <div class="form-group">
+	            <label th:for="stockQuantity">수량</label>
+	            <input type="number" th:field="*{stockQuantity}" class="form-control" placeholder="수량을 입력하세요">
+	        </div>
+	
+	        <div id="sub-form-A" class="sub-form hidden">
+	            <div class="form-group">
+	                <label th:for="artist">아티스트</label>
+	                <input type="text" th:field="*{artist}" class="form-control" placeholder="아티스트를 입력하세요">
+	            </div>
+	            <div class="form-group">
+	                <label th:for="etc">ETC</label>
+	                <input type="text" th:field="*{etc}" class="form-control" placeholder="ETC를 입력하세요">
+	            </div>
+	        </div>
+	
+	        <div id="sub-form-B" class="sub-form hidden">
+	            <div class="form-group">
+	                <label th:for="author">저자</label>
+	                <input type="text" th:field="*{author}" class="form-control" placeholder="저자를 입력하세요">
+	            </div>
+	            <div class="form-group">
+	                <label th:for="isbn">ISBN</label>
+	                <input type="text" th:field="*{isbn}" class="form-control" placeholder="ISBN을 입력하세요">
+	            </div>
+	        </div>
+	
+	        <div id="sub-form-M" class="sub-form hidden">
+	            <div class="form-group">
+	                <label th:for="director">감독</label>
+	                <input type="text" th:field="*{director}" class="form-control" placeholder="감독을 입력하세요">
+	            </div>
+	            <div class="form-group">
+	                <label th:for="actor">배우</label>
+	                <input type="text" th:field="*{actor}" class="form-control" placeholder="배우를 입력하세요">
+	            </div>
+	        </div>
+	
+	        <button type="button" class="btn btn-primary" onclick="fn_submit();">Submit</button>
+	    </form>
+	    <br/>
+	    <div th:replace="fragments/footer :: footer" />
+	
+	</div> <!-- /container -->
+	
+	
+	</body>
+	</html>
+
+
+</details> 
+
+
+
+
 
 
 
@@ -2152,7 +2118,6 @@ public class ItemController {
 	    }
 	}
 </details>	
-
 
 #### 참고 
 > - <a href="https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-JPA-%ED%99%9C%EC%9A%A9-1">실전! 스프링 부트와 JPA 활용1 - 웹 애플리케이션 개발 - 김영한</a>
