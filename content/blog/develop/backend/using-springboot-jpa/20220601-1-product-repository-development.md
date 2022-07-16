@@ -726,6 +726,42 @@ public class ItemRepository {
 </details> 
 
 
+
+#### Exception
+
+> java/jpabook/jpashop/exception/NotEnoughStockException.java
+
+<details title="펼치기/숨기기">
+ 	<summary> NotEnoughStockException.java </summary>
+
+	package jpabook.jpashop.exception;
+	
+	public class NotEnoughStockException extends RuntimeException{
+	    public NotEnoughStockException() {
+	        super();
+	    }
+	
+	    public NotEnoughStockException(String message) {
+	        super(message);
+	    }
+	
+	    public NotEnoughStockException(String message, Throwable cause) {
+	        super(message, cause);
+	    }
+	
+	    public NotEnoughStockException(Throwable cause) {
+	        super(cause);
+	    }
+	
+	    protected NotEnoughStockException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+	        super(message, cause, enableSuppression, writableStackTrace);
+	    }
+	}
+
+</details> 
+
+
+
 > test/resources/application.properties
 
 <details title="펼치기/숨기기">

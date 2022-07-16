@@ -5,10 +5,10 @@ font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-07-16
-slug: "product-list-development"
+slug: "1-product-list-development"
 description: "[스프링부트 JPA 활용] 상품 목록 화면 개발"
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -61,8 +61,127 @@ toc: true
 
 ### 상품 목록 화면 개발
 ----------------------
+> 컨트롤러에서 /items 리퀘스트를 받을 수 있는 itemList()를 생성하고, 서비스를 통해 상품목록을 받아 리턴해 줍니다.
 
+> ItemController.java
 
+```
+package jpabook.jpashop.controller;
+
+import jpabook.jpashop.domain.item.Album;
+import jpabook.jpashop.domain.item.Book;
+import jpabook.jpashop.domain.item.Item;
+import jpabook.jpashop.domain.item.Movie;
+import jpabook.jpashop.dto.ItemForm;
+import jpabook.jpashop.exception.NotHasDiscriminator;
+import jpabook.jpashop.service.ItemService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import javax.validation.Valid;
+import java.util.List;
+
+@Controller
+@RequiredArgsConstructor
+@Slf4j
+public class ItemController {
+
+    private final ItemService itemService;
+
+    @GetMapping("/items/new")
+    public String newItemsForm(Model modal){
+        log.info("call get /items/new");
+
+        modal.addAttribute("itemForm", new ItemForm());
+        return "items/newItemForm";
+    }
+    @PostMapping("/items/new")
+    public String newItems(@Valid ItemForm itemForm, BindingResult result, Model modal){
+        log.info("call post members/new");
+
+        if(result.hasErrors()){
+            return "items/newItemForm";
+        }
+
+        Item item = null;
+        if("A".equals(itemForm.getDtype())){
+            item = new Album().createItem(itemForm); // 앨범 생성
+        }else if("B".equals(itemForm.getDtype())){
+            item = new Book().createItem(itemForm); // 책 생성
+        }else if("M".equals(itemForm.getDtype())){
+            item = new Movie().createItem(itemForm);  // 영화 생성
+        }else{
+            throw new NotHasDiscriminator("Not Has Discriminator");
+        }
+
+        itemService.saveItem(item);
+
+        return  "redirect:/items";
+
+    }
+
+    @GetMapping("/items")
+    public String itemList(Model modal){
+        log.info("call get /items");
+
+        List<Item> items = itemService.findItems();
+
+        modal.addAttribute("items", items);
+        return "items/itemList";
+    }
+}
+
+```
+
+> resources/templates/items/newItemForm.html
+
+```
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>상품명</th>
+                <th>가격</th>
+                <th>재고수량</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.id}"></td>
+                <td th:text="${item.name}"></td>
+                <td th:text="${item.price}"></td>
+                <td th:text="${item.stockQuantity}"></td>
+                <td>
+                    <a href="#" th:href="@{/items/{id}/edit (id=${item.id})}" class="btn btn-primary" role="button">수정</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"/>
+
+</div> <!-- /container -->
+
+</body>
+</html>
+
+```
 
 ### 이전 소스
 ---------------------
@@ -1835,8 +1954,71 @@ toc: true
 </details> 
 
 
+#### Exception
+
+> java/jpabook/jpashop/exception/NotEnoughStockException.java
+
+<details title="펼치기/숨기기">
+ 	<summary> NotEnoughStockException.java </summary>
+
+	package jpabook.jpashop.exception;
+	
+	public class NotEnoughStockException extends RuntimeException{
+	    public NotEnoughStockException() {
+	        super();
+	    }
+	
+	    public NotEnoughStockException(String message) {
+	        super(message);
+	    }
+	
+	    public NotEnoughStockException(String message, Throwable cause) {
+	        super(message, cause);
+	    }
+	
+	    public NotEnoughStockException(Throwable cause) {
+	        super(cause);
+	    }
+	
+	    protected NotEnoughStockException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+	        super(message, cause, enableSuppression, writableStackTrace);
+	    }
+	}
+
+</details> 
 
 
+> java/jpabook/jpashop/exception/NotHasDiscriminator.java
+
+<details title="펼치기/숨기기">
+ 	<summary> NotHasDiscriminator.java </summary>
+
+	package jpabook.jpashop.exception;
+	
+	public class NotHasDiscriminator extends RuntimeException{
+	    public NotHasDiscriminator() {
+	        super();
+	    }
+	
+	    public NotHasDiscriminator(String message) {
+	        super(message);
+	    }
+	
+	    public NotHasDiscriminator(String message, Throwable cause) {
+	        super(message, cause);
+	    }
+	
+	    public NotHasDiscriminator(Throwable cause) {
+	        super(cause);
+	    }
+	
+	    protected NotHasDiscriminator(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+	        super(message, cause, enableSuppression, writableStackTrace);
+	    }
+	}
+
+
+</details> 
 
 
 
