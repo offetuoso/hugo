@@ -63,6 +63,296 @@ toc: true
 ----------------------
 > 등록과 조회와 다르게 수정은 중요합니다. JPA에서 어떤 방법으로 수정을 처리 하는지 또 또 변경감지와 병합 두가지 방법이 어떤 차이가 있는지 알아보겠습니다.
 
+#### ItemController.java 
+> /items/{itemId}/edit 요청을 처리할 리퀘스트 매핑 메서드 추가
+
+```
+...
+    @GetMapping("/items/{itemId}/edit")
+    public String editItemsForm(@PathVariable("itemId") Long itemId, Model modal){
+        log.info("call get /items/edit");
+
+        Item item = itemService.findOne(itemId);
+
+        ItemForm itemForm = item.transItemForm();
+
+        modal.addAttribute("itemForm", itemForm);
+
+        return "items/editItemForm";
+    }
+...
+```
+
+#### Item.java
+> Item 엔티티를 itemFrom 으로 변환해줄 transItemForm 추상 메서드를 추가하고 <br>
+> Item의 자식들에서 각각 구현
+
+```
+ public abstract ItemForm transItemForm();
+```
+
+> Album.java
+
+```
+@Override
+    public ItemForm transItemForm() {
+        Album album = (Album) this;
+
+        ItemForm itemForm = new ItemForm();
+        itemForm.setDtype(album.getDtype());
+        itemForm.setId(album.getId());
+        itemForm.setName(album.getName());
+        itemForm.setPrice(album.getPrice());
+        itemForm.setStockQuantity(album.getStockQuantity());
+
+        itemForm.setArtist(album.getArtist());
+        itemForm.setEtc(album.getEtc());
+
+        return itemForm;
+    }
+```
+
+> Book.java
+
+````
+@Override
+    public ItemForm transItemForm() {
+        Book book = (Book) this;
+
+        ItemForm itemForm = new ItemForm();
+        itemForm.setDtype(book.getDtype());
+        itemForm.setId(book.getId());
+        itemForm.setName(book.getName());
+        itemForm.setPrice(book.getPrice());
+        itemForm.setStockQuantity(book.getStockQuantity());
+
+        itemForm.setAuthor(book.getAuthor());
+        itemForm.setIsbn(book.getIsbn());
+
+        return itemForm;
+    }
+````
+
+> Movie.java
+
+```
+@Override
+    public ItemForm transItemForm() {
+        Movie movie = (Movie) this;
+        ItemForm itemForm = new ItemForm();
+        itemForm.setDtype(movie.getDtype());
+        itemForm.setId(movie.getId());
+        itemForm.setName(movie.getName());
+        itemForm.setPrice(movie.getPrice());
+        itemForm.setStockQuantity(movie.getStockQuantity());
+
+        itemForm.setDirector(movie.getDirector());
+        itemForm.setActor(movie.getActor());
+
+        return itemForm;
+    }
+```
+
+#### resources/templates/items/editItemForm.html
+
+```
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<style>
+    .hidden{
+        display: none;
+        width : inherit;
+        height : 400px;
+    }
+     .fieldError {
+         border-color: #bd2130;
+     }
+</style>
+<script>
+    $(document).ready(function(){
+        fn_change_dtype();
+    });
+
+    let fn_submit = function() {
+        let dtype = $("#dtype").val();
+        $(".fieldError").removeClass("fieldError");
+        $(".errorMsg").remove();
+
+        if(dtype == ''){
+            //alert("상품구분을 선택하세요.");
+            $("#dtype").addClass("fieldError");
+            $("#dtype").parent().append("<p class='errorMsg'>상품 구분을 선택해 주세요.</p>");
+            return false;
+        }
+        if($.trim($("#name").val()) == ""){
+            //alert("이름을 입력하세요.");
+            $("#name").addClass("fieldError");
+            $("#name").parent().append("<p class='errorMsg'>상품 이름을 입력하세요.</p>");
+            return false;
+        }
+        if($.trim($("#stockQuantity").val()) == "" || $("#stockQuantity").val() == 0){
+            //alert("수량을 1이상 입력하세요.");
+            $("#stockQuantity").addClass("fieldError");
+            $("#stockQuantity").parent().append("<p class='errorMsg'>수량을 1이상 입력하세요.</p>");
+            return false;
+        }
+
+        if(dtype == 'A'){
+            if($.trim($("#artist").val()) == ""){
+                //alert("아티스트를 입력하세요.");
+                $("#artist").addClass("fieldError");
+                $("#artist").parent().append("<p class='errorMsg'>아티스트를 입력하세요.</p>");
+                return false;
+            }
+            if($.trim($("#etc").val()) == ""){
+                //alert("ETC를 입력하세요.");
+                $("#etc").addClass("fieldError");
+                $("#etc").parent().append("<p class='errorMsg'>ETC를 입력하세요.</p>");
+                return false;
+            }
+        }else if(dtype == 'B'){
+            if($.trim($("#author").val()) == ""){
+                //alert("저자를 입력하세요.");
+                $("#author").addClass("fieldError");
+                $("#author").parent().append("<p class='errorMsg'>저자를 입력하세요.</p>");
+                return false;
+            }
+            if($.trim($("#isbn").val()) == ""){
+                //alert("ISBN을 입력하세요.");
+                $("#isbn").addClass("fieldError");
+                $("#isbn").parent().append("<p class='errorMsg'>ISBN을 입력하세요.</p>");
+                return false;
+            }
+
+        }else if(dtype == 'M'){
+            if($.trim($("#director").val()) == ""){
+                //alert("감독을 입력하세요.");
+                $("#director").addClass("fieldError");
+                $("#director").parent().append("<p class='errorMsg'>감독을 입력하세요.</p>");
+                return false;
+            }
+            if($.trim($("#actor").val()) == ""){
+                //alert("배우를 입력하세요.");
+                $("#actor").addClass("fieldError");
+                $("#actor").parent().append("<p class='errorMsg'>배우를 입력하세요.</p>");
+                return false;
+            }
+        }
+
+        $("#itemForm").submit();
+
+    };
+
+    let fn_change_dtype = function() {
+        let dtype = $("#dtype").val();
+        $("#itemForm")[0].reset();
+        $("#dtype").val(dtype);
+
+        //초기화
+        $(".hidden").css("display","none");
+
+        if(dtype == ''){
+            return false;
+        }else if(dtype == 'A'){
+            $("#sub-form-A").css("display","inline");
+        }else if(dtype == 'B'){
+            $("#sub-form-B").css("display","inline");
+        }else if(dtype == 'M'){
+            $("#sub-form-M").css("display","inline");
+        }
+
+
+    };
+</script>
+<body>
+
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+
+    <form id="itemForm" th:action="@{/items/new}" th:object="${itemForm}" method="post">
+        <div class="form-group">
+            <label th:for="dtype">상품구분</label>
+            <select th:field="*{dtype}" class="form-control" onchange="fn_change_dtype()">
+                <option value="" >상품구분</option>
+                <option value="A">앨범</option>
+                <option value="B">책</option>
+                <option value="M">영화</option>
+            </select>
+        </div>
+
+       <!-- <select class="form-group form-control">
+            <th:block th:each="num : ${#numbers.sequence(1,10)}">
+                <option th:value="${num}" th:text="${num}" th:selected="${num} == ${itemForm.dtype}">
+                </option>
+            </th:block>
+        </select>-->
+
+
+        <!--<p class="fieldError" th:if="${#fields.hasErrors('dtype')}" th:errors="*{dtype}">Incorrect date</p>-->
+
+        <div class="form-group">
+            <label th:for="name">상품명</label>
+            <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요">
+        </div>
+        <!--<p class="fieldError" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Incorrect date</p>-->
+
+        <div class="form-group">
+            <label th:for="price">가격</label>
+            <input type="number" th:field="*{price}" class="form-control" placeholder="가격을 입력하세요">
+        </div>
+        <div class="form-group">
+            <label th:for="stockQuantity">수량</label>
+            <input type="number" th:field="*{stockQuantity}" class="form-control" placeholder="수량을 입력하세요">
+        </div>
+
+        <div id="sub-form-A" class="sub-form hidden">
+            <div class="form-group">
+                <label th:for="artist">아티스트</label>
+                <input type="text" th:field="*{artist}" class="form-control" placeholder="아티스트를 입력하세요">
+            </div>
+            <div class="form-group">
+                <label th:for="etc">ETC</label>
+                <input type="text" th:field="*{etc}" class="form-control" placeholder="ETC를 입력하세요">
+            </div>
+        </div>
+
+        <div id="sub-form-B" class="sub-form hidden">
+            <div class="form-group">
+                <label th:for="author">저자</label>
+                <input type="text" th:field="*{author}" class="form-control" placeholder="저자를 입력하세요">
+            </div>
+            <div class="form-group">
+                <label th:for="isbn">ISBN</label>
+                <input type="text" th:field="*{isbn}" class="form-control" placeholder="ISBN을 입력하세요">
+            </div>
+        </div>
+
+        <div id="sub-form-M" class="sub-form hidden">
+            <div class="form-group">
+                <label th:for="director">감독</label>
+                <input type="text" th:field="*{director}" class="form-control" placeholder="감독을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label th:for="actor">배우</label>
+                <input type="text" th:field="*{actor}" class="form-control" placeholder="배우를 입력하세요">
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="fn_submit();">Submit</button>
+    </form>
+    <br/>
+    <div th:replace="fragments/footer :: footer" />
+
+</div> <!-- /container -->
+
+
+</body>
+</html>
+
+```
+
 ### 이전 소스
 ---------------------
 
