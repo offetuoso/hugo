@@ -64,7 +64,7 @@ toc: true
 > 등록과 조회와 다르게 수정은 중요합니다. JPA에서 어떤 방법으로 수정을 처리 하는지 또 또 변경감지와 병합 두가지 방법이 어떤 차이가 있는지 알아보겠습니다.
 
 #### ItemController.java 
-> /items/{itemId}/edit 요청을 처리할 리퀘스트 매핑 메서드 추가
+> /items/{itemId}/edit Get(수정 페이지 및 데이터) 요청을 처리할 리퀘스트 매핑 메서드 추가
 
 ```
 ...
@@ -289,8 +289,8 @@ toc: true
             </th:block>
         </select>-->
 
-
-        <!--<p class="fieldError" th:if="${#fields.hasErrors('dtype')}" th:errors="*{dtype}">Incorrect date</p>-->
+        <!-- id -->
+        <input type="hidden" th:field="*{id}" />
 
         <div class="form-group">
             <label th:for="name">상품명</label>
@@ -352,6 +352,46 @@ toc: true
 </html>
 
 ```
+
+#### ItemController.java 
+> /items/{itemId}/edit Post(수정) 요청을 처리할 리퀘스트 매핑 메서드 추가
+
+```
+...
+    @PostMapping("items/{itemId}/edit")
+    public String updateItem(@ModelAttribute("form") ItemForm itemForm){
+
+        Item item = itemService.transItemEntity(itemForm);
+        itemService.saveItem(item);
+        
+        return "redirect:items";
+    }
+}
+
+...
+```
+
+> ItemService.java
+
+```
+public Item transItemEntity(ItemForm itemForm) {
+        Item item = null;
+        String dtype = itemForm.getDtype();
+
+        if("A".equals(itemForm.getDtype())){
+            item = new Album().createItem(itemForm); // 앨범 생성
+        }else if("B".equals(itemForm.getDtype())){
+            item = new Book().createItem(itemForm); // 책 생성
+        }else if("M".equals(itemForm.getDtype())){
+            item = new Movie().createItem(itemForm);  // 영화 생성
+        }else{
+            throw new NotHasDiscriminator("Not Has Discriminator");
+        }
+
+        return item;
+    }
+```
+
 
 ### 이전 소스
 ---------------------
@@ -2530,6 +2570,9 @@ toc: true
 	    }
 	}
 </details>	
+
+
+
 
 #### 참고 
 > - <a href="https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-JPA-%ED%99%9C%EC%9A%A9-1">실전! 스프링 부트와 JPA 활용1 - 웹 애플리케이션 개발 - 김영한</a>
