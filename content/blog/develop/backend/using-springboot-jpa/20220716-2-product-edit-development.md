@@ -8,7 +8,7 @@ date: 2022-07-16
 slug: "2-product-edit-development"
 description: "[스프링부트 JPA 활용] 상품 수정 화면 개발"
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -61,7 +61,6 @@ toc: true
 
 ### 상품 수정 화면 개발
 ----------------------
-> 등록과 조회와 다르게 수정은 중요합니다. JPA에서 어떤 방법으로 수정을 처리 하는지 또 또 변경감지와 병합 두가지 방법이 어떤 차이가 있는지 알아보겠습니다.
 
 #### ItemController.java 
 > /items/{itemId}/edit Get(수정 페이지 및 데이터) 요청을 처리할 리퀘스트 매핑 메서드 추가
@@ -392,6 +391,33 @@ public Item transItemEntity(ItemForm itemForm) {
     }
 ```
 
+
+![contact](/images/develop/backend/using-springboot-jpa/product-edit-development/img-001.png)
+
+![contact](/images/develop/backend/using-springboot-jpa/product-edit-development/img-002.png)
+
+![contact](/images/develop/backend/using-springboot-jpa/product-edit-development/img-003.png)
+
+![contact](/images/develop/backend/using-springboot-jpa/product-edit-development/img-004.png)
+
+> 또한 URI에 Id 값을 포함하여 호출할때, 실제 운영을 할 때에는 보안 이슈가 있기때문에
+당연히 해당 사용자가 해당 상품의 Id 값의 권한이 있는지 확인 하여야 합니다. 
+
+> ItemRepository.java
+
+```
+public void save(Item item){
+        System.out.println(item.getId());
+        System.out.println(item.getId() == null);
+        if (item.getId() == null){
+            em.persist(item);
+        }else{
+            em.merge(item);
+        }
+    }
+```
+
+> 다음 강좌에는 JPA에서 어떤 방법으로 수정을 처리 하는지 또 또 변경감지와 병합 두가지 방법이 어떤 차이가 있는지 알아보겠습니다.
 
 ### 이전 소스
 ---------------------
@@ -1117,9 +1143,7 @@ public Item transItemEntity(ItemForm itemForm) {
 	        return em.createQuery("select m from Member m where m.name = :name", Member.class)
 	                .setParameter("name",name).getResultList();
 	    }
-	
 	}
-
 
 </details> 
 
@@ -1140,8 +1164,6 @@ public Item transItemEntity(ItemForm itemForm) {
 	import org.springframework.transaction.annotation.Transactional;
 	
 	import java.util.List;
-	
-	
 	
 	@Service
 	@Transactional(readOnly = true)
@@ -1471,8 +1493,6 @@ public Item transItemEntity(ItemForm itemForm) {
 	        return order.getId();
 	    }
 	
-	
-	
 	    /**
 	     * 취소
 	     */
@@ -1481,9 +1501,7 @@ public Item transItemEntity(ItemForm itemForm) {
 	        Order order = orderRepository.findOne(orderId);
 	        // 주문 취소
 	        order.cancel();
-	
 	    }
-	
 	
 	    /**
 	     * 검색
