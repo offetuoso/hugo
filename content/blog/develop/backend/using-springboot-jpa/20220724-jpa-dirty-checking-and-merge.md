@@ -341,7 +341,10 @@ toc: true
 > 병합은 모든 컬럼을 업데이트 하기 때문에 null로 넘어온 값 마저도 업데이트 하게됩니다.
 
 #### 결론 
-> merge는 이러한 위험성을 가지고 있기 때문에 변경감지를 사용하는 것을 권장합니다. <br>
+> merge는 이러한 위험성을 가지고 있기 때문에 <mark>변경감지를 사용하시길 바랍니다.</mark> <br>
+
+
+##### Setter 보다 Entity의 method로 사용 
 
 > 또한 
 
@@ -372,7 +375,74 @@ toc: true
 
 > 위와 같이 모두 set()을 이용해 수정하는 것보다 수정이라는 의미를 가지는 메서드를 만들어 사용하면 변경을 엔티티에서 하고 변경지점을 통일 시켜 사방팔방 여러곳에서 수정이 발생되는 것을 막아 유지보수에 조금더 도움을 줄 수 있습니다.
 
- 
+##### 컨트롤러에서 엔티티 생성 지양
+
+````
+  @PostMapping("items/{itemId}/edit")
+    public String updateItem(@ModelAttribute("form") ItemForm itemForm){
+
+        Book book = new Book();
+        book.setId(itemForm.getId());
+        book.setName(itemForm.getName());
+        book.setPrice(itemForm.getPrice());
+        book.setStockQuantity(itemForm.getStockQuantity());
+
+        itemService.updateItem(itemForm.getId(), book);
+
+        return "redirect:items";
+
+    }
+````
+
+> 이런식으로 컨트롤러에서 새로 엔티티 객체를 새로만들어서 처리 하는 것보다 <br>
+> 서비스 계층에 식별자와 <mark>변경할 데이터를 명확하게 전달하는게 좋습니다.</mark> (파라미터 or dto)
+
+````
+  @PostMapping("items/{itemId}/edit")
+    public String updateItem(@ModelAttribute("form") ItemForm itemForm){
+
+        itemService.updateItem(itemForm.getId(), itemForm.getName(), itemForm.getPrice(), itemForm.getStockQuantity());
+
+        return "redirect:items";
+
+    }
+````
+
+```
+    @Transactional
+    public Item updateItem(Long itemId, String name, int price, int quantity){
+
+	    Book findItem = (Book) itemRepository.findOne(itemId);
+         findItem.change(  price
+                           , name
+                           , quantity
+                         );
+        
+        return findItem;
+     }
+            
+```
+
+> 이런식으로 수정할 파라미터만 받아 수정을 하는 것이 바람직합니다. <br>
+> 수정할 파라미터가 한눈에 보이기 때문에 유지보수성이 좋아집니다. 
+
+> 만약 수정할 파라미터가 많다다면 DTO를 만들어 전달 하여도 됩니다. 
+
+
+```
+    @Transactional
+    public Item updateItem(Long itemId, UpdateItemDto itemDto){
+
+	    Book findItem = (Book) itemRepository.findOne(itemId);
+         findItem.change(itemDto);
+        
+        return findItem;
+     }
+            
+```
+
+
+
 
 ### 이전 소스
 ---------------------
