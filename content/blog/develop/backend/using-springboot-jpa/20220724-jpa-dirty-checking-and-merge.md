@@ -8,7 +8,7 @@ date: 2022-07-24
 slug: "jpa-dirty-checking-and-merge"
 description: "[스프링부트 JPA 활용] 변경 감지(Dirty Checking) 와 병합(merge)"
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -340,9 +340,6 @@ toc: true
 
 > 병합은 모든 컬럼을 업데이트 하기 때문에 null로 넘어온 값 마저도 업데이트 하게됩니다.
 
-#### 결론 
-> merge는 이러한 위험성을 가지고 있기 때문에 <mark>변경감지를 사용하시길 바랍니다.</mark> <br>
-
 
 ##### Setter 보다 Entity의 method로 사용 
 
@@ -395,7 +392,8 @@ toc: true
 ````
 
 > 이런식으로 컨트롤러에서 새로 엔티티 객체를 새로만들어서 처리 하는 것보다 <br>
-> 서비스 계층에 식별자와 <mark>변경할 데이터를 명확하게 전달하는게 좋습니다.</mark> (파라미터 or dto)
+> 서비스 계층에 식별자와 <mark>변경할 데이터를 명확하게 전달하는게 좋습니다.</mark> (파라미터 or dto)<br>  
+> 또 트랜잭션이 있는 서비스 계층에서 영속 상태의 엔티티를 조회하고, 엔티티를 직접 변경합니다.
 
 ````
   @PostMapping("items/{itemId}/edit")
@@ -441,6 +439,102 @@ toc: true
             
 ```
 
+> ItemController.java
+
+```
+@PostMapping("items/{itemId}/edit")
+    public String updateItem(@ModelAttribute("form") ItemForm itemForm){
+
+        Item item = itemService.transItemEntity(itemForm);
+        //itemService.saveItem(item);
+        itemService.updateItem(itemForm.getId(), itemForm);
+
+        return "redirect:items";
+
+    }
+```
+
+
+> ItemService.java
+
+```
+@Transactional
+    public Item updateItem(Long itemId, ItemForm itemForm){
+
+        if("A".equals(itemForm.getDtype())){
+            Album findItem = (Album) itemRepository.findOne(itemId);
+
+            return findItem.changeItem(itemForm);
+
+        }else if("B".equals(itemForm.getDtype())){
+            Book findItem = (Book) itemRepository.findOne(itemId);
+
+            return findItem.changeItem(itemForm);
+
+        }else if("M".equals(itemForm.getDtype())){
+            Movie findItem = (Movie) itemRepository.findOne(itemId);
+
+
+            return findItem.changeItem(itemForm);
+
+        }else{
+            throw new NotHasDiscriminator("Not Has Discriminator");
+        }
+    }
+
+```
+
+> Item.java
+
+```
+  public abstract Item changeItem(ItemForm itemForm);
+```
+
+> Album.java
+
+```
+    @Override
+    public Item changeItem(ItemForm itemForm) {
+        this.name = itemForm.getName();
+        this.price = itemForm.getPrice();
+        this.stockQuantity = itemForm.getStockQuantity();
+        this.artist= itemForm.getArtist();
+        this.etc = itemForm.getEtc();
+        return this;
+    }
+```
+
+> Book.java
+
+```
+    @Override
+    public Item changeItem(ItemForm itemForm) {
+        this.name = itemForm.getName();
+        this.price = itemForm.getPrice();
+        this.stockQuantity = itemForm.getStockQuantity();
+        this.author= itemForm.getAuthor();
+        this.isbn = itemForm.getIsbn();
+        return this;
+    }
+```
+
+> Movie.java
+
+```
+    @Override
+    public Item changeItem(ItemForm itemForm) {
+        this.name = itemForm.getName();
+        this.price = itemForm.getPrice();
+        this.stockQuantity = itemForm.getStockQuantity();
+        this.director = itemForm.getDirector();
+        this.actor = itemForm.getActor();
+        return this;
+    }
+```
+
+#### 결론 
+> merge는 이러한 위험성을 가지고 있기 때문에 <mark>변경감지를 사용하시길 바랍니다.</mark> <br>
+> setter보다 엔티티의 메서드를 통해 파라미터를 받아서 <mark>엔티티에서 수정(변경 감지).</mark> <br>
 
 
 
