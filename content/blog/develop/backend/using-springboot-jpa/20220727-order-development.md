@@ -61,6 +61,171 @@ toc: true
 
 ### 상품 주문 화면 개발
 ----------------------
+> 컨트롤러를 만들고 orderForm을 호출할 매핑 메소드와 주문 양식을 submit 할때 처리할 메서드를 생성합니다.
+
+
+
+> java/jpabook/jpashop/controller/OrderController.java
+
+```
+	package jpabook.jpashop.controller;
+	
+	import jpabook.jpashop.domain.Member;
+	import jpabook.jpashop.domain.Order;
+	import jpabook.jpashop.domain.item.Item;
+	import jpabook.jpashop.dto.ItemForm;
+	import jpabook.jpashop.dto.OrderSearch;
+	import jpabook.jpashop.service.ItemService;
+	import jpabook.jpashop.service.MemberService;
+	import jpabook.jpashop.service.OrderService;
+	import lombok.RequiredArgsConstructor;
+	import lombok.extern.slf4j.Slf4j;
+	import org.springframework.stereotype.Controller;
+	import org.springframework.ui.Model;
+	import org.springframework.web.bind.annotation.GetMapping;
+	import org.springframework.web.bind.annotation.PostMapping;
+	import org.springframework.web.bind.annotation.RequestBody;
+	import org.springframework.web.bind.annotation.RequestParam;
+	
+	import java.util.List;
+	
+	@Controller
+	@RequiredArgsConstructor
+	@Slf4j
+	public class OrderController {
+	
+	    private final OrderService orderService;
+	    private final MemberService memberService;
+	    private final ItemService itemService;
+	
+	    @GetMapping("/order")
+	    public String orderForm(Model modal){
+	        log.info("call get /order");
+	
+	        List<Member> members = memberService.findMembers();
+	        List<Item> items = itemService.findItems();
+	
+	        modal.addAttribute("members", members);
+	        modal.addAttribute("items", items);
+	        modal.addAttribute("orderFrom", new ItemForm());
+	        return "order/orderForm";
+	    }
+	    
+}
+```
+
+> resources/templates/order/orderForm.html
+
+```
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+
+    <form role="form" action="/order" method="post">
+
+        <div class="form-group">
+            <label for="member">주문회원</label>
+            <select name="memberId" id="member" class="form-control">
+                <option value="">회원선택</option>
+                <option th:each="member : ${members}"
+                        th:value="${member.id}"
+                        th:text="${member.name}" />
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="item">상품명</label>
+            <select name="itemId" id="item" class="form-control">
+                <option value="">상품선택</option>
+                <option th:each="item : ${items}"
+                        th:value="${item.id}"
+                        th:text="${item.name}" />
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="count">주문수량</label>
+            <input type="number" name="count" class="form-control" id="count" placeholder="주문 수량을 입력하세요">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br/>
+    <div th:replace="fragments/footer :: footer" />
+
+</div> <!-- /container -->
+
+</body>
+</html>
+
+```
+
+> 컨트롤러에서 넘겨준 members와 items를 tymeleaf의 th:each를 이용해 콤보박스를 생성합니다. 
+
+
+
+> OrderController.java
+
+```
+	...
+	   @PostMapping("/order")
+    	   public String order(@RequestParam("memberId") Long memberid,
+                        @RequestParam("itemId") Long itemId,
+                        @RequestParam("count") int count,
+                        Model modal){
+        log.info("call post /order");
+
+        Long order = orderService.order(memberid, itemId, count);
+
+        return  "redirect:/orders";
+
+    }
+	    
+    ...
+    
+```
+
+> memberId, itemId, count를 입력받아 이전에 만든 orderService.order()를 수행합니다.
+
+> 컨트롤러에서 엔티티를 조회하여 넘겨주는 것 대신에 orderService 내부에서 비즈니스 로직을 처리했는데, 
+
+> OrderService.java
+
+```
+  
+     /**
+     * 주문
+     */
+    @Transactional
+    public Long order(Long memberId, Long itemId, int count){
+
+        // 엔티티 조회
+        Member member = memberRepository.findOne(memberId);
+        Item item = itemRepository.findOne(itemId);
+
+        // 배송정보 생성
+        Delivery delivery = new Delivery();
+        delivery.setAddress(member.getAddress());
+        delivery.setStatus(DeliveryStatus.READY);
+
+        // 주문상품 생성
+        OrderItem orderItem = OrderItem.createOrderItem(item, item.getPrice(), count);
+
+        // 주문생성
+        Order order = Order.createOrder(member, delivery , orderItem);
+
+        // 주문 저장
+        orderRepository.save(order);
+
+        return order.getId();
+    }
+```
+
+> 하나의 트랜잭션에서 처리했기 때문에 트랜잭션 관리가 편할뿐만 아니라, 영속성 컨텍스트에서 관리하게 되어 더티체크를 통해 수정된 데이터들을 수정하는데 JPA의 기능을 사용할 수 있습니다.
 
 ![contact](/images/develop/backend/using-springboot-jpa/order-development/img-001.png)
 
@@ -71,6 +236,8 @@ toc: true
 ![contact](/images/develop/backend/using-springboot-jpa/order-development/img-004.png)
 
 ![contact](/images/develop/backend/using-springboot-jpa/order-development/img-005.png)
+
+> orderService에서 order를 구현할때 여러 상품을 한꺼번에 주문할 수 있도록 구현했기 때문에 화면과 컨터롤러를 수정하여 다건 주문을 구현할수도 있습니다.
 
 
 ### 이전 소스
