@@ -8,7 +8,7 @@ date: 2022-07-27
 slug: "order-development"
 description: "[스프링부트 JPA 활용] 상품 주문 화면 개발"
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
 tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
@@ -241,6 +241,381 @@ toc: true
 
 ### 다중 상품 주문 화면 개발
 ----------------------
+> 소스를 설명하기 전 변경된 화면과 프로세스를 설명드리겠습니다.
+
+> 상품을 회원을 선택하고 상품을 선택하면 
+
+![contact](/images/develop/backend/using-springboot-jpa/order-development/img-006.png)
+
+
+> 하단 상품리스트에 상품이 추가 됩니다. <br>
+그리고 선택한 유저를 변경하지 못하게 합니다. 1개의 주문에는 1명의 회원 주문만 가능하기 때문입니다.
+
+
+![contact](/images/develop/backend/using-springboot-jpa/order-development/img-007.png)
+
+
+> 여러건을 추가하면 계속 아래로 추가됩니다.
+
+![contact](/images/develop/backend/using-springboot-jpa/order-development/img-008.png)
+
+> 물론 각각의 갯수를 늘리고 줄일 수 있습니다.
+
+
+![contact](/images/develop/backend/using-springboot-jpa/order-development/img-009.png)
+
+> 개수를 1 이하로 줄이면 상품을 리스트에서 삭제합니다. <br>
+> 모든 상품을 삭제 하면 다시 회원을 선택할 수 있습니다.
+
+![contact](/images/develop/backend/using-springboot-jpa/order-development/img-0010.png)
+
+> OrderController.java
+
+```
+ @GetMapping("/order")
+    public String orderForm(Model modal){
+        log.info("call get /order");
+
+        List<Member> members = memberService.findMembers();
+
+        //List<Item> items = itemService.findItems(); 
+        List<ItemDto> items = itemService.findItemDtoList(); // 반환값이 Item 엔티티가 아니라 ItemDto
+
+        System.out.println(items);
+
+        modal.addAttribute("members", members);
+        modal.addAttribute("items", items);
+        modal.addAttribute("orderFrom", new ItemForm());
+        return "order/orderForm";
+    }
+```
+
+> ItemService.java
+ 
+```
+	public List<ItemDto> findItemDtoList(){
+        return itemRepository.findDtoListAll();
+    }
+```
+
+
+> ItemRepository.java
+
+```
+    public List<ItemDto> findDtoListAll(){
+       
+        String ItemDto = "jpabook.jpashop.dto.ItemDto";
+        List<ItemDto> resultList = em.createQuery("select new "+ItemDto+"(i.id, i.name, i.price, i.stockQuantity, i.dtype, TREAT(i AS Album ).artist, TREAT(i AS Album ).etc, TREAT(i AS Book ).author, TREAT(i AS Book ).isbn, TREAT(i AS Movie ).director, TREAT(i AS Movie ).actor) from Item i", ItemDto.class)
+                .getResultList();
+
+        return resultList;
+    }
+```
+
+
+> orderForm.html
+
+```
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<style>
+    .form-orders > li{
+        list-style-type: none;
+        width:inherit;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top:25px;
+        padding-left:10px;
+        padding-bottom:20px;
+        padding-righr:10px;
+    }
+
+</style>
+<script>
+
+	/*
+	* 상품 선택시 상품 리스트에 주문양식 클론 후 세팅
+	**/
+    let fn_choose_item = (obj) => {
+
+        let memberId = $("#member").val();
+
+		// 회원 선택 벨리데이션
+        if(memberId == ""){
+            alert("회원을 먼저 선택해 주세요.");
+            $("#item").val("");
+            return false;
+        }
+
+		// 선택된 옵션의 객체
+        let item = $(obj).find("option:selected");
+
+        let itemId = $(item).val();					//아이템의 값
+        let itemNm = $(item).text(); 					//아이템의 이름
+        let dtype = $(item).attr("data-dtype");		//아이템 타입
+        let dtypeNm = $(item).attr("data-dtype-nm");	//아이템 타입 이름
+        let value1 = null;							//아이템(앨범, 책, 영화)의 첫번째 컬럼 값 (artist, author, director) 
+        let value2 = null;							//아이템(앨범, 책, 영화)의 두번째 컬럼 값 (etc, isbn, actor)
+        let labelValue1 = null;						//아이템(앨범, 책, 영화)의 첫번째 컬럼 이름
+        let labelValue2 = null;						//아이템(앨범, 책, 영화)의 두번째 컬럼 이름
+
+		// dtype 별로 각 추가된 커스텀 데이터 테그에서 값 세팅
+        if(dtype == 'A'){
+            value1 = $(item).attr("data-artist");
+            value2 = $(item).attr("data-etc");
+            labelValue1 = "아티스트";
+            labelValue2 = "기타";
+            
+        }else if(dtype = 'B'){
+            value1 = $(item).attr("data-author");
+            value2 = $(item).attr("data-isbn");
+            labelValue1 = "저자";
+            labelValue2 = "ISBN";
+            
+        }else{
+            value1 = $(item).attr("data-director");
+            value2 = $(item).attr("data-actor");
+            labelValue1 = "감독";
+            labelValue2 = "배우";
+        }
+
+        let idx = $(".form-orders").find("li").length; //추가할 아이템의 인덱스 0부터 시작
+        
+        $(".form-disabled").find(".form-order").clone().appendTo(".form-orders"); // 미리 만들어둔 주문양식
+
+		
+		// 선택한 아이템 주문양식에 데이터 세팅
+        let chose = $(".form-orders").find("li").eq(idx);
+
+		// name을 orderDtoList[n].memberId 로 변경
+        $(chose).find("input[name=memberId]")
+            .attr("name", "orderDtoList["+idx+"].memberId")
+            .val(memberId);
+
+		// name을 orderDtoList[n].itemId 로 변경
+        $(chose).find("input[name=itemId]")
+            .attr("name", "orderDtoList["+idx+"].itemId")
+            .val( itemId );
+            
+		// name을 orderDtoList[n].count 로 변경
+        $(chose).find("input[name=count]")
+            .attr("name", "orderDtoList["+idx+"].count");
+            
+        $(chose).find(".item-dtype-nm").text(dtypeNm );
+        $(chose).find(".item-name").text(itemNm );
+        $(chose).find(".item-value1").text(value1 );
+        $(chose).find(".label-value1").text(labelValue1 );
+        $(chose).find(".item-value2").text(value2 );
+        $(chose).find(".label-value2").text(labelValue2 );
+
+		//회원 셀렉트 박스를 비활성화
+        $(".form-orders").find(".form-order").css("display","");
+        $(".memberWrap").hide();
+        $(".textMemberWrap").show();
+        $("#textMember").val($(item).text());
+
+
+        $("#item").val("");
+
+    }
+
+	//헤당 상품 갯수 감소 
+    let fn_minus_count = (obj) => {
+        let cnt = parseInt($(obj).parent().find("input").val(), 0);
+
+        if( (cnt-1) > 0 ){
+            $(obj).parent().find("input").val(cnt-1);
+        }else{
+            if(confirm("선택된 상품을 제거하시겠습니까?")){
+                $(obj).parent().parent().remove();
+            }
+			
+			//모든 상품이 삭제 되면, 회원 선택 가능하게함
+            if($(".form-orders").find("li").length == 0){
+                $(".memberWrap").show();
+                $("#member").val("");
+                $("#textMember").val("");
+                $(".textMemberWrap").hide();
+            }
+        }
+    }
+
+	//해당 상품 갯수 증가
+    let fn_plus_count = (obj) => {
+        let cnt = parseInt($(obj).parent().find("input").val(), 0);
+
+        $(obj).parent().find("input").val(cnt+1);
+    }
+
+</script>
+<body>
+
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+
+    <form role="form" action="/order" method="post">
+
+        <div class="form-group memberWrap">
+            <label for="member">주문회원</label>
+            <select id="member" class="form-control">
+                <option value="">회원선택</option>
+                <option th:each="member : ${members}"
+                        th:value="${member.id}"
+                        th:text="${member.name}" />
+            </select>
+        </div>
+        <div class="form-group textMemberWrap"  style="display: none;">
+            <label for="textMember">주문회원</label>
+            <input id="textMember" class="form-control"  style="background-color: #dddddd"  readonly="readonly"/>
+        </div>
+
+
+        <div class="form-group">
+            <label for="item">상품명</label>
+            <select id="item" class="form-control" onchange="fn_choose_item(this)">
+                <option value="">상품선택</option>
+                <option th:each="item : ${items}"
+                        th:value="${item.getId()}"
+                        th:text="${item.getName()}"
+                        th:data-dtype="${item.getDtype()}"
+                        th:data-dtype-nm="${item.getDtypeNm()}"
+                        th:data-price="${item.getPrice()}"
+                        <!-- 하단은 ItemDto로 조회하여 값을 가져옴 -->
+                        th:data-artist="${item.getArtist()}"
+                        th:data-etc="${item.getEtc()}"
+                        th:data-author="${item.getAuthor()}"
+                        th:data-isbn="${item.getIsbn()}"
+                        th:data-director="${item.getDirector()}"
+                        th:data-actor="${item.getActor()}"
+                />
+            </select>
+        </div>
+        <ul class="form-orders" style="list-style-type: none;">
+        </ul>
+
+        <!--<div class="form-group">
+            <label for="count">주문수량</label>
+            <input type="number" name="count" class="form-control" id="count" placeholder="주문 수량을 입력하세요">
+        </div>-->
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <ul class="form-disabled">
+        <li class="form-order" style="display: none;">
+            <h5><span class="item-dtype-nm"></span> > <span class="item-name"></span></h5>
+            <h6>
+                <span class="label-value1"></span> : <span class="item-value1"></span></br>
+                <span class="label-value2"></span> : <span class="item-value2"></span>
+            </h6>
+
+            <input type="hidden" name="memberId">
+            <input type="hidden" name="itemId">
+            <div>
+                <button type="button" onclick="fn_minus_count(this)">-</button><input name = "count" value="1"><button type="button" onclick="fn_plus_count(this)">+</button>
+            </div>
+        </li>
+    </ul>
+
+    <br/>
+    <div th:replace="fragments/footer :: footer" />
+
+</div> <!-- /container -->
+
+</body>
+</html>
+
+```
+
+> OrderController.java
+
+```
+
+	/* orderDtoList[n] 형태의 배열로 넘겨, OrderDto.orderDtoList 로 받음*/
+    @PostMapping("/order")
+    public String order( OrderDto orderDto  
+                        , Model modal){
+        log.info("call post /order");
+
+        System.out.println(orderDto);
+
+        //단건 상품 주문
+        //Long order = orderService.order(memberid, itemId, count);
+
+        //여러 상품 주문
+        Long order = orderService.orderByList(orderDto.getOrderDtoList());
+
+        return  "redirect:/orders";
+
+    }
+```
+
+> OrderService.java
+
+```
+@Transactional
+    public Long orderByList(List<OrderDto> orderDtoList) {
+        Member member = null;
+        Item item = null;
+        Delivery delivery = new Delivery();
+        OrderItem [] orderItems = new OrderItem[orderDtoList.size()];
+
+        int idx=0;
+        for (OrderDto orderDto : orderDtoList) { //orderDtoList를 확장 for 문으로 orderDto 풀음
+
+            // 엔티티 조회
+            member = memberRepository.findOne(orderDto.getMemberId()); 
+            item = itemRepository.findOne(orderDto.getItemId());
+
+            // 배송정보 생성 // 배송정보는 모두 같음(하나의 주문은 한명의 주문만 가능이므로 모두 동일)
+            if(idx == 0){
+                delivery.setAddress(member.getAddress());
+                delivery.setStatus(DeliveryStatus.READY);
+            }
+
+            // 주문상품 생성
+            OrderItem orderItem = OrderItem.createOrderItem(item, item.getPrice(), orderDto.getCount()); //orderDtoList[n].itemId를 통해 조회한 상품, 상품가격, orderDtoList[n].count로 각 주문상품 생성
+
+            orderItems[idx] = orderItem;
+
+            idx++;
+        }
+        
+        // 주문생성
+        Order order = Order.createOrder(member, delivery, orderItems); //orderItems는 가변인자
+        //가변인자는(orderItem ... orderItems) 파라미터 갯수를 가로로 추가하거나, 배열로 넘김
+
+        // 주문 저장
+        orderRepository.save(order);
+
+        return order.getId();
+
+    }
+```
+
+> Order.java
+
+```
+//== 생성 메서드==//
+    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems){ // OrderItem...  여러개를 넘길 수 있음
+
+        Order order = new Order();
+        order.setMember(member);
+        order.setDelivery(delivery);
+        for (OrderItem orderItem : orderItems){
+
+
+            System.out.println(
+                    orderItem
+            );
+            order.addOrderItem(orderItem);
+        }
+        order.setStatus(OrderStatus.ORDER);
+        order.setOrderDate(LocalDateTime.now());
+
+        return order;
+    }
+```
 
 
 ### 이전 소스
