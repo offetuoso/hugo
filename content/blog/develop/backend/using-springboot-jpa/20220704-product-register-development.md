@@ -1449,6 +1449,7 @@ public class ItemController {
 	    /**
 	     * 취소
 	     */
+	     @Transactional
 	    public void cancelOrder(Long orderId){
 	        // 주문 엔티티 조회
 	        Order order = orderRepository.findOne(orderId);
