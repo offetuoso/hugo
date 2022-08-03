@@ -1,26 +1,48 @@
 ---
-title: "[스프링부트 JPA API개발 성능최적화] 회원 등록 API"
+title: "[스프링부트 JPA 활용] 주문 목록 검색 및 취소 개발"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2022-08-03
-slug: "member-registration-api"
-description: "[스프링부트 JPA API개발 성능최적화] 회원 등록 API"
+date: 2022-08-02
+slug: "order-list-search-and-cancel"
+description: "[스프링부트 JPA 활용] 주문 목록 검색 및 취소 개발"
 keywords: ["ORM"]
-draft: true
+draft: false
 categories: ["Java"]
 subcategories: ["JPA"]
-tags: ["스프링부트 JPA API개발 성능최적화","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
+tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
 math: false
 toc: true
 ---
 
-# 스프링부트 JPA API개발 성능최적화
+# 애플리케이션 구현
 -------------------------------
 
 ## 목차
 ----------------------------------
+> 1. 회원 도메인 개발
+>	- 회원 리포지토리 개발
+>	- 회원 서비스 개발
+>	- 기능 테스트
+> 2. 상품 도메인 개발
+>	- 상품 엔티티개발(비즈니스 로직추가)
+>	- 상품 리포지토리 개발
+>	- 상품 서비스 개발
+> 3. 주문 도메인 개발
+>	- 주문, 주문상품 엔티티 개발
+>	- 주문 리포지토리 개발
+>	- 주문 서비스 개발
+> 4. 웹 계층 개발
+>	- 홈 화면과 레이아웃
+>	- 회원 등록
+>	- 회원 목록 조회
+>	- 상품 등록
+>	- 상품 목록
+>	- 상품 수정
+>	- 변경 감지와 병함(merge)
+>	- 상품 주문
+>	- 주문 목록 검색, 취소
 > 5. API 개발 기본
 >	- 회원 등록 API
 >	- 회원 수정 API
@@ -35,12 +57,182 @@ toc: true
 >	- QueryDSL 소개
 >	- 마무리
 
-## API 개발 기본
------------------------------------------
+## 홈 화면과 레이아웃 
 
-### 회원 등록 API
+### 주문 목록 검색 및 취소 개발
+----------------------
+
+#### 상품리스트와 상품 검색 
+
+> OrderController.java
+
+```
+	@GetMapping("/orders")
+    public String orderList(OrderSearch orderSearch, Model modal){
+        log.info("call get /orderList");
+
+		// 단순 조회가 목적이라면, 컨트롤러에서 바로 Repository로 호출해도 상관없다.
+        List<Order> orders = orderService.findOrders(orderSearch);
+
+        modal.addAttribute("orders", orders);
+
+        return "order/orderList";
+    }
+```
+
+> resources/templates/order/orderList.html
+
+```
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<body>
+
+<div class="container">
+
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+
+    <div>
+        <div>
+            <form th:object="${orderSearch}" class="form-inline">
+                <div class="form-group mb-2">
+                    <input type="text" th:field="*{memberName}" class="form-control" placeholder="회원명"/>
+                </div>
+                <div class="form-group mx-sm-1 mb-2">
+                    <select th:field="*{orderStatus}" class="form-control">
+                        <option value="">주문상태</option>
+                        <option th:each="status : ${T(jpabook.jpashop.domain.OrderStatus).values()}"
+                                th:value="${status}"
+                                th:text="${status}">option
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">검색</button>
+            </form>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>회원명</th>
+                <th>대표상품 이름</th>
+                <th>대표상품 주문가격</th>
+                <th>대표상품 주문수량</th>
+                <th>상태</th>
+                <th>일시</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${orders}">
+                <td th:text="${item.id}"></td>
+                <td th:text="${item.member.name}"></td>
+                <td th:text="${item.orderItems[0].item.name}"></td>
+                <td th:text="${item.orderItems[0].orderPrice}"></td>
+                <td th:text="${item.orderItems[0].count}"></td>
+                <td th:text="${item.status}"></td>
+                <td th:text="${item.orderDate}"></td>
+                <td>
+                    <a th:if="${item.status.name() == 'ORDER'}" href="#" th:href="'javascript:cancel('+${item.id}+')'"
+                       class="btn btn-danger">CANCEL</a>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"/>
+
+</div> <!-- /container -->
+
+</body>
+<script>
+    function cancel(id) {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/orders/" + id + "/cancel");
+
+        console.log(form);
+
+        document.body.appendChild(form);
 
 
+        form.submit();
+    }
+</script>
+</html>
+
+```
+
+
+> OrderController.java
+
+```
+	@PostMapping("/orders/{orderId}/cancel")
+    public String cancelOrder(@PathVariable(name = "orderId") Long orderId){
+        log.info("call get /orderList");
+
+        orderService.cancelOrder(orderId);
+
+        return  "redirect:/orders";
+    }
+```
+
+> OrderService.java
+
+```
+    /**
+     * 취소
+     */
+    @Transactional
+    public void cancelOrder(Long orderId){
+        // 주문 엔티티 조회
+        Order order = orderRepository.findOne(orderId);
+        // 주문 취소
+        order.cancel();
+
+    }
+```
+> OrderService.java
+
+```
+    /**
+     * 취소
+     */
+    @Transactional
+    public void cancelOrder(Long orderId){
+        // 주문 엔티티 조회
+        Order order = orderRepository.findOne(orderId);
+        // 주문 취소
+        order.cancel();
+
+    }
+```
+
+> Order.java
+
+
+```
+    //==비즈니스 로직==//
+    /**
+     * 주문 취소
+     */
+    public void cancel(){
+        // 배송이 완료된 주문은 취소가 불가
+        if (delivery.getStatus() == DeliveryStatus.COMP){
+            throw new IllegalStateException("이미 배송이 완료된 상품은 취소가 불가능합니다.");
+        }
+
+        this.setStatus(OrderStatus.CANCEL);
+
+        for (OrderItem orderItem : this.orderItems){
+            orderItem.cancel();
+        }
+    }
+    
+```
 
 ### 이전 소스
 ---------------------

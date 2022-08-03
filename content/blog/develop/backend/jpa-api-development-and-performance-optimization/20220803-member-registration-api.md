@@ -1,48 +1,26 @@
 ---
-title: "[스프링부트 JPA 활용] 주문 목록 검색 및 취소 개발"
+title: "[스프링부트 JPA API개발 성능최적화] 회원 등록 API"
 image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2022-08-02
-slug: "order-list-search-and-cancel"
-description: "[스프링부트 JPA 활용] 주문 목록 검색 및 취소 개발"
+date: 2022-08-03
+slug: "member-registration-api"
+description: "[스프링부트 JPA API개발 성능최적화] 회원 등록 API"
 keywords: ["ORM"]
-draft: false
+draft: true
 categories: ["Java"]
 subcategories: ["JPA"]
-tags: ["스프링부트 JPA 활용","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
+tags: ["스프링부트 JPA API개발 성능최적화","김영한","JPA","ORM","Java", "Spring" ,"인프런"]
 math: false
 toc: true
 ---
 
-# 애플리케이션 구현
+# 스프링부트 JPA API개발 성능최적화
 -------------------------------
 
 ## 목차
 ----------------------------------
-> 1. 회원 도메인 개발
->	- 회원 리포지토리 개발
->	- 회원 서비스 개발
->	- 기능 테스트
-> 2. 상품 도메인 개발
->	- 상품 엔티티개발(비즈니스 로직추가)
->	- 상품 리포지토리 개발
->	- 상품 서비스 개발
-> 3. 주문 도메인 개발
->	- 주문, 주문상품 엔티티 개발
->	- 주문 리포지토리 개발
->	- 주문 서비스 개발
-> 4. 웹 계층 개발
->	- 홈 화면과 레이아웃
->	- 회원 등록
->	- 회원 목록 조회
->	- 상품 등록
->	- 상품 목록
->	- 상품 수정
->	- 변경 감지와 병함(merge)
->	- 상품 주문
->	- 주문 목록 검색, 취소
 > 5. API 개발 기본
 >	- 회원 등록 API
 >	- 회원 수정 API
@@ -57,182 +35,149 @@ toc: true
 >	- QueryDSL 소개
 >	- 마무리
 
-## 홈 화면과 레이아웃 
+## API 개발 기본
+-----------------------------------------
+> 회원 등록 API, 회원 수정 API, 회원 조회 API를 만들어 보겠습니다. 
 
-### 주문 목록 검색 및 취소 개발
-----------------------
+> 요즘에는 화면을 템플릿 엔진을 통해 만드는 것보다 싱글페이지 어플리케이션 React, VueJs, NativeApp 등을 사용하기 때문에 
+서버 개발자는 서버에서 쿼리를 조회하고 페이지를 랜더링 하여 내리는 방식을 많이 사용 하지 않습니다.
 
-#### 상품리스트와 상품 검색 
+> 서버 개발자는 데이터를 넘겨 주고 프론트엔드 개발자가 화면을 랜더링합니다.
 
-> OrderController.java
+> 또한 추세가 MSA로 바뀌어 가며 서버간 통신도 필수가 되어가고 있습니다.
+
+> 그렇기 때문에 API를 설계하고 구성하는게 중요합니다. 
+
+> 과거 SQL을 날려 API로 끌어오는 방식과 JPA를 사용하면 엔티티라는 개념이 있기 때문에 개발 방식이 전혀 다릅니다. 
+
+
+### 회원 등록 API
+------------------------------------------
+> 이전 강의에서 아래와 같은 구조의 어플리케이션을 만들었는데 controller와 api의 controller를 나누려 합니다. 
+
+![contact](/images/develop/backend/jpa-api-development-and-performance-optimization/member-registration-api/img-001.png)
+
+> 공통으로 처리할 내용을 패키지 단위로 나누게 되면 좀더 바람직하게 관리할 수 있습니다. <br>
+예를 들어 탬플릿엔진에서 사용하는 controller는 로그인 및 세션 체크를 하거나 <br>
+api에서는 토큰 체크 및 호출을 실패 했을때 json으로 spec을 반환하는 등 나누어 관리하는게 좋습니다.
+
+
+#### MemberApiController.java
+
+> java/jpabook/jpashop/api/MemberApiController.java
 
 ```
-	@GetMapping("/orders")
-    public String orderList(OrderSearch orderSearch, Model modal){
-        log.info("call get /orderList");
+package jpabook.jpashop.api;
 
-		// 단순 조회가 목적이라면, 컨트롤러에서 바로 Repository로 호출해도 상관없다.
-        List<Order> orders = orderService.findOrders(orderSearch);
+import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.service.MemberService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-        modal.addAttribute("orders", orders);
+import javax.validation.Valid;
 
-        return "order/orderList";
+//@Controller @RequestBody // 두개 합친 것이 @RestController
+@RestController
+@RequiredArgsConstructor
+public class MemberApiController {
+
+    private final MemberService memberService;
+
+    /*
+    *  첫번째 버전의 회원등록
+    * */
+    @PostMapping("/api/v1/members")
+    public CreateMemberResopnse saveMemberV1(@RequestBody @Valid Member member){
+        Long id = memberService.join(member);
+        return new CreateMemberResopnse(id);
     }
-```
 
-> resources/templates/order/orderList.html
+    @Data
+    static class CreateMemberResopnse {
+        private long id;
 
-```
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: header"/>
-<body>
-
-<div class="container">
-
-    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
-
-    <div>
-        <div>
-            <form th:object="${orderSearch}" class="form-inline">
-                <div class="form-group mb-2">
-                    <input type="text" th:field="*{memberName}" class="form-control" placeholder="회원명"/>
-                </div>
-                <div class="form-group mx-sm-1 mb-2">
-                    <select th:field="*{orderStatus}" class="form-control">
-                        <option value="">주문상태</option>
-                        <option th:each="status : ${T(jpabook.jpashop.domain.OrderStatus).values()}"
-                                th:value="${status}"
-                                th:text="${status}">option
-                        </option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary mb-2">검색</button>
-            </form>
-        </div>
-
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>회원명</th>
-                <th>대표상품 이름</th>
-                <th>대표상품 주문가격</th>
-                <th>대표상품 주문수량</th>
-                <th>상태</th>
-                <th>일시</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="item : ${orders}">
-                <td th:text="${item.id}"></td>
-                <td th:text="${item.member.name}"></td>
-                <td th:text="${item.orderItems[0].item.name}"></td>
-                <td th:text="${item.orderItems[0].orderPrice}"></td>
-                <td th:text="${item.orderItems[0].count}"></td>
-                <td th:text="${item.status}"></td>
-                <td th:text="${item.orderDate}"></td>
-                <td>
-                    <a th:if="${item.status.name() == 'ORDER'}" href="#" th:href="'javascript:cancel('+${item.id}+')'"
-                       class="btn btn-danger">CANCEL</a>
-                </td>
-            </tr>
-
-            </tbody>
-        </table>
-    </div>
-
-    <div th:replace="fragments/footer :: footer"/>
-
-</div> <!-- /container -->
-
-</body>
-<script>
-    function cancel(id) {
-        var form = document.createElement("form");
-        form.setAttribute("method", "post");
-        form.setAttribute("action", "/orders/" + id + "/cancel");
-
-        console.log(form);
-
-        document.body.appendChild(form);
-
-
-        form.submit();
-    }
-</script>
-</html>
-
-```
-
-#### 상품리스트와 상품 취소 
-
-> OrderController.java
-
-```
-	@PostMapping("/orders/{orderId}/cancel")
-    public String cancelOrder(@PathVariable(name = "orderId") Long orderId){
-        log.info("call get /orderList");
-
-        orderService.cancelOrder(orderId);
-
-        return  "redirect:/orders";
-    }
-```
-
-> OrderService.java
-
-```
-    /**
-     * 취소
-     */
-    @Transactional
-    public void cancelOrder(Long orderId){
-        // 주문 엔티티 조회
-        Order order = orderRepository.findOne(orderId);
-        // 주문 취소
-        order.cancel();
-
-    }
-```
-> OrderService.java
-
-```
-    /**
-     * 취소
-     */
-    @Transactional
-    public void cancelOrder(Long orderId){
-        // 주문 엔티티 조회
-        Order order = orderRepository.findOne(orderId);
-        // 주문 취소
-        order.cancel();
-
-    }
-```
-
-> Order.java
-
-```
-    //==비즈니스 로직==//
-    /**
-     * 주문 취소
-     */
-    public void cancel(){
-        // 배송이 완료된 주문은 취소가 불가
-        if (delivery.getStatus() == DeliveryStatus.COMP){
-            throw new IllegalStateException("이미 배송이 완료된 상품은 취소가 불가능합니다.");
-        }
-
-        this.setStatus(OrderStatus.CANCEL);
-
-        for (OrderItem orderItem : this.orderItems){
-            orderItem.cancel();
+        public CreateMemberResopnse(long id) {
+            this.id = id;
         }
     }
-    
+}
+
 ```
+
+
+![contact](/images/develop/backend/jpa-api-development-and-performance-optimization/member-registration-api/img-002.png)
+
+> postman(api 호출 어플리케이션)에서 작성했던대로, post 방식으로 <br>
+> localhost:8080/api/v1/members <br>
+
+> request
+```
+"body" : {
+	{
+	    "name" : "hello"
+	}
+}
+```
+
+![contact](/images/develop/backend/jpa-api-development-and-performance-optimization/member-registration-api/img-003.png)
+
+> response
+```
+{
+    "id": 97
+}
+```
+
+
+##### @Valid
+> javax.validation의 기능으로 필수값 체크
+
+```
+	javax.validation @Target({ElementType.METHOD,ElementType.FIELD,ElementType.CONSTRUCTOR,ElementType.PARAMETER,ElementType.TYPE_USE}) 
+@Retention(RetentionPolicy.RUNTIME) 
+@Documented 
+public interface Valid
+extends annotation.Annotation
+```
+
+##### @RequestBody
+> Json으로 넘어온 파라미터를 변수(Member member)에 할당
+
+```
+	public CreateMemberResopnse saveMemberV1(@RequestBody @Valid Member member){
+```
+
+##### @RestController
+
+```
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Controller
+@ResponseBody
+public @interface RestController {
+
+	/**
+	 * The value may indicate a suggestion for a logical component name,
+	 * to be turned into a Spring bean in case of an autodetected component.
+	 * @return the suggested component name, if any (or empty String otherwise)
+	 * @since 4.0.1
+	 */
+	@AliasFor(annotation = Controller.class)
+	String value() default "";
+
+}
+
+```
+
+#### @Data
+
+
+
 
 ### 이전 소스
 ---------------------
