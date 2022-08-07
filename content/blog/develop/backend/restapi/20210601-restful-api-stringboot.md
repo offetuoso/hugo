@@ -198,7 +198,7 @@ public class UserProfileController {
 
 > 아래 표와 같은 기능을 Controller에서 간단히 작성해 보려합니다.
 
-   Resource   | GET(read)     | PUT(create)        | POST(update)     | DELETE(delete)
+   Resource   | GET(read)     | POST(create)        | PUT/PACTH(update)     | DELETE(delete)
 --------------|---------------|---------------------|-----------------|------
   /users      | 사용자 전체 조회  | -                   | -               | -          
   /users/{id} | {id}사용자 조회  | {id} 신규 사용자 추가   | {id} 사용자 수정   | {id} 사용자 삭제 
@@ -234,6 +234,33 @@ public class UserProfileController {
 ![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-028.png)
 
 
+### POST 
+> POST : /users/1?name=&phone=&address=
+
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-031.png)
+
+```
+    @PostMapping("/users/{id}")
+	public void postUserProfile(@PathVariable("id") String id
+								, @RequestParam("name") String name
+								, @RequestParam("phone") String phone
+								, @RequestParam("address") String address) {
+		
+		UserProfile userProfile = new UserProfile(id,name,phone,address);
+		userMap.put(id,userProfile);
+
+	}
+
+```
+
+
+> POST : http://localhost:8080/users/1?name=첫번째&phone=010-1111&address=서울시 영등포구 영등포1동
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-033.png)
+
+> GET : http://localhost:8080/users/1
+![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-034.png)
+
+
 ### PUT 
 > PUT : /users/1?name=&phone=&address=
 
@@ -249,8 +276,10 @@ public class UserProfileController {
                                  , @RequestParam("phone") String phone
                                  , @RequestParam("address") String address) {
 		
-		UserProfile userProfile = new UserProfile(id,name,phone,address);
-		userMap.put(id,userProfile);
+		UserProfile userProfile = userMap.get(id);
+		userProfile.setName(name);
+		userProfile.setPhone(phone);
+		userProfile.setAddress(address);
 		
 	}
 
@@ -263,34 +292,6 @@ public class UserProfileController {
 > GET : http://localhost:8080/users/4
 ![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-030.png)
 
-
-
-### POST 
-> POST : /users/1?name=&phone=&address=
-
-![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-031.png)
-
-```
-    @PostMapping("/users/{id}")
-	public void postUserProfile(@PathVariable("id") String id
-								, @RequestParam("name") String name
-								, @RequestParam("phone") String phone
-								, @RequestParam("address") String address) {
-		
-		UserProfile userProfile = userMap.get(id);
-		userProfile.setName(name);
-		userProfile.setPhone(phone);
-		userProfile.setAddress(address);
-	}
-
-```
-
-
-> POST : http://localhost:8080/users/1?name=첫번째&phone=010-1111&address=서울시 영등포구 영등포1동
-![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-033.png)
-
-> GET : http://localhost:8080/users/1
-![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-034.png)
 
 
 ### DELETE 
@@ -315,18 +316,6 @@ public class UserProfileController {
 
 > GET : http://localhost:8080/users/all
 ![contact](/images/develop/backend/restapi/demo-rest-api-1/demo-restapi-1-037.png)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

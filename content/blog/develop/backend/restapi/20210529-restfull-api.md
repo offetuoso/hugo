@@ -67,6 +67,83 @@ toc: true
 
 ![contact](/images/develop/backend/restapi/rest-api-002.png)
  
+### REST API 메소드
+
+> HTTP Method는 크게 GET, POST, PUT, PATCH DELETE가 있으며, <br>
+CRUD에 빗대면 GET은 조회, POST는 저장, PUT과 PATCH는 수정, DELETE는 삭제로 이해하면 된다.
+
+#### POST와 PUT의 모호함 
+
+> GET과 DELETE와 다르게 POST와 PUT은 큰 차이가 없어 보이지만 Idempotence(멱등성)이란 개념을 이해하면 도움이 됩니다.
+
+> 멱등성이란 여러번 수행해도 결과가 같음을 의미합니다.
+
+> POST를 제외한 나머지들은 Idempotence하다. 특정 데이터를 수정하는 PUT을 몇번이나 수정해도 같은 결과가 나오며, 한번 처리 한것과 10번 처리한 것이 같지만, 
+
+> POST는 수행한 만큼 새로운 데이터가 Insert 됩니다.
+
+> POST는 입력 받은 값을 새로운 Row로 인서트하는 행위이며, 
+
+> PUT은 입력받은 모든 값들로 기존의 값을 대체 합니다. 
+
+#### PUT과 PATCH
+> PUT과 PATCH 모두 수정을 위한 메서드 입니다. 하지만 어떨때 PUT을 쓰고 어떠한 경우에 PATCH를 쓰는지 이름만으로 알수 없습니다. 
+
+> 두 PUT과 PATCH의 차이를 확인해 보겠습니다.
+
+> PUT method requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload
+
+
+##### PUT
+
+> PUT 메서드는 대상 리소스의 상태가 요청 메시지 페이로드에 포함된 표현에 의해 정의된 상태로 생성되거나 대체되도록 요청합니다.
+
+> PUT은 파라미터로 일부만 보냈을 경우 나머지 값은 Defult 값으로 수정하는 게 원칙 이므로 
+
+> request
+
+````
+PUT    /api/v2/members/110
+{
+"name": "홍길동"
+}
+````
+
+> response
+
+````
+HTTP/1.1 200 OK
+{
+    "name": "홍길동",
+    "age": null
+}
+````
+
+> 전달할때 수정할 파라미터 및 나머지 모든 파라미터를 채워 보내줘야합니다.
+ 
+
+##### PATCH
+> 그러나 PATCH를 통하여 특정 수정할 파라미터만 보내면 새로 바뀐 데이터만 적용되고 기존의 값은 유지됩니다.
+
+````
+PUT    /api/v2/members/110
+{
+"name": "홍길동"
+}
+````
+
+> response
+
+````
+HTTP/1.1 200 OK
+{
+    "name": "홍길동",
+    "age": 28
+}
+````
+
+> 전체적인 데이터를 수정할때는 PUT, 특정 값만 수정할 경우에는 PATCH를 사용하면 됩니다.
+
 
 ### REST API 디자인
 
@@ -146,7 +223,7 @@ http://restapi.example.com/users/customer
 > 5. 행위는 포함하지 않는다. 
 > - 행위(동사)는 URL대신 Method를 사용하여 전달한다.(GET, POST, PUT, DELETE 등)
 
-   Resource   | GET(read)     | PUT(create) | POST(update)     | DELETE(delete)
+   Resource   | GET(read)     | POST(create) | PUT/PACTH(update)     | DELETE(delete)
 --------------|---------------|--------------|-----------------|------
   /goods      | 상품목록        | 상품추가        | -              |   -          
   /goods/{id} | {id}값 상품상세  | -            | {id}값 상품 수정  | {id}값 상품 삭제 
@@ -203,7 +280,6 @@ HTTP/1.1 Host: restapi.example.com Accept: image/jpg
 
 > 8.     오류 처리를 명확하게 해라.
 > -  HTTP 상태코드를 정하고(많아도 안좋음), 다른 개발자들을 위한 오류 메시지 정의, 상세 정보 링크 등을 넣어주면 도움이 된다.
-
 
 
 #### 참고
