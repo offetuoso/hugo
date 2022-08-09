@@ -70,6 +70,55 @@ java.lang.IllegalStateException: Cannot call sendError() after the response has 
 ...
 ```
 
+> <a href="https://offetuoso.github.io/blog/develop/troubleshooting/jpa/java.lang.illegalstateexception-cannot-call-senderror-after-the-response-has-been-committed/">
+JPA 양방향 무한 루프 java.lang.IllegalStateException: ...</>
+
+> 위의 정리한 내용을 보시면 더 자세한 내용이 있습니다.
+
+> 1. DTO로 바꾸어 사용
+> 2. @JsonIdentityInfo 어노테이션을 추가해서 중복 생성 막음
+> 3. @JsonIgnore 어노테이션 사용 Json 직렬화 제외
+
+```
+package jpabook.jpashop.domain;
+
+import com.fasterxml.jackson.annotation.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter @Setter
+//@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
+public class Member {
+
+
+    public Member() {
+    }
+
+    @Id @GeneratedValue
+    @Column(name = "member_id")
+    private Long id;
+
+    private String name;
+
+    @Embedded
+    private Address address;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "member")
+    private List<Order> orders = new ArrayList<>();
+
+}
+
+```
+
+
+
 ### 이전 소스
 ---------------------
 > - <a href="https://github.com/offetuoso/jpa-practice.git">https://github.com/offetuoso/jpa-practice.git<a>
