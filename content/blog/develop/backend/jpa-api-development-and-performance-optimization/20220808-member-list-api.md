@@ -42,7 +42,7 @@ toc: true
 ------------------------------------------
 > 조회는 단순 검색 및 반환이기 때문에 어렵지는 않습니다. 하지만 V1, V2 개선사항을 순서대로 작성해 보겠습니다. 
 
-#### 회원 조회 V1
+#### 회원 조회 V1 (엔티티를 반환 타입으로 생성)
 > 이전에 엔티티를 바로 반환하면 안된다 하였지만, V1은 엔티티를 이용해 바로 반환하여 간단하게 작성하였습니다. 
 
 ```
@@ -117,7 +117,139 @@ public class Member {
 
 ```
 
+#### 응답 값으로 엔티티를 직접 외부에 노출 문제점
+> - 엔티티에 프리젠테이션 계층을 위한 로직이 추가된다.
+> - 기본적으로 엔티티의 모든 값들이 노출된다. (ex Password)
+> - 응답 스팩을 맞추기 위해 로직이 추가된다. (@JsonIgnore, 별도 뷰 로직 등등)
+> - 실무에서는 같은 엔티티에 대해 API가 용도에 따라 다양하게 만들어지는데, 한엔티티에 각각의 API를 위한 프리젠 테이션 응답 로직을 담기 어렵다.
+> - 엔티티가 변경 되면 API 스팩이 변한다.
+> - 추가로 컬렉션을 직접 반환하면 향후 API스팩을 변경하기 어렵다. (별ㄷ의 Result 클래스 생성으로 해결)
 
+##### 결론  
+> API 응답 스팩에 맞추어 별도의 DTO를 반환한다.
+
+
+#### 회원 조회 V2 
+> DTO를 이용해 리스트를 반환할때에도 주의점이 있습니다. 
+
+> 바로 List<MemberDto> 같이 결과 컬렉션을 반환하는게 아니라, 하나의 오브젝트로 감싸서 반환하는 것입니다. 
+
+> 콜렉션으로 바로 반환을 하였을때 
+
+```
+[
+    {
+        "id": 33,
+        "name": "회원1",
+        "address": {
+            "city": "도시1",
+            "street": "거리1",
+            "zipcode": "11111"
+        }
+    },
+    {
+        "id": 34,
+        "name": "회원2",
+        "address": {
+            "city": "도시2",
+            "street": "거리2",
+            "zipcode": "22222"
+        }
+    },
+    {
+        "id": 97,
+        "name": "hello",
+        "address": null
+    }
+]  
+```
+
+> 이런 식으로 나오게 되는데 요구사항으로 리스트의 토탈 카운트를 넣어달라고 하면, 현재의 컬렉션을 반환한 JSON 타입으로는 반환 값을 커스터마이징 하기가 어렵습니다. 
+
+> 그렇기 때문에 하나의 Depth를 추가해 컬렉션을 감싸줘야 합니다. 
+
+````
+result :{
+	total_cnt : 3,
+	data : [
+			    {
+			        "id": 33,
+			        "name": "회원1",
+			        "address": {
+			            "city": "도시1",
+			            "street": "거리1",
+			            "zipcode": "11111"
+			        }
+			    },
+			    {
+			        "id": 34,
+			        "name": "회원2",
+			        "address": {
+			            "city": "도시2",
+			            "street": "거리2",
+			            "zipcode": "22222"
+			        }
+			    },
+			    {
+			        "id": 97,
+			        "name": "hello",
+			        "address": null
+			    }
+		]  
+}
+````
+
+> 위의 내용을 생각하여 조회V2를 작성해 보겠습니다.
+
+> MemberApiController.java
+
+```
+	@GetMapping("/api/v2/members")
+    public Result getMembersV2(){
+        List<Member> findMembers = memberService.findMembers();
+
+        List<MemberDto> collect = findMembers.stream()
+                .map(m -> new MemberDto(m.getName(), m.getAddress()))
+                .collect(Collectors.toList());
+
+        return new Result(collect);
+    }
+
+    @Data
+    @AllArgsConstructor
+    public class Result<T> {
+        private T data;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class MemberDto {
+        private String name;
+        private Address address;
+    }
+```
+
+> 응답 결과에 count 추가
+
+````
+    @Data
+    @AllArgsConstructor
+    public class Result<T> {
+        private int count;
+        private T data;
+    }
+    
+	@GetMapping("/api/v2/members")
+    public Result getMembersV2(){
+        List<Member> findMembers = memberService.findMembers();
+
+        List<MemberDto> collect = findMembers.stream()
+                .map(m -> new MemberDto(m.getName(), m.getAddress()))
+                .collect(Collectors.toList());
+
+        return new Result(collect.size(), collect);
+    }
+````
 
 ### 이전 소스
 ---------------------
