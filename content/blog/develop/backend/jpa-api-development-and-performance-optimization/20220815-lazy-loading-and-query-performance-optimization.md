@@ -300,7 +300,7 @@ Hibernate5Module hibernate5Module() {
  
 > 또한 이외에 4개의 해결책이 더 있습니다. 
 
-<a href=""></a>
+<a href="">JPA Lazy 로딩 Jackson Serialize 에러 - No serializer found for class...</a>
 
 ### 이전 소스
 ---------------------
