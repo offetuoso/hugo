@@ -70,7 +70,7 @@ java.lang.IllegalStateException: Cannot call sendError() after the response has 
 ...
 ```
 
-
+	
 > <a href="https://offetuoso.github.io/blog/develop/troubleshooting/jpa/java.lang.illegalstateexception-cannot-call-senderror-after-the-response-has-been-committed/">
 JPA 양방향 무한 루프 java.lang.IllegalStateException: ...</>
 

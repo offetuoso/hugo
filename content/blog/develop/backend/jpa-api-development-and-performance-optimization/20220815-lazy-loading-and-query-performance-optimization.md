@@ -298,18 +298,9 @@ Hibernate5Module hibernate5Module() {
 
 > jackson-datatype-hibernate5 모듈을 추가하고 Bean 등록을 하게 되면, 지연로딩으로 설정된 프록시 엔티티를 null 값으로 설정합니다. 
  
-#### yml spring.jackson.serialization.fail-on-empty-beans 값 false 
-> 다른 방법중에 yml 설정을 통해 해당 jackson을 통해 serialization 할때 비어있는 bean을 serialization 하지 않게 설정하면 해당 오류를 해결할 있습니다. 
+> 또한 이외에 4개의 해결책이 더 있습니다. 
 
-````
-spring:
-  jackson:
-    serialization:
-      fail-on-empty-beans: false
-````
-
-#### @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-> 다른 해결 방법은 엔티티 위에 해당 어노테이션을 추가해주면 됩니다. 
+<a href=""></a>
 
 ### 이전 소스
 ---------------------
