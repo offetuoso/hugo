@@ -187,11 +187,12 @@ public class Order {
 Jackson 라이브러리 제공자 FasterXML에서 위 문제를 해결하기 위해 <br>
  ObjectMapper 객체에서 사용할 수 있는 Hibernate용 특정 모듈 jackson-datatype-hibernate 를 제공합니다.
  
+> 해당 hibernate5를 빈으로 생성하면 Jackson Serialize 시 LAZY 로딩이 설정된 엔티티를 스킵하여 Null로 생성합니다. 
+ 
 > build.gradle
 
 ```
 	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate5'
-
 ```
 
 > JpashopApplication - 빈생성
@@ -218,7 +219,55 @@ public class JpashopApplication {
 		return new Hibernate5Module();
 	}
 }
+```
 
+
+#### Hibernate5Module LAZY Loding 강제 데이터 로딩
+> Hibernate5Module의 설정을 Hibernate5Module.Feature.FORCE_LAZY_LOADING 을 True로 변경해 강제 LAZY 로딩 설정된 데이터를 가져옵니다.
+
+> JpashopApplication
+
+```
+	@Bean
+		Hibernate5Module hibernate5Module(){
+		Hibernate5Module hibernate5Module = new Hibernate5Module();
+		hibernate5Module.configure(Hibernate5Module.Feature.FORCE_LAZY_LOADING, true);
+		return hibernate5Module;
+	}
+```
+
+> 하지만 성능 문제가 있고, 엔티티를 노출 시키는 것은 문제가 있기 떄문에 추천드리지는 않습니다. 
+
+#### FORCE_LAZY_LOADING 없이 원하는 엔티티 조회
+
+> JpashopApplication
+
+```
+@Bean
+		Hibernate5Module hibernate5Module(){
+		Hibernate5Module hibernate5Module = new Hibernate5Module();
+		//hibernate5Module.configure(Hibernate5Module.Feature.FORCE_LAZY_LOADING, true);
+		return hibernate5Module;
+	}
+
+```
+
+> OrderSimpleApiController.java
+
+```
+ @GetMapping("/api/v1/simple-orders")
+    public List<Order> getOrdersV1(){
+
+
+        List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+
+        for (Order order : orders){
+            order.getMember().getName(); // LAZY 강제 초기화
+            order.getDelivery();
+        }
+
+        return orders;
+    }
 ```
 
 ### 3. yml spring.jackson.serialization.fail-on-empty-beans 값 false 
