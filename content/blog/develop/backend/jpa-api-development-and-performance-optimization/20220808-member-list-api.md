@@ -5,7 +5,7 @@ font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-08-03
-slug: "member-update-api"
+slug: "member-list-api"
 description: "[스프링부트 JPA API개발 성능최적화] 회원 조회 API"
 keywords: ["ORM"]
 draft: false
@@ -69,6 +69,7 @@ java.lang.IllegalStateException: Cannot call sendError() after the response has 
 	at
 ...
 ```
+
 
 > <a href="https://offetuoso.github.io/blog/develop/troubleshooting/jpa/java.lang.illegalstateexception-cannot-call-senderror-after-the-response-has-been-committed/">
 JPA 양방향 무한 루프 java.lang.IllegalStateException: ...</>
