@@ -5,7 +5,7 @@ font_color: "white"
 font_size: "28px"
 opacity: "0.4"
 date: 2022-08-15
-slug: "no-serializer-found-for-class-bytebuddyinterceptor-and-no-properties-discovered to-create-beanserializer"
+slug: "no-serializer-found-for-class"
 keywords: ["자바 ORM 표준 JPA","김영한","JPA","ORM","Java","인프런"]
 draft: false
 categories: ["Troubleshooting"]
