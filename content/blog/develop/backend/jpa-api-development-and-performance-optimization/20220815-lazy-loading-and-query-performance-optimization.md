@@ -4,7 +4,7 @@ image: "bg-using-springboot-jpa.png"
 font_color: "white"
 font_size: "28px"
 opacity: "0.4"
-date: 2022-08-03
+date: 2022-09-04
 slug: "lazy-loading-and-query-performance-optimization"
 description: "[스프링부트 JPA API개발 성능최적화] 지연 로딩과 조회 성능 최적화"
 keywords: ["ORM"]
@@ -46,7 +46,7 @@ toc: true
 
 > 해당 내용은 매우 중요하며, 실무에서 JPA를 사용하려면 100%이해해야 합니다. 
 
-#### 간단한 주문 조회 V1 : 엔티티 직접 노출
+### 간단한 주문 조회 V1 : 엔티티 직접 노출
 > xToOne(ManyToOne,OneToOne) 관계에서 성능 최적화할 것인가
 
 > - Order -> Member // @ManyToOne(fetch = FetchType.LAZY)
@@ -366,6 +366,8 @@ Hibernate5Module hibernate5Module() {
 
 > 요구사항이 Order와 Member, Delivery의 정보를 가져 오고 싶은데, 해당 모든 데이터들을 가져오다 보니 
 
+> /api/v1/simple-orders - response
+
 ```
 [
     {
@@ -568,6 +570,424 @@ Hibernate5Module hibernate5Module() {
 
 > - 지연(LAZY) 로딩을 피하기 위해 즉시(EAGER) 로딩으로 설정하면 안된다. 즉시 로딩 때문에  연관관계가 필요 없는 경우에도 데이터를 항상 조회해소 성능 이슈를 발생시킬수 있다. 즉시 로딩으로 실행하면 성능 튜닝이 매우 어려워 진다. 항상 지연 로딩을 기본으로 하고, 성능 최적화가 필요한 경우에는 페치 조인을 사용해라(V3)
 
+
+
+### 간단한 주문 조회 V2 : Simple OrderDto 사용
+> - 최적화 하여 api 요구사항과 스펙에 따라 개발
+> - 엔티티를 DTO로 변환하는 일반적인 방법
+> - 쿼리가 총 1+N+N 번 수행 ( v1과 쿼리 결과 수는 같다.)
+>	- Order 조회 1번 (Order의 결과 로우 수가 N이 된다.)
+>	- Order -> Member 지연 로딩 조회 N번
+>	- Order -> Delivery 지연로딩 조히 N번
+>	- 예) Order의 결과가 4면 1+4+4번 수행된다.(최악의 경우)
+>		- 지연로딩은 영속성 컨텍스트에서 조회하므로, 이미 조회된 경우 쿼리를 생략한다.
+
+
+> OrderSimpleApiController.java 
+
+```
+  @GetMapping("/api/v2/simple-orders")
+    public Result getOrdersV2(){
+        List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+        List<SimpleOrderDto> collect = orders.stream()
+                .map(o -> new SimpleOrderDto(o))
+                .collect(Collectors.toList());
+
+        return new OrderSimpleApiController.Result(collect.size(), collect);
+    }
+    
+    @Data
+    static class SimpleOrderDto {
+        private long orderId;
+        private String name;
+        private LocalDateTime orderDate;
+        private OrderStatus orderStatus;
+        private Address address;
+
+        public SimpleOrderDto(Order order) {
+            this.orderId = order.getId();
+            this.name = order.getMember().getName();
+            this.orderDate = order.getOrderDate();
+            this.orderStatus = order.getStatus();
+            this.address = order.getDelivery().getAddress();
+        }
+
+    }
+
+    @Data
+    @AllArgsConstructor
+    public class Result<T> {
+        private int count;
+        private T data;
+    }
+```
+
+> /api/v2/simple-orders - response
+
+```
+{
+    "count": 3,
+    "data": [
+        {
+            "orderId": 35,
+            "name": "회원1",
+            "orderDate": "2022-07-30T15:23:25.537696",
+            "orderStatus": "CANCEL",
+            "address": {
+                "city": "도시1",
+                "street": "거리1",
+                "zipcode": "11111"
+            }
+        },
+        {
+            "orderId": 88,
+            "name": "회원1",
+            "orderDate": "2022-08-01T23:19:02.252476",
+            "orderStatus": "ORDER",
+            "address": {
+                "city": "도시1",
+                "street": "거리1",
+                "zipcode": "11111"
+            }
+        },
+        {
+            "orderId": 92,
+            "name": "회원1",
+            "orderDate": "2022-08-02T00:58:44.937685",
+            "orderStatus": "CANCEL",
+            "address": {
+                "city": "도시1",
+                "street": "거리1",
+                "zipcode": "11111"
+            }
+        }
+    ]
+}
+```
+
+> OrderSimpleApiController.java 
+> 코드 리팩토링
+
+```
+    @GetMapping("/api/v2/simple-orders")
+	public Result getOrdersV2(){
+        List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+        List<SimpleOrderDto> collect = orders.stream()
+                //.map(o -> new SimpleOrderDto(o))
+                .map(SimpleOrderDto::new)
+                .collect(toList()); //static import - import static java.util.stream.Collectors.*;
+
+        return new OrderSimpleApiController.Result(collect.size(), collect);
+    }
+```
+
+> v1과 v2의 고질적인 문제가 있는데, Lazy Loading으로 인해 SQL이 너무 많이 조회하게 됩니다.
+
+> console
+
+```
+
+2022-09-04 18:34:23.088 DEBUG 29132 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        order0_.order_id as order_id1_6_,
+        order0_.delivery_id as delivery4_6_,
+        order0_.member_id as member_i5_6_,
+        order0_.order_date as order_da2_6_,
+        order0_.status as status3_6_ 
+    from
+        orders order0_ 
+    left outer join
+        member member1_ 
+            on order0_.member_id=member1_.member_id limit ?
+...
+
+2022-09-04 18:34:23.097 DEBUG 29132 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        member0_.member_id as member_i1_4_0_,
+        member0_.city as city2_4_0_,
+        member0_.street as street3_4_0_,
+        member0_.zipcode as zipcode4_4_0_,
+        member0_.name as name5_4_0_ 
+    from
+        member member0_ 
+    where
+        member0_.member_id=?
+
+...
+
+2022-09-04 18:34:23.100 DEBUG 29132 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        delivery0_.delivery_id as delivery1_2_0_,
+        delivery0_.city as city2_2_0_,
+        delivery0_.street as street3_2_0_,
+        delivery0_.zipcode as zipcode4_2_0_,
+        delivery0_.status as status5_2_0_ 
+    from
+        delivery delivery0_ 
+    where
+        delivery0_.delivery_id=?
+
+...        
+
+2022-09-04 18:34:23.102 DEBUG 29132 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        delivery0_.delivery_id as delivery1_2_0_,
+        delivery0_.city as city2_2_0_,
+        delivery0_.street as street3_2_0_,
+        delivery0_.zipcode as zipcode4_2_0_,
+        delivery0_.status as status5_2_0_ 
+    from
+        delivery delivery0_ 
+    where
+        delivery0_.delivery_id=?
+
+...
+
+2022-09-04 18:34:23.104 DEBUG 29132 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        delivery0_.delivery_id as delivery1_2_0_,
+        delivery0_.city as city2_2_0_,
+        delivery0_.street as street3_2_0_,
+        delivery0_.zipcode as zipcode4_2_0_,
+        delivery0_.status as status5_2_0_ 
+    from
+        delivery delivery0_ 
+    where
+        delivery0_.delivery_id=?
+```
+
+> Lazy Loading의 메커니즘을 알아야 왜 위의 콘솔처럼 조회 되는지 알 수 있습니다.
+
+> 1. Order -> Sql 1번 -> 결과 주문 수 2개 	- sql 1개
+
+```
+
+	List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+```
+
+> 2. 루프 결과 주문 수 만큼  					- sql 4개 (row 2 * Lazy Loading 대상 테이블 2)
+> 	N + 1 문제 (1(Order) + N(회원) + N(배송)
+
+`````
+
+	     public SimpleOrderDto(Order order) {
+            this.orderId = order.getId();
+            this.name = order.getMember().getName(); // Lazy Loading 초기화
+            this.orderDate = order.getOrderDate();
+            this.orderStatus = order.getStatus();
+            this.address = order.getDelivery().getAddress(); ; // Lazy Loading 초기화
+        }
+`````
+
+> 이를 해결하기 위해 Lazy Loading 에서 Eager로 바꾸면 해결될것 같지만, <br>
+> 해결 되지 않을 뿐만 아니라 예측할 수 없는 쿼리가 실행됩니다. 
+
+
+> Order.java
+
+````
+
+...
+
+    @ManyToOne(fetch = FetchType.EAGER)  // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
+    @JoinColumn(name = "member_id") // Order의 member가 수정되면 Order의 외래키 값이 변경됩니다.
+    private Member member;
+
+
+    // ToOne은 fetch = FetchType.LAZY로 꼭 !!! 세팅
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "delivery_id")
+    private Delivery delivery;
+...
+
+````
+
+>  console
+
+
+```
+
+2022-09-04 19:00:10.544 DEBUG 33748 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        order0_.order_id as order_id1_6_,
+        order0_.delivery_id as delivery4_6_,
+        order0_.member_id as member_i5_6_,
+        order0_.order_date as order_da2_6_,
+        order0_.status as status3_6_ 
+    from
+        orders order0_ 
+    left outer join
+        member member1_ 
+            on order0_.member_id=member1_.member_id limit ?
+
+...
+
+2022-09-04 19:00:10.594 DEBUG 33748 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        delivery0_.delivery_id as delivery1_2_0_,
+        delivery0_.city as city2_2_0_,
+        delivery0_.street as street3_2_0_,
+        delivery0_.zipcode as zipcode4_2_0_,
+        delivery0_.status as status5_2_0_ 
+    from
+        delivery delivery0_ 
+    where
+        delivery0_.delivery_id=?
+
+...
+
+2022-09-04 19:00:10.603 DEBUG 33748 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        order0_.order_id as order_id1_6_2_,
+        order0_.delivery_id as delivery4_6_2_,
+        order0_.member_id as member_i5_6_2_,
+        order0_.order_date as order_da2_6_2_,
+        order0_.status as status3_6_2_,
+        delivery1_.delivery_id as delivery1_2_0_,
+        delivery1_.city as city2_2_0_,
+        delivery1_.street as street3_2_0_,
+        delivery1_.zipcode as zipcode4_2_0_,
+        delivery1_.status as status5_2_0_,
+        member2_.member_id as member_i1_4_1_,
+        member2_.city as city2_4_1_,
+        member2_.street as street3_4_1_,
+        member2_.zipcode as zipcode4_4_1_,
+        member2_.name as name5_4_1_ 
+    from
+        orders order0_ 
+    left outer join
+        delivery delivery1_ 
+            on order0_.delivery_id=delivery1_.delivery_id 
+    left outer join
+        member member2_ 
+            on order0_.member_id=member2_.member_id 
+    where
+        order0_.delivery_id=?
+
+...
+
+2022-09-04 19:00:10.618 DEBUG 33748 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        delivery0_.delivery_id as delivery1_2_0_,
+        delivery0_.city as city2_2_0_,
+        delivery0_.street as street3_2_0_,
+        delivery0_.zipcode as zipcode4_2_0_,
+        delivery0_.status as status5_2_0_ 
+    from
+        delivery delivery0_ 
+    where
+        delivery0_.delivery_id=?
+        
+
+...
+
+2022-09-04 19:00:10.620 DEBUG 33748 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        order0_.order_id as order_id1_6_2_,
+        order0_.delivery_id as delivery4_6_2_,
+        order0_.member_id as member_i5_6_2_,
+        order0_.order_date as order_da2_6_2_,
+        order0_.status as status3_6_2_,
+        delivery1_.delivery_id as delivery1_2_0_,
+        delivery1_.city as city2_2_0_,
+        delivery1_.street as street3_2_0_,
+        delivery1_.zipcode as zipcode4_2_0_,
+        delivery1_.status as status5_2_0_,
+        member2_.member_id as member_i1_4_1_,
+        member2_.city as city2_4_1_,
+        member2_.street as street3_4_1_,
+        member2_.zipcode as zipcode4_4_1_,
+        member2_.name as name5_4_1_ 
+    from
+        orders order0_ 
+    left outer join
+        delivery delivery1_ 
+            on order0_.delivery_id=delivery1_.delivery_id 
+    left outer join
+        member member2_ 
+            on order0_.member_id=member2_.member_id 
+    where
+        order0_.delivery_id=?
+
+...
+
+2022-09-04 19:00:10.622 DEBUG 33748 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        delivery0_.delivery_id as delivery1_2_0_,
+        delivery0_.city as city2_2_0_,
+        delivery0_.street as street3_2_0_,
+        delivery0_.zipcode as zipcode4_2_0_,
+        delivery0_.status as status5_2_0_ 
+    from
+        delivery delivery0_ 
+    where
+        delivery0_.delivery_id=?
+
+...
+
+2022-09-04 19:00:10.624 DEBUG 33748 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        order0_.order_id as order_id1_6_2_,
+        order0_.delivery_id as delivery4_6_2_,
+        order0_.member_id as member_i5_6_2_,
+        order0_.order_date as order_da2_6_2_,
+        order0_.status as status3_6_2_,
+        delivery1_.delivery_id as delivery1_2_0_,
+        delivery1_.city as city2_2_0_,
+        delivery1_.street as street3_2_0_,
+        delivery1_.zipcode as zipcode4_2_0_,
+        delivery1_.status as status5_2_0_,
+        member2_.member_id as member_i1_4_1_,
+        member2_.city as city2_4_1_,
+        member2_.street as street3_4_1_,
+        member2_.zipcode as zipcode4_4_1_,
+        member2_.name as name5_4_1_ 
+    from
+        orders order0_ 
+    left outer join
+        delivery delivery1_ 
+            on order0_.delivery_id=delivery1_.delivery_id 
+    left outer join
+        member member2_ 
+            on order0_.member_id=member2_.member_id 
+    where
+        order0_.delivery_id=?
+```
+
+>
+     
+```
+    @GetMapping("/api/v2/simple-orders")
+    public Result getOrdersV2(){
+        List<Order> orders = orderRepository.findAllByString(new OrderSearch()); //Order 조회
+        
+        List<SimpleOrderDto> collect = orders.stream() 						 //Order 결과만큼 루프
+                .map(SimpleOrderDto::new)    
+                .collect(toList()); //static import - import static java.util.stream.Collectors.*;
+
+        return new OrderSimpleApiController.Result(collect.size(), collect);
+    }
+    
+    
+    @Data
+    static class SimpleOrderDto {
+        private long orderId;
+        private String name;
+        private LocalDateTime orderDate;
+        private OrderStatus orderStatus;
+        private Address address;
+
+        public SimpleOrderDto(Order order) {
+            this.orderId = order.getId();
+            this.name = order.getMember().getName(); 	//Eager로 Order와 Member 합쳐진 쿼리 수행
+            this.orderDate = order.getOrderDate();
+            this.orderStatus = order.getStatus();
+            this.address = order.getDelivery().getAddress(); //Eager로 Order와 Delivery 합쳐진 쿼리 수행
+        }
+
+    }
+    
+```
 
 ### 이전 소스
 ---------------------
