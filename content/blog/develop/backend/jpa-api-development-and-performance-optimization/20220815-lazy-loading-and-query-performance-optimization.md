@@ -804,7 +804,6 @@ Hibernate5Module hibernate5Module() {
 
 >  console
 
-
 ```
 
 2022-09-04 19:00:10.544 DEBUG 33748 --- [nio-8080-exec-2] org.hibernate.SQL                        : 
@@ -988,6 +987,357 @@ Hibernate5Module hibernate5Module() {
     }
     
 ```
+
+### 간단한 주문 조회 V3 : Fetch Join
+> Order에 member와 delivery가 Lazy로 되어있지만, 무시하고 fetch 조인을 이용해 한방 쿼리로 조회
+
+
+> OrderSimpleApiController.java
+
+```
+ @GetMapping("/api/v3/simple-orders")
+    public Result getOrdersV3(){
+        List<Order> orders = orderRepository.findAllWithMemberDelivery(); //새로운 Member,Delivery를 같이 조회 하는 메서드 생성
+
+        List<SimpleOrderDto> collect = orders.stream()
+                .map(SimpleOrderDto::new)
+                .collect(toList()); //static import - import static java.util.stream.Collectors.*;
+
+        return new OrderSimpleApiController.Result(collect.size(), collect);
+    }
+```
+
+> OrderRepository.java
+
+```
+    public List<Order> findAllWithMemberDelivery() {
+        return em.createQuery(
+                "SELECT o from Order o" +
+                        " join fetch o.member m "+
+                        " join fetch o.delivery d ", Order.class
+        ).getResultList();
+    }
+```
+
+> /api/v3/simple-orders - response
+
+```
+{
+    "count": 3,
+    "data": [
+        {
+            "orderId": 35,
+            "name": "회원1",
+            "orderDate": "2022-07-30T15:23:25.537696",
+            "orderStatus": "CANCEL",
+            "address": {
+                "city": "도시1",
+                "street": "거리1",
+                "zipcode": "11111"
+            }
+        },
+        {
+            "orderId": 88,
+            "name": "회원1",
+            "orderDate": "2022-08-01T23:19:02.252476",
+            "orderStatus": "ORDER",
+            "address": {
+                "city": "도시1",
+                "street": "거리1",
+                "zipcode": "11111"
+            }
+        },
+        {
+            "orderId": 92,
+            "name": "회원1",
+            "orderDate": "2022-08-02T00:58:44.937685",
+            "orderStatus": "CANCEL",
+            "address": {
+                "city": "도시1",
+                "street": "거리1",
+                "zipcode": "11111"
+            }
+        }
+    ]
+}
+```
+
+> console
+
+```
+2022-09-09 15:28:13.079 DEBUG 26180 --- [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        order0_.order_id as order_id1_6_0_,
+        member1_.member_id as member_i1_4_1_,
+        delivery2_.delivery_id as delivery1_2_2_,
+        order0_.delivery_id as delivery4_6_0_,
+        order0_.member_id as member_i5_6_0_,
+        order0_.order_date as order_da2_6_0_,
+        order0_.status as status3_6_0_,
+        member1_.city as city2_4_1_,
+        member1_.street as street3_4_1_,
+        member1_.zipcode as zipcode4_4_1_,
+        member1_.name as name5_4_1_,
+        delivery2_.city as city2_2_2_,
+        delivery2_.street as street3_2_2_,
+        delivery2_.zipcode as zipcode4_2_2_,
+        delivery2_.status as status5_2_2_ 
+    from
+        orders order0_ 
+    inner join
+        member member1_ 
+            on order0_.member_id=member1_.member_id 
+    inner join
+        delivery delivery2_ 
+            on order0_.delivery_id=delivery2_.delivery_id
+```
+
+> 이전 쿼리와 다르게 N+1 대신 1건의 쿼리가 발생 되는 것을 확인할 수 있습니다. 
+
+> JPA 모든 성능 이슈 중에 90%는 N+1 문제이며, 이 문제는 fetch 조인을 사용함으로 해결할 수 있습니다. 
+
+> 다시말하면 JPA의 90% 이상은 Lazy로 설정하고, fetch join을 사용하면 거진 성능 최적화 문제를 해결 할 수 있습니다.
+
+
+### 간단한 주문 조회 V4 : 변환 없이 DTO로 바로 조회
+> - 일반적인 SQL을 사용할 때 처럼 원하는 값을 선택해서 조회
+> - new 명령어를 사용해서 JPQL의 결과를 DTO로 바로 변환
+> - SELECT절에서 원하는 데이터를 직접 선택하므로 DB -> 애플리케이션 네트웍 용량 최적화(생각보다 미비)
+> - 리포지토리 재사용성 떨어짐, API 스펙에 맞춘 코드가 리포지토리에 들어가는 단점
+>	리포지토리가 API 스펙(화면)에 의존하게 되어, API 스펙이 변경되면 리포지토리를 뜯어 고쳐야 하는 상황이 발생
+
+
+
+> OrderSimpleApiController에 있던 SimpleOrderDto를 새로운 class로 OrderSimpleQueryDto로 생성합니다. 
+
+> OrderRepository에서 OrderSimpleApiController의 SimpleOrderDto를 사용하게 되면 종속성이 생기기 때문입니다. 
+
+> java/jpabook/jpashop/dto/OrderSimpleQueryDto.java
+
+```
+package jpabook.jpashop.dto;
+
+import jpabook.jpashop.domain.Address;
+import jpabook.jpashop.domain.Order;
+import jpabook.jpashop.domain.OrderStatus;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+public class OrderSimpleQueryDto {
+    private long orderId;
+    private String name;
+    private LocalDateTime orderDate;
+    private OrderStatus orderStatus;
+    private Address address;
+
+    public OrderSimpleQueryDto( Long orderId
+                              , String name
+                              , LocalDateTime orderDate
+                              , OrderStatus orderStatus
+                              , Address address
+                              ) {
+        this.orderId = orderId;
+        this.name = name;
+        this.orderDate = orderDate;
+        this.orderStatus = orderStatus;
+        this.address = address;
+    }
+
+}
+```
+
+> OrderRepository.java
+
+```
+ public List<OrderSimpleQueryDto> findOrderDtos() {
+        String orderSimpleQueryDto = "jpabook.jpashop.dto.OrderSimpleQueryDto";
+        
+        return em.createQuery(
+                "SELECT new "+orderSimpleQueryDto+"(o.id, m.name, o.orderDate, o.status, d.address) "+
+                        " from Order o" +
+                        " join o.member m "+
+                        " join o.delivery d ", OrderSimpleQueryDto.class
+        ).getResultList();
+    }
+
+```
+
+> new jpabook.jpashop.dto.OrderSimpleQueryDto(o) 를 통해 엔티티를 넘기게 되면 엔티티가 아니라 식별자를 넘기게 되어 각각 o.id, m.name, o.orderDate, o.status, d.address 컬럼을 풀어서 넣어줘야합니다. 
+
+> Address는 엔티티가 아니라 값 타입이기 때문에 o.address로 넘겨도 괜찮습니다.
+
+
+> /api/v4/simple-orders - response
+
+```
+{
+    "count": 3,
+    "data": [
+        {
+            "orderId": 35,
+            "name": "회원1",
+            "orderDate": "2022-07-30T15:23:25.537696",
+            "orderStatus": "CANCEL",
+            "address": {
+                "city": "도시1",
+                "street": "거리1",
+                "zipcode": "11111"
+            }
+        },
+        {
+            "orderId": 88,
+            "name": "회원1",
+            "orderDate": "2022-08-01T23:19:02.252476",
+            "orderStatus": "ORDER",
+            "address": {
+                "city": "도시1",
+                "street": "거리1",
+                "zipcode": "11111"
+            }
+        },
+        {
+            "orderId": 92,
+            "name": "회원1",
+            "orderDate": "2022-08-02T00:58:44.937685",
+            "orderStatus": "CANCEL",
+            "address": {
+                "city": "도시1",
+                "street": "거리1",
+                "zipcode": "11111"
+            }
+        }
+    ]
+}
+
+```
+
+
+> console 
+
+````
+    select
+        order0_.order_id as col_0_0_,
+        member1_.name as col_1_0_,
+        order0_.order_date as col_2_0_,
+        order0_.status as col_3_0_,
+        delivery2_.city as col_4_0_,
+        delivery2_.street as col_4_1_,
+        delivery2_.zipcode as col_4_2_ 
+    from
+        orders order0_ 
+    inner join
+        member member1_ 
+            on order0_.member_id=member1_.member_id 
+    inner join
+        delivery delivery2_ 
+            on order0_.delivery_id=delivery2_.delivery_id
+````
+
+> fetch 조인과 from 이하 동일한 쿼리가 발생하는 것을 확인 할 수 있고, 원하는 컬럼만 조회 한것을 알 수 있습니다.
+
+> V3와 V4는 우열을 가르기 힘들 정도로 크게 성능차이는 없습니다. 
+
+> V3는 사용하는 엔티티만, fetch 조인으로 가져와 모든 컬럼을 사용할 수 있지만,
+
+> V4는 원하는 컬럼만 OrderSimpleQueryDto에 담았기 때문에 해당 DTO 떄만 사용가능해 재사용성이 떨어지게 됩니다.
+
+> 또한 V3는 엔티티를 조회했기 때문에 비즈니스로직에서 조회하여 데이터를 조작할 수 있지만, 
+V4 같은 경우 DTO이기 때문에 데이터를 조작할 수 없는 단점도 있습니다.
+
+> 그러면 V3가 무조건 좋은가 하면 상황에 따라 고객이 계속 조회해야 하거나 컬럼의 갯수가 30~40개가 넘어간다면 DTO로 필요한 컬럼만 조회하는 V4가 좋을 수 있습니다. 
+
+#### OderSimpleQueryRepository로 소스 분리
+> repository 폴더 아래 order/simpleQuery 2 depth 패키지 구조를 추가해 특정 쿼리용 레포지토리를 분리합니다. 
+
+> java/jpabook/jpashop/repository/order/simpleQuery/OrderSimepleQueryRepository.java
+
+````
+package jpabook.jpashop.repository.order.simpleQuery;
+
+import jpabook.jpashop.dto.OrderSimpleQueryDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
+import java.util.List;
+
+@Repository
+@RequiredArgsConstructor
+public class OrderSimepleQueryRepository {
+
+    private final EntityManager em;
+
+    public List<OrderSimpleQueryDto> findOrderDtos() {
+        String orderSimpleQueryDto = "jpabook.jpashop.dto.OrderSimpleQueryDto";
+        return em.createQuery(
+                "SELECT new "+orderSimpleQueryDto+"(o.id, m.name, o.orderDate, o.status, d.address) "+
+                        " from Order o" +
+                        " join o.member m "+
+                        " join o.delivery d ", OrderSimpleQueryDto.class
+        ).getResultList();
+    }
+}
+
+````
+
+> 또한 OrderSimpleQueryDto도 dto/order/simpleQuery 에 위치해 주고 참조한 주소들을 수정합니다.
+
+> java/jpabook/jpashop/dto/order/simpleQuery/OrderSimpleQueryDto.java
+
+```
+package jpabook.jpashop.dto.order.simpleQuery;
+
+import jpabook.jpashop.domain.Address;
+import jpabook.jpashop.domain.Order;
+import jpabook.jpashop.domain.OrderStatus;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+public class OrderSimpleQueryDto {
+    private long orderId;
+    private String name;
+    private LocalDateTime orderDate;
+    private OrderStatus orderStatus;
+    private Address address;
+
+    public OrderSimpleQueryDto( Long orderId
+                              , String name
+                              , LocalDateTime orderDate
+                              , OrderStatus orderStatus
+                              , Address address
+                              ) {
+        this.orderId = orderId;
+        this.name = name;
+        this.orderDate = orderDate;
+        this.orderStatus = orderStatus;
+        this.address = address;
+    }
+}
+```
+
+> 이렇게 분리한 이유는 Repository와 DTO는 순수한 엔티티를 조회하는데 사용하고, <br>
+> queryRepository, queryDTO는 특정 쿼리나 통계와 같은 화면(요구사항)에 맞춰 사용하는게 유지보수에도 도움이 됩니다.
+
+
+#### 정리 
+> 엔티티를 DTO로 변환하거나, DTO로 바로 조회하는 두가지 방법은 각각 장단점이 있습니다.
+> 둘중 상황에 따라서 더 나은 방법을 선택하면 됩니다. 
+> 엔티티로 조회하면 리포지토리의 재사용성도 좋고, 개발도 단순해 집니다. 
+
+> 따라서 권장하는 방법은 아래와 같습니다.
+
+> 1. 우선 엔티티를 DTO로 변환하는 방법을 선택한다.
+> 2. 필요하면 fetch조인으로 성능을 최적화 한다. -> 대부분 성능 이슈가 해결
+> 3. 그래도 안되면 DTO로 직접 조회하는 방법을 사용한다.
+> 4. 최후의 방법은 JPA가 제공하는 네이티브 SQL이나 스프링 JDBC Template를 사용해서 SQL을 직접 사용한다.
+
+
+
+
 
 ### 이전 소스
 ---------------------
